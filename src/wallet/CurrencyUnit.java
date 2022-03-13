@@ -9,18 +9,22 @@ public class CurrencyUnit {
     private static final Pattern CURRENCY_PATTERN = Pattern.compile("[A-Z]{3}");
 
     private final Currency currency;
+    private final String code;
 
     public CurrencyUnit() {
         putCurrenciesToMap();
         currency = Currency.USD;
+        code = "USD";
     }
     public CurrencyUnit(String currencyString) {
         putCurrenciesToMap();
         this.currency = of(currencyString).currency;
+        code = currencyString;
     }
     private CurrencyUnit(Currency currency) {
         putCurrenciesToMap();
         this.currency = currency;
+        code = currency.toString();
     }
 
     private static void putCurrenciesToMap() {
@@ -39,6 +43,18 @@ public class CurrencyUnit {
         } catch (Exception e) {
             throw new IllegalArgumentException("Can't find currency " + currencyString);
         }
+    }
+
+    public static boolean equals(CurrencyUnit left, CurrencyUnit right) {
+        return left.equals(right);
+    }
+
+    public boolean equalTo(CurrencyUnit currency) {
+        return this.currency == currency.currency;
+    }
+
+    public String toString() {
+        return code;
     }
 
 }

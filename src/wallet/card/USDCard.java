@@ -1,11 +1,11 @@
 package wallet.card;
 
 import wallet.Currency;
-import wallet.balance.Balance;
+import wallet.money.Money;
 
 public class USDCard implements Card {
 
-    Balance balance;
+    Money balance;
     Currency currency = Currency.USD;
 
     @Override
@@ -14,7 +14,7 @@ public class USDCard implements Card {
     }
 
     @Override
-    public Balance getBalance() {
+    public Money getBalance() {
         return balance;
     }
 

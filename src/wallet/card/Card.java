@@ -2,12 +2,12 @@ package wallet.card;
 
 
 import wallet.Currency;
-import wallet.balance.Balance;
+import wallet.money.Money;
 
 public interface Card {
 
     Currency getCurrency();
-    Balance getBalance();
+    Money getBalance();
     float getMonthConsumptiion();
     float getMonthIncome();
 
