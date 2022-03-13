@@ -11,27 +11,24 @@ public class CurrencyUnit {
     private final Currency currency;
     private final String code;
 
-    public CurrencyUnit() {
-        putCurrenciesToMap();
-        currency = Currency.USD;
-        code = "USD";
-    }
-    public CurrencyUnit(String currencyString) {
-        putCurrenciesToMap();
-        this.currency = of(currencyString).currency;
-        code = currencyString;
-    }
-    private CurrencyUnit(Currency currency) {
-        putCurrenciesToMap();
-        this.currency = currency;
-        code = currency.toString();
-    }
-
-    private static void putCurrenciesToMap() {
+    static {
         currencyHashMap = new HashMap<>();
         currencyHashMap.put("USD",Currency.USD);
         currencyHashMap.put("BYN",Currency.BYN);
         currencyHashMap.put("EUR",Currency.EUR);
+    }
+
+    public CurrencyUnit() {
+        currency = Currency.USD;
+        code = "USD";
+    }
+    public CurrencyUnit(String currencyString) {
+        this.currency = of(currencyString).currency;
+        code = currencyString;
+    }
+    private CurrencyUnit(Currency currency) {
+        this.currency = currency;
+        code = currency.toString();
     }
 
     public static CurrencyUnit of(String currencyString) {

@@ -46,21 +46,21 @@ public class Money {
         BigDecimal newAmount;
         if(isSameCurrency(money)) {
             newAmount = this.amount.add(money.amount);
-            return new Money(this.currency,newAmount);
         } else {
-            //add converter
-            return null;
+            Money convertedMoney = CurrencyConverter.convert(money,currency);
+            newAmount = this.amount.add(convertedMoney.amount);
         }
+        return new Money(this.currency,newAmount);
     }
     public Money minus(Money money) {
         BigDecimal newAmount;
         if(isSameCurrency(money)) {
             newAmount = this.amount.subtract(money.amount);
-            return new Money(this.currency,newAmount);
         } else {
-            //add converter
-            return null;
+            Money convertedMoney = CurrencyConverter.convert(money,currency);
+            newAmount = this.amount.subtract(convertedMoney.amount);
         }
+        return new Money(this.currency,newAmount);
     }
 
     public Money plus(BigDecimal moneyAmount) {
