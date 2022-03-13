@@ -8,8 +8,8 @@ import java.math.RoundingMode;
 
 public class Money {
 
-    private CurrencyUnit currency;
-    private BigDecimal amount;
+    private final CurrencyUnit currency;
+    private final BigDecimal amount;
 
     public BigDecimal getAmount() {
         return amount;
@@ -30,7 +30,7 @@ public class Money {
             throw new IllegalArgumentException(moneyString.trim() + " can't be parsed");
         }
         String currencyString = formattedMoneyString.substring(0,3);
-        String amountString = formattedMoneyString.substring(4);
+        String amountString = formattedMoneyString.substring(3);
         return of(CurrencyUnit.of(currencyString),new BigDecimal(amountString));
     }
 
@@ -89,3 +89,4 @@ public class Money {
     }
 
 }
+

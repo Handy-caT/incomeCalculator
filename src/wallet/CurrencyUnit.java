@@ -43,15 +43,19 @@ public class CurrencyUnit {
     }
 
     public static boolean equals(CurrencyUnit left, CurrencyUnit right) {
-        return left.equals(right);
+        return left.equalTo(right);
     }
 
     public boolean equalTo(CurrencyUnit currency) {
         return this.currency == currency.currency;
     }
+    public boolean equalTo(String currencyString) {
+        return equalTo(CurrencyUnit.of(currencyString));
+    }
 
     public String toString() {
         return code;
     }
+
 
 }
