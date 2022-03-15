@@ -1,45 +1,112 @@
 package wallet.money;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider{
 
-    private String JSONFileName = "currencies.json";
+    private static String JSONFileName = "currencies.json";
 
     private static HashMap<String,HashMap<String, BigDecimal>> converterMapSell;
     static {
         converterMapSell = new HashMap<>();
+        FileReader reader;
+        try {
+            reader = new FileReader(JSONFileName);
+            JSONParser jsonParser = new JSONParser();
+            JSONArray currenciesJSONArray = (JSONArray) jsonParser.parse(reader);
 
+            JSONObject currencyObject = (JSONObject) currenciesJSONArray.get(0);
 
+            HashMap<String,BigDecimal> Converter = new HashMap<>();
+            String currencyName = (String) currencyObject.get("currencyName");
+            Converter.put(currencyName,BigDecimal.valueOf(1));
 
-        HashMap<String,BigDecimal> USDConverter = new HashMap<>();
-        USDConverter.put("USD",BigDecimal.valueOf(1));
-        USDConverter.put("EUR",BigDecimal.valueOf(0.8929));
-        USDConverter.put("BYN",BigDecimal.valueOf(3.80));
-        converterMapSell.put("USD",USDConverter);
+            JSONArray ratioArray = (JSONArray) currencyObject.get("ratioArray");
+            int i = 0;
+            while(i < ratioArray.size()) {
+                JSONObject ratioObject = (JSONObject) ratioArray.get(i);
+                String currencyTo = (String) ratioObject.get("currencyTo");
+                BigDecimal ratio = (BigDecimal) ratioObject.get("ratio");
+                Converter.put(currencyTo,ratio);
+                i++;
+            }
 
-        HashMap<String,BigDecimal> EURConverter = new HashMap<>();
-        EURConverter.put("EUR",BigDecimal.valueOf(1));
-        EURConverter.put("USD",BigDecimal.valueOf(1.05));
-        EURConverter.put("BYN",BigDecimal.valueOf(3.95));
-        converterMapSell.put("EUR",EURConverter);
+            converterMapSell.put(currencyName,Converter);
+            reader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        HashMap<String,BigDecimal> BYNConverter = new HashMap<>();
-        BYNConverter.put("EUR",BigDecimal.valueOf(0.2278));
-        BYNConverter.put("USD",BigDecimal.valueOf(0.2506));
-        BYNConverter.put("BYN",BigDecimal.valueOf(1));
-        converterMapSell.put("BYN",BYNConverter);
     }
 
     @Override
     public short getDecimalPlaces(String currencyString) {
-        return 0;
+        FileReader reader;
+        short decimalPlaces = 0;
+        try {
+            reader = new FileReader(JSONFileName);
+            JSONParser jsonParser = new JSONParser();
+            JSONArray currenciesJSONArray = (JSONArray) jsonParser.parse(reader);
+            
+            String tempString = null;
+            int i = 1;
+            JSONObject currencyObject = (JSONObject) currenciesJSONArray.get(0);
+            tempString = (String) currencyObject.get("currencyName");
+            while(!Objects.equals(tempString, currencyString)) {
+                currencyObject = (JSONObject) currenciesJSONArray.get(i);
+                tempString = (String) currencyObject.get("currencyName");
+                i++;
+            }
+            decimalPlaces = (short) currencyObject.get("decimalPlaces");
+            reader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return decimalPlaces;
     }
 
     @Override
     public BigDecimal getRatio(String currencyFrom, String currencyTo) {
-        return null;
+        FileReader reader;
+        BigDecimal ratio = null;
+        try {
+            reader = new FileReader(JSONFileName);
+            JSONParser jsonParser = new JSONParser();
+            JSONArray currenciesJSONArray = (JSONArray) jsonParser.parse(reader);
+
+            String tempString = null;
+            int i = 1;
+            JSONObject currencyObject = (JSONObject) currenciesJSONArray.get(0);
+            tempString = (String) currencyObject.get("currencyName");
+            while(!Objects.equals(tempString, currencyFrom)) {
+                currencyObject = (JSONObject) currenciesJSONArray.get(i);
+                tempString = (String) currencyObject.get("currencyName");
+                i++;
+            }
+            
+            JSONArray ratioArray = (JSONArray) currencyObject.get("ratioArray");
+            JSONObject ratioObject = (JSONObject) ratioArray.get(0);
+            tempString = (String) currencyObject.get("currencyTo");
+            i = 1;
+            while(!Objects.equals(tempString, currencyTo)) {
+                ratioObject = (JSONObject) ratioArray.get(i);
+                tempString = (String) ratioObject.get("currencyTo");
+                ratio = (BigDecimal) ratioObject.get("ratio");
+                i++;
+            }
+            reader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ratio;
     }
 
     @Override
