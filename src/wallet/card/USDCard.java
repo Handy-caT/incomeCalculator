@@ -1,15 +1,15 @@
 package wallet.card;
 
-import wallet.Currency;
+import wallet.money.CurrencyUnit;
 import wallet.money.Money;
 
 public class USDCard implements Card {
 
     Money balance;
-    Currency currency = Currency.USD;
+    CurrencyUnit currency = CurrencyUnit.of("USD");
 
     @Override
-    public Currency getCurrency() {
+    public CurrencyUnit getCurrency() {
         return currency;
     }
 

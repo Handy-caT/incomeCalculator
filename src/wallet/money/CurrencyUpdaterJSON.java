@@ -3,11 +3,15 @@ package wallet.money;
 import java.math.BigDecimal;
 import java.util.HashMap;
 
-public class CurrencyConverter {
+public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider{
+
+    private String JSONFileName = "currencies.json";
 
     private static HashMap<String,HashMap<String, BigDecimal>> converterMapSell;
     static {
         converterMapSell = new HashMap<>();
+
+
 
         HashMap<String,BigDecimal> USDConverter = new HashMap<>();
         USDConverter.put("USD",BigDecimal.valueOf(1));
@@ -28,18 +32,23 @@ public class CurrencyConverter {
         converterMapSell.put("BYN",BYNConverter);
     }
 
-    public static BigDecimal getConvertSellRatio(CurrencyUnit fromCurrency,CurrencyUnit toCurrency) {
-        return converterMapSell.get(fromCurrency.toString()).get(toCurrency.toString());
+    @Override
+    public short getDecimalPlaces(String currencyString) {
+        return 0;
     }
 
-    public static void setConvertSellRatio(CurrencyUnit fromCurrency,CurrencyUnit toCurrency,BigDecimal ratio) {
-        converterMapSell.get(fromCurrency.toString()).remove(toCurrency.toString());
-        converterMapSell.get(fromCurrency.toString()).put(toCurrency.toString(),ratio);
+    @Override
+    public BigDecimal getRatio(String currencyFrom, String currencyTo) {
+        return null;
     }
 
-    public static Money convert(Money money, CurrencyUnit currencyToConvertTo) {
-        BigDecimal newAmount = money.getAmount().multiply(getConvertSellRatio(money.getCurrency(),currencyToConvertTo));
-        return new Money(currencyToConvertTo,newAmount);
+    @Override
+    public void addCurrency(String currencyName, HashMap<String, BigDecimal> currenciesRatioMap) {
+
     }
 
+    @Override
+    public void saveCurrenciesState() {
+
+    }
 }

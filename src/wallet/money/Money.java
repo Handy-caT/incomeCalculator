@@ -1,8 +1,5 @@
 package wallet.money;
 
-import wallet.Currency;
-import wallet.CurrencyUnit;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -39,7 +36,7 @@ public class Money {
     }
 
     public boolean isSameCurrency(Money money) {
-        return (CurrencyUnit.equals(money.currency,currency));
+        return (currency.equals(money.currency));
     }
 
     public Money plus(Money money) {
