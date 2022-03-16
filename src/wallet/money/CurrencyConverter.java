@@ -2,30 +2,32 @@ package wallet.money;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 
 public class CurrencyConverter {
 
+    private static short mapSize;
+    private static HashMap<String,BigDecimal> priorityHash;
+    private static CurrencyUpdaterProvider currencyUpdater;
+
     private static HashMap<String,HashMap<String, BigDecimal>> converterMapSell;
     static {
+        mapSize = 3;
         converterMapSell = new HashMap<>();
+        priorityHash = new HashMap<>();
+        currencyUpdater = new CurrencyUpdaterJSON();
 
-        HashMap<String,BigDecimal> USDConverter = new HashMap<>();
-        USDConverter.put("USD",BigDecimal.valueOf(1));
-        USDConverter.put("EUR",BigDecimal.valueOf(0.8929));
-        USDConverter.put("BYN",BigDecimal.valueOf(3.80));
-        converterMapSell.put("USD",USDConverter);
+        HashMap<String,BigDecimal> tempHash= currencyUpdater.getCurrencyHash("USD");
+        converterMapSell.put("USD",tempHash);
+        priorityHash.put("USD",BigDecimal.ZERO);
 
-        HashMap<String,BigDecimal> EURConverter = new HashMap<>();
-        EURConverter.put("EUR",BigDecimal.valueOf(1));
-        EURConverter.put("USD",BigDecimal.valueOf(1.05));
-        EURConverter.put("BYN",BigDecimal.valueOf(3.95));
-        converterMapSell.put("EUR",EURConverter);
+        tempHash = currencyUpdater.getCurrencyHash("EUR");
+        converterMapSell.put("USD",tempHash);
+        priorityHash.put("EUR",BigDecimal.ZERO);
 
-        HashMap<String,BigDecimal> BYNConverter = new HashMap<>();
-        BYNConverter.put("EUR",BigDecimal.valueOf(0.2278));
-        BYNConverter.put("USD",BigDecimal.valueOf(0.2506));
-        BYNConverter.put("BYN",BigDecimal.valueOf(1));
-        converterMapSell.put("BYN",BYNConverter);
+        tempHash = currencyUpdater.getCurrencyHash("BYN");
+        converterMapSell.put("BYN",tempHash);
+        priorityHash.put("BYN",BigDecimal.ZERO);
     }
 
     public static BigDecimal getConvertSellRatio(CurrencyUnit fromCurrency,CurrencyUnit toCurrency) {
@@ -40,6 +42,14 @@ public class CurrencyConverter {
     public static Money convert(Money money, CurrencyUnit currencyToConvertTo) {
         BigDecimal newAmount = money.getAmount().multiply(getConvertSellRatio(money.getCurrency(),currencyToConvertTo));
         return new Money(currencyToConvertTo,newAmount);
+    }
+
+    public static void setMapSize(short size) {
+        mapSize = size;
+    }
+
+    protected static void addCurrency(String currencyName, HashMap<String, BigDecimal> currenciesRatioMap) {
+
     }
 
 }
