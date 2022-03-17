@@ -7,6 +7,7 @@ import org.json.simple.parser.JSONParser;
 import java.io.FileReader;
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider{
@@ -116,12 +117,39 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider{
     }
 
     @Override
-    public void addCurrency(String currencyName, HashMap<String, BigDecimal> currenciesRatioMap) {
+    public void addCurrency(String currencyName,BigDecimal decimalPlaces, HashMap<String, BigDecimal> currenciesRatioMap) {
+
+        FileReader reader;
+        BigDecimal ratio = null;
+        try {
+            reader = new FileReader(JSONFileName);
+            JSONParser jsonParser = new JSONParser();
+            JSONArray currenciesJSONArray = (JSONArray) jsonParser.parse(reader);
+
+            JSONObject newCurrencyJSON = new JSONObject();
+            JSONArray newCurrencyRatioArray = new JSONArray();
+            JSONObject tempRatioObject;
+
+            for(Map.Entry<String,BigDecimal> entry : currenciesRatioMap.entrySet()) {
+                tempRatioObject = new JSONObject();
+                tempRatioObject.put("currencyTo",entry.getKey());
+                tempRatioObject.put("ratio",entry.getValue());
+
+                newCurrencyRatioArray.add(tempRatioObject);
+            }
+
+            newCurrencyJSON.put("currencyName",currencyName);
+            newCurrencyJSON.put("decimalPlaces",decimalPlaces);
+            newCurrencyJSON.put("ratioArray",newCurrencyRatioArray);
+
+            currenciesJSONArray.add(newCurrencyJSON);
+
+            //save jsonArray to file
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
-    @Override
-    public void saveCurrenciesState() {
-
-    }
 }
