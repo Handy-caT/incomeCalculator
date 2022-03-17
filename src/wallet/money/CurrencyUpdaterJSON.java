@@ -5,6 +5,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,9 +16,9 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider{
     private static String JSONFileName = "currencies.json";
 
     @Override
-    public short getDecimalPlaces(String currencyString) {
+    public BigDecimal getDecimalPlaces(String currencyString) {
         FileReader reader;
-        short decimalPlaces = 0;
+        BigDecimal decimalPlaces = BigDecimal.ZERO;
         try {
             reader = new FileReader(JSONFileName);
             JSONParser jsonParser = new JSONParser();
@@ -32,7 +33,7 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider{
                 tempString = (String) currencyObject.get("currencyName");
                 i++;
             }
-            decimalPlaces = (short) currencyObject.get("decimalPlaces");
+            decimalPlaces = BigDecimal.valueOf((long) currencyObject.get("decimalPlaces"));
             reader.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,7 +67,7 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider{
             while(!Objects.equals(tempString, currencyTo)) {
                 ratioObject = (JSONObject) ratioArray.get(i);
                 tempString = (String) ratioObject.get("currencyTo");
-                ratio = (BigDecimal) ratioObject.get("ratio");
+                ratio = BigDecimal.valueOf((double) ratioObject.get("ratio"));
                 i++;
             }
             reader.close();
@@ -105,7 +106,7 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider{
             while(i < ratioArray.size()) {
                 ratioObject = (JSONObject) ratioArray.get(i);
                 tempString = (String) ratioObject.get("currencyTo");
-                ratio = (BigDecimal) ratioObject.get("ratio");
+                ratio = BigDecimal.valueOf((double) ratioObject.get("ratio"));
                 currencyHash.put(tempString,ratio);
                 i++;
             }
@@ -144,12 +145,61 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider{
 
             currenciesJSONArray.add(newCurrencyJSON);
 
-            //save jsonArray to file
+            reader.close();
+
+            FileWriter writer = new FileWriter(JSONFileName);
+            writer.write(currenciesJSONArray.toString());
+            writer.close();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+    }
+
+    @Override
+    public void addRatio(String currencyFrom, String currencyTo, BigDecimal ratio) {
+        FileReader reader;
+        try {
+            reader = new FileReader(JSONFileName);
+            JSONParser jsonParser = new JSONParser();
+            JSONArray currenciesJSONArray = (JSONArray) jsonParser.parse(reader);
+
+            String tempString;
+            int i = 1;
+            JSONObject currencyObject = (JSONObject) currenciesJSONArray.get(0);
+            tempString = (String) currencyObject.get("currencyName");
+            while (!Objects.equals(tempString, currencyFrom)) {
+                currencyObject = (JSONObject) currenciesJSONArray.get(i);
+                tempString = (String) currencyObject.get("currencyName");
+                i++;
+            }
+
+            currenciesJSONArray.remove(i-1);
+
+            JSONArray ratioArray = (JSONArray) currencyObject.get("ratioArray");
+            JSONObject tempRatioObject = new JSONObject();
+            tempRatioObject.put("currencyTo",currencyTo);
+            tempRatioObject.put("ratio",ratio);
+            ratioArray.add(tempRatioObject);
+
+            currencyObject.replace("ratioArray",ratioArray);
+
+            currenciesJSONArray.add(currencyObject);
+
+            reader.close();
+
+            FileWriter writer = new FileWriter(JSONFileName);
+            writer.write(currenciesJSONArray.toString());
+            writer.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void setJsonFilePath(String filePath) {
+        JSONFileName = filePath;
     }
 
 }

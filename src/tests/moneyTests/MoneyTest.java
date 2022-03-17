@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import wallet.money.CurrencyUnit;
 import wallet.money.CurrencyConverter;
+import wallet.money.CurrencyUpdaterJSON;
 import wallet.money.Money;
 
 import java.math.BigDecimal;
@@ -17,6 +18,7 @@ public class MoneyTest {
 
     @Before
     public void beforeSetUp() {
+        CurrencyUpdaterJSON.setJsonFilePath("testFiles/currencies.json");
         testMoney = new Money(CurrencyUnit.of("USD"),new BigDecimal("30"));
     }
 
@@ -24,13 +26,13 @@ public class MoneyTest {
     public void moneyParseTest() {
         Money anotherTestMoney = Money.parse("USD 23.75");
         assertEquals(anotherTestMoney.getAmount(), new BigDecimal("23.75"));
-        assert anotherTestMoney.getCurrency().equals("USD");
+        assertTrue(anotherTestMoney.getCurrency().equals("USD"));
     }
 
     @Test
     public void isEqualCurrencyTest() {
         Money anotherTestMoney = new Money(CurrencyUnit.of("USD"),new BigDecimal("23.75"));
-        assert anotherTestMoney.isSameCurrency(testMoney);
+        assertTrue(anotherTestMoney.isSameCurrency(testMoney));
     }
 
     @Test
@@ -38,7 +40,7 @@ public class MoneyTest {
         Money anotherTestMoney = new Money(CurrencyUnit.of("USD"),new BigDecimal("23.75"));
         anotherTestMoney = testMoney.plus(anotherTestMoney);
         assertEquals(anotherTestMoney.getAmount(), new BigDecimal("53.75"));
-        assert anotherTestMoney.getCurrency().equals("USD");
+        assertTrue(anotherTestMoney.getCurrency().equals("USD"));
     }
 
     @Test
@@ -48,7 +50,7 @@ public class MoneyTest {
         BigDecimal resultAmount = testMoney.getAmount().add(new BigDecimal("10")
                 .multiply(CurrencyConverter.getConvertSellRatio(anotherTestMoney.getCurrency(),testMoney.getCurrency())));
         assertEquals(result.getAmount(), resultAmount);
-        assert result.getCurrency().equals("USD");
+        assertTrue(result.getCurrency().equals("USD"));
     }
 
     @Test
@@ -56,7 +58,7 @@ public class MoneyTest {
         Money anotherTestMoney = new Money(CurrencyUnit.of("USD"),new BigDecimal("23.75"));
         anotherTestMoney = testMoney.minus(anotherTestMoney);
         assertEquals(anotherTestMoney.getAmount(), new BigDecimal("6.25"));
-        assert anotherTestMoney.getCurrency().equals("USD");
+        assertTrue(anotherTestMoney.getCurrency().equals("USD"));
     }
 
     @Test
@@ -66,7 +68,7 @@ public class MoneyTest {
         BigDecimal resultAmount = testMoney.getAmount().subtract(new BigDecimal("10")
                 .multiply(CurrencyConverter.getConvertSellRatio(anotherTestMoney.getCurrency(),testMoney.getCurrency())));
         assertEquals(result.getAmount(), resultAmount);
-        assert result.getCurrency().equals("USD");
+        assertTrue(result.getCurrency().equals("USD"));
     }
 
     @Test
@@ -75,7 +77,7 @@ public class MoneyTest {
         BigDecimal resultAmount = testMoney.getAmount()
                 .multiply(BigDecimal.valueOf(1.5));
         assertEquals(result.getAmount(), resultAmount);
-        assert result.getCurrency().equals("USD");
+        assertTrue(result.getCurrency().equals("USD"));
     }
 
     @Test
@@ -84,7 +86,7 @@ public class MoneyTest {
         BigDecimal resultAmount = testMoney.getAmount()
                 .divide(BigDecimal.valueOf(1.5), RoundingMode.DOWN);
         assertEquals(result.getAmount(), resultAmount);
-        assert result.getCurrency().equals("USD");
+        assertTrue(result.getCurrency().equals("USD"));
     }
 
 }
