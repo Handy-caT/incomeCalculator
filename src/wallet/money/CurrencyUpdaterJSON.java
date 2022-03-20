@@ -13,7 +13,7 @@ import java.util.Objects;
 
 public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider{
 
-    private static String JSONFileName = "currencies.json";
+    private static String JSONFileName = "currenciesToAdd.json";
 
     @Override
     public BigDecimal getDecimalPlaces(String currencyString) {
@@ -54,7 +54,7 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider{
             int i = 1;
             JSONObject currencyObject = (JSONObject) currenciesJSONArray.get(0);
             tempString = (String) currencyObject.get("currencyName");
-            while(!Objects.equals(tempString, currencyFrom)) {
+            while(!Objects.equals(tempString, currencyFrom) && i < currenciesJSONArray.size()) {
                 currencyObject = (JSONObject) currenciesJSONArray.get(i);
                 tempString = (String) currencyObject.get("currencyName");
                 i++;
@@ -65,12 +65,13 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider{
             tempString = (String) ratioObject.get("currencyTo");
             ratio = BigDecimal.valueOf((double) ratioObject.get("ratio"));
             i = 1;
-            while(!Objects.equals(tempString, currencyTo)) {
+            while(!Objects.equals(tempString, currencyTo) && i < ratioArray.size()) {
                 ratioObject = (JSONObject) ratioArray.get(i);
                 tempString = (String) ratioObject.get("currencyTo");
                 ratio = BigDecimal.valueOf((double) ratioObject.get("ratio"));
                 i++;
             }
+            if(i > ratioArray.size()) throw new IllegalArgumentException("No such ratio found!");
             reader.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -197,6 +198,57 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider{
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void deleteRatio(String currencyFrom, String currencyTo) {
+        FileReader reader;
+        try {
+            reader = new FileReader(JSONFileName);
+            JSONParser jsonParser = new JSONParser();
+            JSONArray currenciesJSONArray = (JSONArray) jsonParser.parse(reader);
+
+            String tempString;
+            int i = 1;
+            JSONObject currencyObject = (JSONObject) currenciesJSONArray.get(0);
+            tempString = (String) currencyObject.get("currencyName");
+            while (!Objects.equals(tempString, currencyFrom)) {
+                currencyObject = (JSONObject) currenciesJSONArray.get(i);
+                tempString = (String) currencyObject.get("currencyName");
+                i++;
+            }
+
+            currenciesJSONArray.remove(i-1);
+
+            JSONArray ratioArray = (JSONArray) currencyObject.get("ratioArray");
+            JSONObject ratioObject = (JSONObject) ratioArray.get(0);
+            tempString = (String) ratioObject.get("currencyTo");
+            i = 1;
+            while(!Objects.equals(tempString, currencyTo)) {
+                ratioObject = (JSONObject) ratioArray.get(i);
+                tempString = (String) ratioObject.get("currencyTo");
+                i++;
+            }
+            ratioArray.remove(i-1);
+
+            currencyObject.replace("ratioArray",ratioArray);
+
+            currenciesJSONArray.add(currencyObject);
+
+            reader.close();
+
+            FileWriter writer = new FileWriter(JSONFileName);
+            writer.write(currenciesJSONArray.toString());
+            writer.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void deleteCurrency(String currencyName) {
+
     }
 
     public static void setJsonFilePath(String filePath) {

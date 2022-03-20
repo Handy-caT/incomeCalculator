@@ -8,7 +8,9 @@ public interface CurrencyUpdaterProvider {
     BigDecimal getDecimalPlaces(String currencyString);
     BigDecimal getRatio(String currencyFrom,String currencyTo);
     void addCurrency(String currencyName,BigDecimal decimalPlaces, HashMap<String, BigDecimal> currenciesRatioMap);
-    void addRatio(String fromCurrencyName,String toCurrencyName,BigDecimal ratio);
+    void addRatio(String currencyFrom,String currencyTo,BigDecimal ratio);
+    void deleteRatio(String currencyFrom,String currencyTo);
+    void deleteCurrency(String currencyName);
     HashMap<String,BigDecimal> getCurrencyHash(String currencyName);
 
 }

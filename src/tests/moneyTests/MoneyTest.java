@@ -18,7 +18,7 @@ public class MoneyTest {
 
     @Before
     public void beforeSetUp() {
-        CurrencyUpdaterJSON.setJsonFilePath("testFiles/currencies.json");
+        CurrencyUpdaterJSON.setJsonFilePath("testFiles/currenciesToAdd.json");
         testMoney = new Money(CurrencyUnit.of("USD"),new BigDecimal("30"));
     }
 
