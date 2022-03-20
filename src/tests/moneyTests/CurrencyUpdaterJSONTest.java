@@ -43,5 +43,25 @@ public class CurrencyUpdaterJSONTest {
 
     @Test
     public void addCurrency() {
+        CurrencyUpdaterJSON.setJsonFilePath("testFiles/currenciesToAddTest.json");
+        HashMap<String,BigDecimal> currencyHash = new HashMap<>();
+
+        BigDecimal USDRatio = BigDecimal.valueOf(1.3171);
+        BigDecimal EURRatio = BigDecimal.valueOf(1.1913);
+        BigDecimal BYNRatio = BigDecimal.valueOf(4.3433);
+
+        currencyHash.put("USD",USDRatio);
+        currencyHash.put("EUR",EURRatio);
+        currencyHash.put("BYN",BYNRatio);
+
+        currencyUpdater.addCurrency("GBP",BigDecimal.valueOf(2),currencyHash);
+
+        BigDecimal ratio = currencyUpdater.getRatio("GBP","USD");
+        assertEquals(USDRatio,ratio);
+        ratio = currencyUpdater.getRatio("GBP","EUR");
+        assertEquals(EURRatio,ratio);
+        ratio = currencyUpdater.getRatio("GBP","BYN");
+        assertEquals(BYNRatio,ratio);
+
     }
 }

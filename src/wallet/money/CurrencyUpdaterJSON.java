@@ -63,6 +63,7 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider{
             JSONArray ratioArray = (JSONArray) currencyObject.get("ratioArray");
             JSONObject ratioObject = (JSONObject) ratioArray.get(0);
             tempString = (String) ratioObject.get("currencyTo");
+            ratio = BigDecimal.valueOf((double) ratioObject.get("ratio"));
             i = 1;
             while(!Objects.equals(tempString, currencyTo)) {
                 ratioObject = (JSONObject) ratioArray.get(i);

@@ -24,7 +24,6 @@ public class CurrencyUnit {
         this.decimalPlaces = decimalPlaces;
     }
 
-
     public static CurrencyUnit of(String currencyString) {
         if(!CURRENCY_PATTERN.matcher(currencyString).matches()) {
             throw new IllegalArgumentException(currencyString + " is not currency string");
@@ -34,8 +33,9 @@ public class CurrencyUnit {
         } catch (Exception e) {
             throw new IllegalArgumentException("Can't find currency " + currencyString);
         }
-    }
 
+
+    }
 
     @Override
     public boolean equals(Object o) {
