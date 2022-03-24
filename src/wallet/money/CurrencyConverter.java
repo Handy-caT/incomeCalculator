@@ -5,31 +5,29 @@ import java.util.*;
 
 public class CurrencyConverter {
 
-    private static short mapSize;
-    private static TreeMap<String,BigDecimal> priorityHash;
-    private static CurrencyUpdaterProvider currencyUpdater;
+    private short mapSize;
+    private TreeMap<String,BigDecimal> priorityHash;
+    private CurrencyUpdaterProvider currencyUpdater;
 
-    private static HashMap<String,HashMap<String, BigDecimal>> converterMapSell;
-    static {
-        mapSize = 4;
-        converterMapSell = new HashMap<>();
-        priorityHash = new TreeMap<>();
-        currencyUpdater = new CurrencyUpdaterJSON();
+    private HashMap<String,HashMap<String, BigDecimal>> converterMapSell;
 
-        HashMap<String,BigDecimal> tempHash= currencyUpdater.getCurrencyHash("USD");
-        converterMapSell.put("USD",tempHash);
-        priorityHash.put("USD",BigDecimal.ZERO);
+    CurrencyConverter(CurrencyUpdaterProvider currencyUpdater, short mapSize,List<String> currencyNamesList) {
+        this.currencyUpdater = currencyUpdater;
+        this.mapSize = mapSize;
 
-        tempHash = currencyUpdater.getCurrencyHash("EUR");
-        converterMapSell.put("USD",tempHash);
-        priorityHash.put("EUR",BigDecimal.ZERO);
-
-        tempHash = currencyUpdater.getCurrencyHash("BYN");
-        converterMapSell.put("BYN",tempHash);
-        priorityHash.put("BYN",BigDecimal.ZERO);
+        buildHashes(currencyNamesList);
     }
+    CurrencyConverter(CurrencyUpdaterProvider currencyUpdater) {
+        this.currencyUpdater = currencyUpdater;
+        mapSize = 3;
+        List<String> currencyNameList = new LinkedList<>();
+        currencyNameList.add("USD");
+        currencyNameList.add("EUR");
+        currencyNameList.add("BYN");
 
-    public static BigDecimal getConvertSellRatio(CurrencyUnit fromCurrency,CurrencyUnit toCurrency) {
+        buildHashes(currencyNameList);
+    }
+    public  BigDecimal getConvertSellRatio(CurrencyUnit fromCurrency,CurrencyUnit toCurrency) {
 
         if(!converterMapSell.containsKey(fromCurrency.toString())) {
             HashMap<String, BigDecimal> temp = currencyUpdater.getCurrencyHash(fromCurrency.toString());
@@ -47,22 +45,19 @@ public class CurrencyConverter {
 
         return converterMapSell.get(fromCurrency.toString()).get(toCurrency.toString());
     }
-
-    public static void setConvertSellRatio(CurrencyUnit fromCurrency,CurrencyUnit toCurrency,BigDecimal ratio) {
+    public void setConvertSellRatio(CurrencyUnit fromCurrency,CurrencyUnit toCurrency,BigDecimal ratio) {
         converterMapSell.get(fromCurrency.toString()).remove(toCurrency.toString());
         converterMapSell.get(fromCurrency.toString()).put(toCurrency.toString(),ratio);
     }
-
-    public static Money convert(Money money, CurrencyUnit currencyToConvertTo) {
+    public Money convert(Money money, CurrencyUnit currencyToConvertTo) {
         BigDecimal newAmount = money.getAmount().multiply(getConvertSellRatio(money.getCurrency(),currencyToConvertTo));
         return new Money(currencyToConvertTo,newAmount);
     }
-
-    public static void setMapSize(short size) {
+    public void setMapSize(short size) {
         mapSize = size;
     }
 
-    protected static void addCurrency(String currencyName, HashMap<String, BigDecimal> currenciesRatioMap) {
+    private void addCurrency(String currencyName, HashMap<String, BigDecimal> currenciesRatioMap) {
         if(!converterMapSell.containsKey(currencyName)) {
             if(converterMapSell.size() >= mapSize) {
                 String lowPriorityCurrency = priorityHash.firstKey();
@@ -74,4 +69,18 @@ public class CurrencyConverter {
         }
     }
 
+    private void buildHashes(List<String> currencyNamesList) {
+        int i = 0;
+
+        converterMapSell = new HashMap<>();
+
+        while(i < mapSize) {
+            String currencyName = currencyNamesList.get(i);
+            HashMap<String,BigDecimal> tempHashMap = currencyUpdater.getCurrencyHash(currencyName);
+
+            addCurrency(currencyName,tempHashMap);
+            i++;
+        }
+
+    }
 }

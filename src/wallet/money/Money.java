@@ -44,8 +44,7 @@ public class Money {
         if(isSameCurrency(money)) {
             newAmount = this.amount.add(money.amount);
         } else {
-            Money convertedMoney = CurrencyConverter.convert(money,currency);
-            newAmount = this.amount.add(convertedMoney.amount);
+            throw new IllegalArgumentException("Currencies are not the same");
         }
         return new Money(this.currency,newAmount);
     }
@@ -54,8 +53,7 @@ public class Money {
         if(isSameCurrency(money)) {
             newAmount = this.amount.subtract(money.amount);
         } else {
-            Money convertedMoney = CurrencyConverter.convert(money,currency);
-            newAmount = this.amount.subtract(convertedMoney.amount);
+            throw new IllegalArgumentException("Currencies are not the same");
         }
         return new Money(this.currency,newAmount);
     }

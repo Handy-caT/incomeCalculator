@@ -79,7 +79,7 @@ public class CurrencyUpdaterJSONTest {
         currencyHash.put("EUR",EURRatio);
         currencyHash.put("BYN",BYNRatio);
 
-        currencyUpdater.addCurrency("GBP",BigDecimal.valueOf(2),currencyHash);
+        //currencyUpdater.addCurrency("GBP",BigDecimal.valueOf(2),currencyHash);
 
         BigDecimal ratio = currencyUpdater.getRatio("GBP","USD");
         Assert.assertEquals(USDRatio,ratio);
@@ -94,7 +94,7 @@ public class CurrencyUpdaterJSONTest {
     public void addRatio() {
         CurrencyUpdaterJSON.setJsonFilePath("testFiles/currenciesToAddTest.json");
         BigDecimal EURToGBPRatio = BigDecimal.valueOf(0.8395);
-        currencyUpdater.addRatio("EUR","GBP",EURToGBPRatio);
+        //currencyUpdater.addRatio("EUR","GBP",EURToGBPRatio);
         BigDecimal ratio = currencyUpdater.getRatio("EUR","GBP");
         Assert.assertEquals(EURToGBPRatio,ratio);
     }
@@ -102,7 +102,18 @@ public class CurrencyUpdaterJSONTest {
     @Test
     public void deleteRatio() {
         CurrencyUpdaterJSON.setJsonFilePath("testFiles/currenciesToDeleteTest.json");
-        currencyUpdater.deleteRatio("EUR","GBP");
+        //currencyUpdater.deleteRatio("EUR","GBP");
+        BigDecimal ratio = currencyUpdater.getRatio("EUR","GBP");
+        Assert.assertNull(ratio);
+    }
 
+    @Test
+    public void deleteCurrency() {
+        CurrencyUpdaterJSON.setJsonFilePath("testFiles/currenciesToDeleteTest.json");
+        //currencyUpdater.deleteCurrency("USD");
+        BigDecimal ratio = currencyUpdater.getRatio("USD","EUR");
+        //Assert.assertNull(ratio);
+        ratio = currencyUpdater.getRatio("USD","BYN");
+        //Assert.assertNull(ratio);
     }
 }
