@@ -1,92 +1,42 @@
 package tests.moneyTests;
 
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import wallet.money.CurrencyUnit;
-import wallet.money.CurrencyConverter;
-import wallet.money.CurrencyUpdaterJSON;
 import wallet.money.Money;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-
-import static org.junit.Assert.*;
+import java.security.SecureRandom;
 
 public class MoneyTest {
 
-    Money testMoney;
+    SecureRandom random;
+
+    private BigDecimal randomValue() {
+        BigDecimal value = BigDecimal.valueOf(random.nextInt(9999));
+        value = value.setScale(2, RoundingMode.DOWN);
+        value.divide(BigDecimal.valueOf(100));
+
+        return value;
+    }
 
     @Before
-    public void beforeSetUp() {
-        CurrencyUpdaterJSON.setJsonFilePath("testFiles/currenciesToAdd.json");
-        testMoney = new Money(CurrencyUnit.of("USD"),new BigDecimal("30"));
+    public void beforeMethod() {
+        random = new SecureRandom();
     }
 
     @Test
-    public void moneyParseTest() {
-        Money anotherTestMoney = Money.parse("USD 23.75");
-        assertEquals(anotherTestMoney.getAmount(), new BigDecimal("23.75"));
-        assertTrue(anotherTestMoney.getCurrency().equals("USD"));
-    }
+    public void parseTest() {
+        BigDecimal value = randomValue();
+        String currencyString = "USD";
+        String parseString = value + " " + currencyString;
+        Money result = Money.parse(parseString);
 
-    @Test
-    public void isEqualCurrencyTest() {
-        Money anotherTestMoney = new Money(CurrencyUnit.of("USD"),new BigDecimal("23.75"));
-        assertTrue(anotherTestMoney.isSameCurrency(testMoney));
-    }
-
-    @Test
-    public void moneySameCurrencyAdd() {
-        Money anotherTestMoney = new Money(CurrencyUnit.of("USD"),new BigDecimal("23.75"));
-        anotherTestMoney = testMoney.plus(anotherTestMoney);
-        assertEquals(anotherTestMoney.getAmount(), new BigDecimal("53.75"));
-        assertTrue(anotherTestMoney.getCurrency().equals("USD"));
-    }
-
-    @Test
-    public void moneyOtherCurrencyAdd() {
-        Money anotherTestMoney = new Money(CurrencyUnit.of("EUR"),new BigDecimal("10"));
-        Money result = testMoney.plus(anotherTestMoney);
-        BigDecimal resultAmount = testMoney.getAmount().add(new BigDecimal("10")
-                .multiply(CurrencyConverter.getConvertSellRatio(anotherTestMoney.getCurrency(),testMoney.getCurrency())));
-        assertEquals(result.getAmount(), resultAmount);
-        assertTrue(result.getCurrency().equals("USD"));
-    }
-
-    @Test
-    public void moneySameCurrencySubtract() {
-        Money anotherTestMoney = new Money(CurrencyUnit.of("USD"),new BigDecimal("23.75"));
-        anotherTestMoney = testMoney.minus(anotherTestMoney);
-        assertEquals(anotherTestMoney.getAmount(), new BigDecimal("6.25"));
-        assertTrue(anotherTestMoney.getCurrency().equals("USD"));
-    }
-
-    @Test
-    public void moneyOtherCurrencySubtract() {
-        Money anotherTestMoney = new Money(CurrencyUnit.of("EUR"),new BigDecimal("10"));
-        Money result = testMoney.minus(anotherTestMoney);
-        BigDecimal resultAmount = testMoney.getAmount().subtract(new BigDecimal("10")
-                .multiply(CurrencyConverter.getConvertSellRatio(anotherTestMoney.getCurrency(),testMoney.getCurrency())));
-        assertEquals(result.getAmount(), resultAmount);
-        assertTrue(result.getCurrency().equals("USD"));
-    }
-
-    @Test
-    public void moneyMultiply() {
-        Money result = testMoney.multiply(BigDecimal.valueOf(1.5));
-        BigDecimal resultAmount = testMoney.getAmount()
-                .multiply(BigDecimal.valueOf(1.5));
-        assertEquals(result.getAmount(), resultAmount);
-        assertTrue(result.getCurrency().equals("USD"));
-    }
-
-    @Test
-    public void moneyDivide() {
-        Money result = testMoney.divide(BigDecimal.valueOf(1.5));
-        BigDecimal resultAmount = testMoney.getAmount()
-                .divide(BigDecimal.valueOf(1.5), RoundingMode.DOWN);
-        assertEquals(result.getAmount(), resultAmount);
-        assertTrue(result.getCurrency().equals("USD"));
+        Assert.assertEquals(value,result.getAmount());
+        Assert.assertEquals(CurrencyUnit.of(currencyString),result.getCurrency());
     }
 
 }

@@ -56,6 +56,15 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider{
     }
 
     @Override
+    public BigDecimal getCurScale(String currencyName) {
+        return null;
+    }
+
+    @Override
+    public BigDecimal getCurID(String currencyName) {
+        return null;
+    }
+
     public BigDecimal getDecimalPlaces(String currencyString) {
         JSONObject currencyObject = getCurrencyJSONObject(currencyString);
         BigDecimal decimalPlaces = BigDecimal.valueOf((long)currencyObject.get("decimalPlaces"));

@@ -6,8 +6,11 @@ import java.util.HashMap;
 
 public interface CurrencyUpdaterProvider {
 
-    BigDecimal getDecimalPlaces(String currencyString);
+
     BigDecimal getRatio(String currencyFrom,String currencyTo);
+    BigDecimal getCurID(String currencyName);
+    BigDecimal getCurScale(String currencyName);
+
     HashMap<String,BigDecimal> getCurrencyHash(String currencyName);
 
 }

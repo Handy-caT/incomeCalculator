@@ -9,6 +9,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="junit" level="project" />
     <orderEntry type="library" exported="" name="googlecode.json.simple" level="project" />
-    <orderEntry type="library" name="net.sourceforge.htmlunit" level="project" />
+    <orderEntry type="library" exported="" name="net.sourceforge.htmlunit" level="project" />
+    <orderEntry type="library" exported="" name="mashape.unirest.java" level="project" />
   </component>
 </module>
