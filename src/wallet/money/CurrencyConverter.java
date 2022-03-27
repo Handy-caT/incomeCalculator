@@ -9,27 +9,32 @@ public class CurrencyConverter {
     private TreeMap<String,BigDecimal> priorityHash;
     private CurrencyUpdaterProvider currencyUpdater;
 
-    private HashMap<String,HashMap<String, BigDecimal>> converterMapSell;
+    private List<String> currencyNamesList;
+    private Map<String,Map<String, BigDecimal>> converterMapSell;
 
     CurrencyConverter(CurrencyUpdaterProvider currencyUpdater, short mapSize,List<String> currencyNamesList) {
         this.currencyUpdater = currencyUpdater;
         this.mapSize = mapSize;
+        this.currencyNamesList = currencyNamesList;
 
         buildHashes(currencyNamesList);
     }
     CurrencyConverter(CurrencyUpdaterProvider currencyUpdater) {
         this.currencyUpdater = currencyUpdater;
         mapSize = 3;
-        List<String> currencyNameList = new LinkedList<>();
-        currencyNameList.add("USD");
-        currencyNameList.add("EUR");
-        currencyNameList.add("BYN");
+        List<String> currencyNamesList = new LinkedList<>();
+        currencyNamesList.add("USD");
+        currencyNamesList.add("EUR");
+        currencyNamesList.add("BYN");
 
-        buildHashes(currencyNameList);
+        this.currencyNamesList = currencyNamesList;
+
+        buildHashes(currencyNamesList);
     }
+
     public  BigDecimal getConvertSellRatio(CurrencyUnit fromCurrency,CurrencyUnit toCurrency) {
 
-        if(!converterMapSell.containsKey(fromCurrency.toString())) {
+        if(!currencyNamesList.contains(fromCurrency.toString())) {
             HashMap<String, BigDecimal> temp = currencyUpdater.getCurrencyHash(fromCurrency.toString());
             addCurrency(fromCurrency.toString(),temp);
         }
@@ -73,13 +78,9 @@ public class CurrencyConverter {
         int i = 0;
 
         converterMapSell = new HashMap<>();
-
-        while(i < mapSize) {
-            String currencyName = currencyNamesList.get(i);
-            HashMap<String,BigDecimal> tempHashMap = currencyUpdater.getCurrencyHash(currencyName);
-
-            addCurrency(currencyName,tempHashMap);
-            i++;
+        for (String currencyTo : currencyNamesList) {
+            Map<String,BigDecimal> tempMap = currencyUpdater.getCurrencyRatiosMap(currencyTo,currencyNamesList);
+            converterMapSell.put(currencyTo,tempMap);
         }
 
     }

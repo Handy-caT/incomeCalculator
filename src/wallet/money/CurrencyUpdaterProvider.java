@@ -1,8 +1,9 @@
 package wallet.money;
 
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.HashMap;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 public interface CurrencyUpdaterProvider {
 
@@ -10,7 +11,9 @@ public interface CurrencyUpdaterProvider {
     BigDecimal getRatio(String currencyFrom,String currencyTo);
     BigDecimal getCurID(String currencyName);
     BigDecimal getCurScale(String currencyName);
+    BigDecimal getRatioOnDate(String currencyFrom,String currencyTo, Date date);
 
-    HashMap<String,BigDecimal> getCurrencyHash(String currencyName);
+    Map<String,BigDecimal> getCurrencyRatiosMap(String currencyFrom, List<String> currencyTo);
+
 
 }
