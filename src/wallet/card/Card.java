@@ -8,7 +8,7 @@ public interface Card {
 
     CurrencyUnit getCurrency();
     Money getBalance();
-    float getMonthConsumptiion();
+    float getMonthConsumption();
     float getMonthIncome();
 
 }

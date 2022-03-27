@@ -4,8 +4,7 @@ package tests.moneyTests;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import wallet.money.CurrencyUnit;
-import wallet.money.Money;
+import wallet.money.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -18,7 +17,7 @@ public class MoneyTest {
     private BigDecimal randomValue() {
         BigDecimal value = BigDecimal.valueOf(random.nextInt(9999));
         value = value.setScale(2, RoundingMode.DOWN);
-        value.divide(BigDecimal.valueOf(100));
+        value = value.divide(BigDecimal.valueOf(100));
 
         return value;
     }
@@ -32,11 +31,92 @@ public class MoneyTest {
     public void parseTest() {
         BigDecimal value = randomValue();
         String currencyString = "USD";
-        String parseString = value + " " + currencyString;
+        String parseString = currencyString + " " + value ;
         Money result = Money.parse(parseString);
 
         Assert.assertEquals(value,result.getAmount());
         Assert.assertEquals(CurrencyUnit.of(currencyString),result.getCurrency());
+    }
+
+    @Test
+    public void plusTest() {
+        BigDecimal valueFirst = randomValue();
+        BigDecimal valueSecond = randomValue();
+        String currencyString = "USD";
+
+        Money moneyFirst = Money.of(currencyString,valueFirst);
+        Money moneySecond = Money.of(currencyString,valueSecond);
+
+        Money result = moneyFirst.plus(moneySecond);
+
+        Assert.assertEquals(valueFirst.add(valueSecond),result.getAmount());
+        Assert.assertEquals(CurrencyUnit.of(currencyString),result.getCurrency());
+    }
+
+    @Test
+    public void multiplyTest() {
+        BigDecimal valueFirst = randomValue();
+        BigDecimal valueSecond = randomValue();
+        String currencyString = "USD";
+
+        Money moneyFirst = Money.of(currencyString,valueFirst);
+
+        Money result = moneyFirst.multiply(valueSecond);
+
+        Assert.assertEquals(valueFirst.multiply(valueSecond),result.getAmount());
+        Assert.assertEquals(CurrencyUnit.of(currencyString),result.getCurrency());
+    }
+
+    @Test
+    public void minusTest() {
+        BigDecimal valueFirst = randomValue();
+        BigDecimal valueSecond = randomValue();
+        String currencyString = "USD";
+
+        Money moneyFirst;
+        Money moneySecond;
+
+        if(valueFirst.compareTo(valueSecond) > 0) {
+            moneyFirst = Money.of(currencyString,valueFirst);
+            moneySecond = Money.of(currencyString,valueSecond);
+        } else {
+            moneyFirst = Money.of(currencyString,valueSecond);
+            moneySecond = Money.of(currencyString,valueFirst);
+        }
+
+        Money result = moneyFirst.minus(moneySecond);
+
+        Assert.assertEquals(valueFirst.subtract(valueSecond).abs(),result.getAmount());
+        Assert.assertEquals(CurrencyUnit.of(currencyString),result.getCurrency());
+    }
+
+    @Test
+    public void convertTest() {
+        CurrencyUpdaterProvider currencyUpdater = new CurrencyUpdaterWeb();
+        CurrencyConverter currencyConverter = new CurrencyConverter(currencyUpdater);
+
+        BigDecimal valueFirst = randomValue();
+        BigDecimal valueSecond = randomValue();
+        String currencyFirstString = "USD";
+        String currencySecondString = "BYN";
+
+        Money moneyFirst = Money.of(currencyFirstString,valueFirst);
+        Money moneySecond = Money.of(currencySecondString,valueSecond);
+
+        BigDecimal ratio = currencyConverter
+                .getConvertSellRatio(CurrencyUnit.of(currencyFirstString),CurrencyUnit.of(currencySecondString));
+        try {
+            moneyFirst.plus(moneySecond);
+            Assert.fail("Mustn't plus different currencies");
+        } catch (IllegalArgumentException e) {
+            Money recountedMoney = currencyConverter.convert(moneySecond,CurrencyUnit.of(currencyFirstString));
+            Money result = moneyFirst.plus(recountedMoney);
+
+            Assert.assertEquals(valueSecond.multiply(ratio),recountedMoney.getAmount());
+            Assert.assertEquals(valueSecond.multiply(ratio).add(valueFirst),result.getAmount());
+            Assert.assertEquals(CurrencyUnit.of(currencyFirstString),result.getCurrency());
+        }
+
     }
 
 }

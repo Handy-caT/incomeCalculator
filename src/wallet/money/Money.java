@@ -20,6 +20,9 @@ public class Money {
     public static Money of(CurrencyUnit currency,BigDecimal amount) {
         return new Money(currency,amount);
     }
+    public static Money of(String currencyString, BigDecimal amount) {
+        return new Money(CurrencyUnit.of(currencyString),amount);
+    }
 
     public static Money parse(String moneyString) {
         String formattedMoneyString = moneyString.replaceAll(" ","");
@@ -66,10 +69,12 @@ public class Money {
         BigDecimal newAmount = this.amount.subtract(moneyAmount);
         return new Money(this.currency,newAmount);
     }
+
     public Money multiply(BigDecimal value) {
         BigDecimal newAmount = this.amount.multiply(value);
         return new Money(this.currency,newAmount);
     }
+
     public Money divide(BigDecimal value) {
         BigDecimal newAmount = this.amount.divide(value, RoundingMode.DOWN);
         return new Money(this.currency,newAmount);

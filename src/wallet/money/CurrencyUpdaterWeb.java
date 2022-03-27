@@ -77,9 +77,13 @@ public class CurrencyUpdaterWeb implements CurrencyUpdaterProvider {
                 JSONObject currencyObject= getCurrencyJSONFromWeb(currencyFrom);
                 BigDecimal ratioFirst = BigDecimal.valueOf((double) currencyObject.get("Cur_OfficialRate"));
 
-                if(!Objects.equals(currencyTo, "BYN")) {
+                if(!Objects.equals(currencyFrom, "BYN")) {
                     JSONObject secondCurrencyObject = getCurrencyJSONFromWeb(currencyTo);
                     ratio = findRatioOfCurrencies(currencyObject,secondCurrencyObject);
+                } else if(!Objects.equals(currencyTo, "BYN")) {
+                    JSONObject secondCurrencyObject = getCurrencyJSONFromWeb(currencyFrom);
+                    ratio = BigDecimal.valueOf((double) secondCurrencyObject.get("Cur_OfficialRate"));
+                    ratio = BigDecimal.ONE.setScale(4).divide(ratio,RoundingMode.DOWN);
                 } else ratio = ratioFirst;
 
             } catch (UnirestException | ParseException e) {
@@ -147,6 +151,15 @@ public class CurrencyUpdaterWeb implements CurrencyUpdaterProvider {
             for(String currencyTo : currencyToList) {
                 if(Objects.equals(currencyTo, currencyFrom)) {
                     currenciesHash.put(currencyTo,BigDecimal.ONE);
+                } else if(Objects.equals("BYN", currencyTo) ) {
+                    JSONObject currencyObject = getCurrencyJSONFromJSONArray(currenciesArray,currencyFrom);
+                    BigDecimal ratio = BigDecimal.valueOf((double) currencyObject.get("Cur_OfficialRate"));
+                    ratio = BigDecimal.ONE.setScale(4).divide(ratio,RoundingMode.DOWN);
+                    currenciesHash.put(currencyTo,ratio);
+                } else if(Objects.equals("BYN", currencyFrom)) {
+                    JSONObject currencyObject = getCurrencyJSONFromJSONArray(currenciesArray,currencyTo);
+                    BigDecimal ratio = BigDecimal.valueOf((double) currencyObject.get("Cur_OfficialRate"));
+                    currenciesHash.put(currencyTo,ratio);
                 } else {
                     JSONObject currencyObject = getCurrencyJSONFromJSONArray(currenciesArray,currencyTo);
                     BigDecimal ratio = findRatioOfCurrencies(currencyFromObject,currencyObject);

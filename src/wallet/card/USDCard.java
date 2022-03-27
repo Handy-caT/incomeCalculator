@@ -19,7 +19,7 @@ public class USDCard implements Card {
     }
 
     @Override
-    public float getMonthConsumptiion() {
+    public float getMonthConsumption() {
         return 0;
     }
 
