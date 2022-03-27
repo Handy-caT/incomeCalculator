@@ -1,0 +1,18 @@
+[
+  {
+    "currencyName" : "BYN",
+    "decimalPlaces": 2,
+    "ratioArray":
+    [
+      {
+        "currencyTo": "USD",
+        "ratio": 0.2506
+      },
+      {
+        "currencyTo": "EUR",
+        "ratio": 0.2278
+      }
+    ]
+  }
+]
+
