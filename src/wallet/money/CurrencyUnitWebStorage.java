@@ -9,7 +9,7 @@ import org.json.simple.parser.ParseException;
 
 import java.math.BigDecimal;
 
-public class CurrencyUnitWebStorage implements  CurrencyUnitStorage{
+public class CurrencyUnitWebStorage implements  CurrencyUnitStorage {
 
     @Override
     public CurrencyUnit getCurrencyUnitByCurrencyID(BigDecimal currencyId)  {
@@ -67,4 +67,5 @@ public class CurrencyUnitWebStorage implements  CurrencyUnitStorage{
         }
         return true;
     }
+
 }

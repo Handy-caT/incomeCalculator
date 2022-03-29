@@ -1,7 +1,6 @@
 package wallet.money;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -9,29 +8,29 @@ public class CurrencyUnit {
 
     private static final Pattern CURRENCY_PATTERN = Pattern.compile("[A-Z]{3}");
 
-    private final String code;
-    private final BigDecimal id;
-    private final BigDecimal scale;
+    private final String currencyName;
+    private final BigDecimal currencyId;
+    private final BigDecimal currencyScale;
 
     public CurrencyUnit() {
-        code = "USD";
-        id = BigDecimal.valueOf(431);
-        scale = BigDecimal.ONE;
+        currencyName = "USD";
+        currencyId = BigDecimal.valueOf(431);
+        currencyScale = BigDecimal.ONE;
     }
     public CurrencyUnit(String currencyString) {
-        code = currencyString;
-        this.scale = BigDecimal.ONE;
-        id = null;
+        currencyName = currencyString;
+        this.currencyScale = BigDecimal.ONE;
+        currencyId = null;
     }
     public CurrencyUnit(String currencyString,BigDecimal id) {
-        code = currencyString;
-        this.id = id;
-        this.scale = BigDecimal.ONE;
+        currencyName = currencyString;
+        this.currencyId = id;
+        this.currencyScale = BigDecimal.ONE;
     }
     public CurrencyUnit(String currencyString,BigDecimal id,BigDecimal scale) {
-        code = currencyString;
-        this.id = id;
-        this.scale = scale;
+        currencyName = currencyString;
+        this.currencyId = id;
+        this.currencyScale = scale;
     }
 
     public static CurrencyUnit of(String currencyString) {
@@ -52,20 +51,20 @@ public class CurrencyUnit {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CurrencyUnit that = (CurrencyUnit) o;
-        return Objects.equals(code, that.code) && Objects.equals(id, that.id) && Objects.equals(scale, that.scale);
+        return Objects.equals(currencyName, that.currencyName) && Objects.equals(currencyId, that.currencyId) && Objects.equals(currencyScale, that.currencyScale);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(code, id, scale);
+        return Objects.hash(currencyName, currencyId, currencyScale);
     }
 
     public boolean equals(String currencyString) {
-        return Objects.equals(code, currencyString);
+        return Objects.equals(currencyName, currencyString);
     }
 
     public String toString() {
-        return code;
+        return currencyName;
     }
 
 
