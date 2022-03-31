@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 public class CurrencyUnitWebStorage implements  CurrencyUnitStorage {
 
     @Override
-    public CurrencyUnit getCurrencyUnitByCurrencyID(BigDecimal currencyId)  {
+    public StrictCurrencyUnit getCurrencyUnitByCurrencyID(BigDecimal currencyId)  {
         JSONParser jsonParser = new JSONParser();
         JSONObject currencyObject = null;
 
@@ -30,11 +30,11 @@ public class CurrencyUnitWebStorage implements  CurrencyUnitStorage {
         String currencyString = (String) currencyObject.get("Cur_Abbreviation");
         BigDecimal scale = BigDecimal.valueOf((long)currencyObject.get("Cur_Scale"));
 
-        return new CurrencyUnit(currencyString,currencyId,scale);
+        return new StrictCurrencyUnit(currencyString,currencyId,scale);
     }
 
     @Override
-    public CurrencyUnit getCurrencyUnitByCurrencyString(String currencyString) {
+    public StrictCurrencyUnit getCurrencyUnitByCurrencyString(String currencyString) {
         JSONParser jsonParser = new JSONParser();
         JSONObject currencyObject = null;
 
@@ -52,7 +52,7 @@ public class CurrencyUnitWebStorage implements  CurrencyUnitStorage {
         BigDecimal currencyId = BigDecimal.valueOf((long)currencyObject.get("Cur_ID"));
         BigDecimal scale = BigDecimal.valueOf((long)currencyObject.get("Cur_Scale"));
 
-        return new CurrencyUnit(currencyString,currencyId,scale);
+        return new StrictCurrencyUnit(currencyString,currencyId,scale);
     }
 
     @Override

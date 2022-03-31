@@ -14,7 +14,7 @@ import java.util.Objects;
 
 public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
 
-    private String jsonPathString = null;
+    private String jsonPathString;
 
     JSONArray currencyJSONArray;
 
@@ -27,7 +27,7 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
         }
         currencyJSONArray = builder.getResult();
 
-        jsonPathString = "temp/currencyUnitArray";
+        jsonPathString = "temp/currencyUnitArray.json";
 
         FileWriter fileWriter = new FileWriter(jsonPathString);
         currencyJSONArray.writeJSONString(fileWriter);
@@ -47,7 +47,6 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
         currencyJSONArray.writeJSONString(fileWriter);
         fileWriter.close();
     }
-
     public CurrencyUnitJSONStorage(String jsonPathString) throws IOException, ParseException {
         this.jsonPathString = jsonPathString;
 
@@ -59,7 +58,7 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
     }
 
     @Override
-    public CurrencyUnit getCurrencyUnitByCurrencyString(String currencyString) {
+    public StrictCurrencyUnit getCurrencyUnitByCurrencyString(String currencyString) {
         JSONObject currencyObject = null;
         for(Object object : currencyJSONArray) {
             currencyObject = (JSONObject) object;
@@ -69,11 +68,11 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
         BigDecimal currencyId = BigDecimal.valueOf((long)currencyObject.get("currencyId"));
         BigDecimal currencyScale = BigDecimal.valueOf((long)currencyObject.get("currencyScale"));
 
-        return new CurrencyUnit(currencyString,currencyId,currencyScale);
+        return new StrictCurrencyUnit(currencyString,currencyId,currencyScale);
     }
 
     @Override
-    public CurrencyUnit getCurrencyUnitByCurrencyID(BigDecimal currencyId) {
+    public StrictCurrencyUnit getCurrencyUnitByCurrencyID(BigDecimal currencyId) {
         JSONObject currencyObject = null;
         for(Object object : currencyJSONArray) {
             currencyObject = (JSONObject) object;
@@ -83,7 +82,7 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
         String currencyString = (String) currencyObject.get("currencyName");
         BigDecimal currencyScale = BigDecimal.valueOf((long)currencyObject.get("currencyScale"));
 
-        return new CurrencyUnit(currencyString,currencyId,currencyScale);
+        return new StrictCurrencyUnit(currencyString,currencyId,currencyScale);
     }
 
     @Override

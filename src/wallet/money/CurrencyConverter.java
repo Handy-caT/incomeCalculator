@@ -32,7 +32,7 @@ public class CurrencyConverter {
         buildHashes(currencyNamesList);
     }
 
-    public  BigDecimal getConvertSellRatio(CurrencyUnit currencyFromUnit,CurrencyUnit currencyToUnit) {
+    public  BigDecimal getConvertSellRatio(StrictCurrencyUnit currencyFromUnit, StrictCurrencyUnit currencyToUnit) {
 
         if(!currencyNamesList.contains(currencyFromUnit.toString())) {
             addCurrency(currencyFromUnit);
@@ -54,11 +54,11 @@ public class CurrencyConverter {
 
         return converterMapSell.get(currencyFromUnit.toString()).get(currencyToUnit.toString());
     }
-    private void setConvertSellRatio(CurrencyUnit currencyFromUnit,CurrencyUnit currencyToUnit,BigDecimal ratio) {
+    private void setConvertSellRatio(StrictCurrencyUnit currencyFromUnit, StrictCurrencyUnit currencyToUnit, BigDecimal ratio) {
         converterMapSell.get(currencyFromUnit.toString()).remove(currencyToUnit.toString());
         converterMapSell.get(currencyFromUnit.toString()).put(currencyToUnit.toString(),ratio);
     }
-    public Money convert(Money money, CurrencyUnit currencyToConvertToUnit) {
+    public Money convert(Money money, StrictCurrencyUnit currencyToConvertToUnit) {
         BigDecimal newAmount = money.getAmount().multiply(getConvertSellRatio(currencyToConvertToUnit,money.getCurrency()));
         return new Money(currencyToConvertToUnit,newAmount);
     }
@@ -67,7 +67,7 @@ public class CurrencyConverter {
         mapSize = size;
     }
 
-    private void addCurrency(CurrencyUnit currencyUnit) {
+    private void addCurrency(StrictCurrencyUnit currencyUnit) {
         if(!currencyNamesList.contains(currencyUnit.toString())) {
             if (currencyNamesList.size() >= mapSize) {
                 String currencyToRemove = priorityHash.firstKey();
@@ -82,7 +82,7 @@ public class CurrencyConverter {
             converterMapSell.put(currencyUnit.toString(), temp);
         }
     }
-    private void addRatioForAllCurrencies(CurrencyUnit currencyToUnit) {
+    private void addRatioForAllCurrencies(StrictCurrencyUnit currencyToUnit) {
         for(String currencyFrom : currencyNamesList) {
             BigDecimal ratio = currencyUpdater.getRatio(currencyFrom,currencyToUnit.toString());
             converterMapSell.get(currencyFrom).put(currencyToUnit.toString(),ratio);

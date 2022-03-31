@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 public interface CurrencyUnitStorage {
 
     boolean isCurrencyExists(String currencyString);
-    CurrencyUnit getCurrencyUnitByCurrencyString(String currencyString);
-    CurrencyUnit getCurrencyUnitByCurrencyID(BigDecimal currencyId);
+    StrictCurrencyUnit getCurrencyUnitByCurrencyString(String currencyString);
+    StrictCurrencyUnit getCurrencyUnitByCurrencyID(BigDecimal currencyId);
 
 }

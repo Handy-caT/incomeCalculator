@@ -1,36 +1,20 @@
 package wallet.money;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 import java.util.regex.Pattern;
 
-public class CurrencyUnit {
+public class CurrencyUnit extends StrictCurrencyUnit {
 
     private static final Pattern CURRENCY_PATTERN = Pattern.compile("[A-Z]{3}");
 
-    private final String currencyName;
-    private final BigDecimal currencyId;
-    private final BigDecimal currencyScale;
-
-    public CurrencyUnit() {
-        currencyName = "USD";
-        currencyId = BigDecimal.valueOf(431);
-        currencyScale = BigDecimal.ONE;
-    }
-    public CurrencyUnit(String currencyString) {
-        currencyName = currencyString;
-        this.currencyScale = BigDecimal.ONE;
-        currencyId = null;
-    }
-    public CurrencyUnit(String currencyString,BigDecimal id) {
-        currencyName = currencyString;
-        this.currencyId = id;
+    protected CurrencyUnit(String currencyString) {
+        super();
+        this.currencyName = currencyString;
+        this.currencyId = null;
         this.currencyScale = BigDecimal.ONE;
     }
-    public CurrencyUnit(String currencyString,BigDecimal id,BigDecimal scale) {
-        currencyName = currencyString;
-        this.currencyId = id;
-        this.currencyScale = scale;
+    public CurrencyUnit(StrictCurrencyUnit currencyUnit) {
+        super(currencyUnit);
     }
 
     public static CurrencyUnit of(String currencyString) {
@@ -42,29 +26,6 @@ public class CurrencyUnit {
         } catch (Exception e) {
             throw new IllegalArgumentException("Can't find currency " + currencyString);
         }
-
-
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CurrencyUnit that = (CurrencyUnit) o;
-        return Objects.equals(currencyName, that.currencyName) && Objects.equals(currencyId, that.currencyId) && Objects.equals(currencyScale, that.currencyScale);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(currencyName, currencyId, currencyScale);
-    }
-
-    public boolean equals(String currencyString) {
-        return Objects.equals(currencyName, currencyString);
-    }
-
-    public String toString() {
-        return currencyName;
     }
 
 
