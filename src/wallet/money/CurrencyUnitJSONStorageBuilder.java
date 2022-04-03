@@ -13,14 +13,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-public class CurrencyUnitJSONStorageBuilderSingleton implements CurrencyUnitStorageBuilder {
+public class CurrencyUnitJSONStorageBuilder implements CurrencyUnitStorageBuilder {
 
-    private static CurrencyUnitJSONStorageBuilderSingleton instance;
+    private static CurrencyUnitJSONStorageBuilder instance;
 
     private static JSONArray currenciesWebJSONArray;
     private static JSONArray currenciesJSONArray;
 
-    private CurrencyUnitJSONStorageBuilderSingleton() {
+    private CurrencyUnitJSONStorageBuilder() {
         JSONParser jsonParser = new JSONParser();
 
         String url = "https://www.nbrb.by/api/exrates/currencies";
@@ -36,9 +36,9 @@ public class CurrencyUnitJSONStorageBuilderSingleton implements CurrencyUnitStor
         currenciesJSONArray = new JSONArray();
     }
 
-    public static CurrencyUnitJSONStorageBuilderSingleton getInstance() {
+    public static CurrencyUnitJSONStorageBuilder getInstance() {
         if(instance == null) {
-            instance = new CurrencyUnitJSONStorageBuilderSingleton();
+            instance = new CurrencyUnitJSONStorageBuilder();
         }
         return instance;
     }

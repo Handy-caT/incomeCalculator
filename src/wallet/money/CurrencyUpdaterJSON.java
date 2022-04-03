@@ -7,6 +7,12 @@ import java.util.Map;
 
 public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
 
+    private String jsonPathString;
+
+    CurrencyUpdaterJSON() {
+        
+    }
+
     @Override
     public BigDecimal getRatioOnDate(String currencyFrom, String currencyTo, Date date) {
         return null;
