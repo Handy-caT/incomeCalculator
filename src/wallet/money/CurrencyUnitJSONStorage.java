@@ -16,7 +16,7 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
     private static CurrencyUnitJSONStorage instance;
     private static String jsonPathString;
 
-    JSONArray currencyJSONArray;
+    private static JSONArray currencyJSONArray;
 
     private CurrencyUnitJSONStorage() throws IOException {
         CurrencyUnitJSONStorageBuilder builder = CurrencyUnitJSONStorageBuilder.getInstance();
@@ -27,7 +27,8 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
         }
         currencyJSONArray = builder.getResult();
 
-        jsonPathString = "temp/currencyUnitArray.json";
+        jsonPathString = "json/currencyUnitStorage.json";
+        addJsonPathToProperties(jsonPathString);
 
         FileWriter fileWriter = new FileWriter(jsonPathString);
         currencyJSONArray.writeJSONString(fileWriter);
