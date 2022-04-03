@@ -7,9 +7,19 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 
 public class CurrencyUnitWebStorage implements  CurrencyUnitStorage {
+
+    private static CurrencyUnitWebStorage instance;
+
+    public static CurrencyUnitWebStorage getInstance() {
+        if(instance == null) {
+            instance = new CurrencyUnitWebStorage();
+        }
+        return instance;
+    }
 
     @Override
     public StrictCurrencyUnit getCurrencyUnitByCurrencyID(BigDecimal currencyId)  {
