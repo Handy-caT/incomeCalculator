@@ -7,4 +7,8 @@ public class JSONHistoryKeeper implements HistoryKeeper{
 
     }
 
+    @Override
+    public void saveState(Transaction transaction) {
+
+    }
 }

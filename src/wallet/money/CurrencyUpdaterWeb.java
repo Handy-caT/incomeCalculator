@@ -174,6 +174,7 @@ public class CurrencyUpdaterWeb implements CurrencyUpdaterProvider {
 
         return currenciesHash;
     }
+
 }
 
 

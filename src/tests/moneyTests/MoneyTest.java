@@ -31,10 +31,21 @@ public class MoneyTest {
     public void parseTest() {
         BigDecimal value = randomValue();
         String currencyString = "USD";
-        String parseString = currencyString + " " + value ;
+        String parseString = currencyString + " " + value;
         Money result = Money.parse(parseString);
 
         Assert.assertEquals(value,result.getAmount());
+        Assert.assertEquals(CurrencyUnit.of(currencyString),result.getCurrency());
+    }
+
+    @Test
+    public void parseNegativeTest() {
+        BigDecimal value = randomValue();
+        String currencyString = "USD";
+        String parseString = currencyString + " " + value.negate();
+        Money result = Money.parse(parseString);
+
+        Assert.assertEquals(value.negate(),result.getAmount());
         Assert.assertEquals(CurrencyUnit.of(currencyString),result.getCurrency());
     }
 
