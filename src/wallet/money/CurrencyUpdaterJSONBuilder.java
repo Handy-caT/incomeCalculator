@@ -32,8 +32,7 @@ public class CurrencyUpdaterJSONBuilder implements CurrencyUpdaterBuilder{
         } catch (UnirestException | ParseException e) {
             e.printStackTrace();
         }
-
-        currenciesWebJSONArray = new JSONArray();
+        currenciesJSONArray = new JSONArray();
     }
 
     public static CurrencyUpdaterJSONBuilder getInstance() {
@@ -68,7 +67,7 @@ public class CurrencyUpdaterJSONBuilder implements CurrencyUpdaterBuilder{
 
         BigDecimal currencyId = BigDecimal.valueOf((long)currencyObject.get("Cur_ID"));
         BigDecimal currencyScale = BigDecimal.valueOf((long)currencyObject.get("Cur_Scale"));
-        BigDecimal ratio = BigDecimal.valueOf((long)currencyObject.get("Cur_OfficialRate"));
+        BigDecimal ratio = BigDecimal.valueOf((double)currencyObject.get("Cur_OfficialRate"));
 
         JSONObject localCurrencyObject = new JSONObject();
         localCurrencyObject.put("currencyName",currencyString);

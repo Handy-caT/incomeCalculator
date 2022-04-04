@@ -90,7 +90,6 @@ public class CurrencyConverter {
     }
 
     private void buildHashes(List<String> currencyNamesList) {
-        int i = 0;
         priorityHash = new TreeMap<>();
 
         converterMapSell = new HashMap<>();

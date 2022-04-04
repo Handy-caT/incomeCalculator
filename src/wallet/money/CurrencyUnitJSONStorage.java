@@ -16,6 +16,7 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
     private static CurrencyUnitJSONStorage instance;
     private static String jsonPathString;
 
+    public static String propertiesString = "properties/json.properties";
     private static JSONArray currencyJSONArray;
 
     private CurrencyUnitJSONStorage() throws IOException {
@@ -60,7 +61,7 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
     }
 
     private static CurrencyUnitJSONStorage createInstance() throws IOException, ParseException {
-        FileInputStream fis = new FileInputStream("properties/json.properties");
+        FileInputStream fis = new FileInputStream(propertiesString);
         Properties properties = new Properties();
         properties.load(fis);
 

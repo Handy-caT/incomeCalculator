@@ -5,10 +5,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
@@ -17,12 +14,12 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
 
     private static CurrencyUpdaterJSON instance;
 
-    private String jsonPathString;
+    public static String propertiesString = "properties/json.properties";
+    private static String jsonPathString;
     private static JSONArray currencyJSONArray;
 
     private CurrencyUpdaterJSON() throws IOException {
         CurrencyUpdaterJSONBuilder builder = CurrencyUpdaterJSONBuilder.getInstance();
-        builder.reset();
         List<String> buildingPlan = builder.getBuildPlan();
         for (String currencyString : buildingPlan) {
             builder.buildCurrency(currencyString);
@@ -32,7 +29,12 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
         jsonPathString = "json/currencyUpdater.json";
         addJsonPathToProperties(jsonPathString);
 
-        FileWriter fileWriter = new FileWriter(jsonPathString);
+        File file = new File(jsonPathString);
+        File dir = new File("json/");
+        dir.mkdir();
+        file.createNewFile();
+
+        FileWriter fileWriter = new FileWriter(file);
         currencyJSONArray.writeJSONString(fileWriter);
         fileWriter.close();
     }
@@ -74,7 +76,7 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
         }
     }
     private static void addJsonPathToProperties(String jsonPathString) throws IOException {
-        FileInputStream fis = new FileInputStream("properties/json.properties");
+        FileInputStream fis = new FileInputStream(propertiesString);
         Properties properties = new Properties();
         properties.load(fis);
 
@@ -88,13 +90,14 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
         return instance;
     }
 
+
     private JSONObject getJSONObjectByCurrencyString(String currencyName) {
         JSONObject currencyJSONObject;
         JSONObject result = null;
 
         for( Object currencyObject : currencyJSONArray) {
             currencyJSONObject = (JSONObject) currencyObject;
-            String tempCurrencyName = (String) currencyJSONObject.get("Cur_Abbreviation");
+            String tempCurrencyName = (String) currencyJSONObject.get("currencyName");
             if(Objects.equals(tempCurrencyName, currencyName)) {
                 result = currencyJSONObject;
                 break;
