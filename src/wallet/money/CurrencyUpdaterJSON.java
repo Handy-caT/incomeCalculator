@@ -1,6 +1,7 @@
 package wallet.money;
 
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
@@ -9,10 +10,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.math.RoundingMode;
+import java.util.*;
 
 public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
 
@@ -89,29 +88,69 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
         return instance;
     }
 
+    private JSONObject getJSONObjectByCurrencyString(String currencyName) {
+        JSONObject currencyJSONObject;
+        JSONObject result = null;
+
+        for( Object currencyObject : currencyJSONArray) {
+            currencyJSONObject = (JSONObject) currencyObject;
+            String tempCurrencyName = (String) currencyJSONObject.get("Cur_Abbreviation");
+            if(Objects.equals(tempCurrencyName, currencyName)) {
+                result = currencyJSONObject;
+                break;
+            }
+        }
+        return result;
+    }
 
     @Override
     public BigDecimal getRatioOnDate(String currencyFrom, String currencyTo, Date date) {
-        return null;
+        CurrencyUpdaterWeb currencyUpdaterWeb = CurrencyUpdaterWeb.getInstance();
+        return currencyUpdaterWeb.getRatioOnDate(currencyFrom,currencyTo,date);
     }
 
     @Override
     public BigDecimal getCurScale(String currencyName) {
-        return null;
+        JSONObject currencyObject = getJSONObjectByCurrencyString(currencyName);
+        return BigDecimal.valueOf((long)currencyObject.get("currencyScale"));
     }
 
     @Override
     public BigDecimal getRatio(String currencyFrom, String currencyTo) {
-        return null;
+        BigDecimal ratio;
+        if(Objects.equals(currencyFrom, currencyTo)) {
+            return BigDecimal.ONE;
+        } else {
+            if(!Objects.equals(currencyFrom, "BYN") && !Objects.equals(currencyTo, "BYN")) {
+                JSONObject currencyObject = getJSONObjectByCurrencyString(currencyFrom);
+                ratio = BigDecimal.valueOf((long)currencyObject.get("Ratio"));
+                JSONObject secondCurrencyObject = getJSONObjectByCurrencyString(currencyTo);
+                BigDecimal secondRatio = BigDecimal.valueOf((long)secondCurrencyObject.get("Ratio"));
+                ratio = ratio.divide(secondRatio, RoundingMode.DOWN);
+            } else if(Objects.equals(currencyFrom, "BYN")) {
+                JSONObject currencyObject = getJSONObjectByCurrencyString(currencyFrom);
+                ratio = BigDecimal.valueOf((long)currencyObject.get("Ratio"));
+            } else {
+                JSONObject currencyObject = getJSONObjectByCurrencyString(currencyTo);
+                ratio = BigDecimal.valueOf((long)currencyObject.get("Ratio"));
+                ratio = BigDecimal.ONE.setScale(4).divide(ratio,RoundingMode.DOWN);
+            }
+        }
+        return ratio;
     }
 
     @Override
     public BigDecimal getCurID(String currencyName) {
-        return null;
+        JSONObject currencyObject = getJSONObjectByCurrencyString(currencyName);
+        return BigDecimal.valueOf((long)currencyObject.get("currencyId"));
     }
 
     @Override
-    public Map<String, BigDecimal> getCurrencyRatiosMap(String currencyFrom, List<String> currencyTo) {
-        return null;
+    public Map<String, BigDecimal> getCurrencyRatiosMap(String currencyFrom, List<String> currencyToList) {
+        Map<String,BigDecimal> currenciesHash = new HashMap<>();
+        for(String currencyTo : currencyToList) {
+            currenciesHash.put(currencyTo,getRatio(currencyFrom,currencyTo));
+        }
+        return currenciesHash;
     }
 }
