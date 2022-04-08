@@ -1,9 +1,17 @@
 package wallet.money;
 
+import org.json.simple.parser.ParseException;
+
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 
 public class CurrencyConverter {
+
+    private static CurrencyConverter instance;
+
+    public static String propertiesString = "properties/config.properties";
 
     private short mapSize;
     private TreeMap<String,BigDecimal> priorityHash;
@@ -12,14 +20,14 @@ public class CurrencyConverter {
     private List<String> currencyNamesList;
     private Map<String,Map<String, BigDecimal>> converterMapSell;
 
-    public CurrencyConverter(CurrencyUpdaterProvider currencyUpdater, short mapSize,List<String> currencyNamesList) {
+    private CurrencyConverter(CurrencyUpdaterProvider currencyUpdater, short mapSize,List<String> currencyNamesList) {
         this.currencyUpdater = currencyUpdater;
         this.mapSize = mapSize;
         this.currencyNamesList = currencyNamesList;
 
         buildHashes(currencyNamesList);
     }
-    public CurrencyConverter(CurrencyUpdaterProvider currencyUpdater) {
+    private CurrencyConverter(CurrencyUpdaterProvider currencyUpdater) {
         this.currencyUpdater = currencyUpdater;
         mapSize = 3;
         List<String> currencyNamesList = new LinkedList<>();
@@ -99,5 +107,25 @@ public class CurrencyConverter {
             priorityHash.put(currencyTo,BigDecimal.ZERO);
         }
 
+    }
+
+    private static CurrencyConverter createInstance() throws IOException, ParseException {
+        FileInputStream fis = new FileInputStream("properties/json.properties");
+        Properties properties = new Properties();
+        properties.load(fis);
+
+        String jsonPathString = (String) properties.get("CurrencyUnitStorageType");
+        if(jsonPathString == null) {
+            return new CurrencyConverter(CurrencyUpdaterWeb.getInstance());
+        } else {
+            return new CurrencyConverter(CurrencyUpdaterJSON.getInstance());
+        }
+    }
+
+    public static CurrencyConverter getInstance() throws IOException, ParseException {
+        if(instance == null) {
+            instance = createInstance();
+        }
+        return instance;
     }
 }

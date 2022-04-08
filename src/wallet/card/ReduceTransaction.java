@@ -3,10 +3,9 @@ package wallet.card;
 import wallet.money.CurrencyConverter;
 import wallet.money.Money;
 
+public class ReduceTransaction extends Transaction {
 
-public class AddTransaction extends Transaction {
-
-    AddTransaction(Card card, Money moneyAmount) {
+    ReduceTransaction(Card card, Money moneyAmount) {
         this.card = card;
         this.moneyAmount = moneyAmount;
     }
@@ -14,12 +13,12 @@ public class AddTransaction extends Transaction {
     @Override
     public void Execute() {
         if(card.currencyUnit.equals(moneyAmount.getCurrency())) {
-            card.addMoneyToBalance(moneyAmount);
+            card.subtractMoneyFromBalance(moneyAmount);
         } else {
             try {
                 CurrencyConverter currencyConverter = CurrencyConverter.getInstance();
                 Money convertedMoney = currencyConverter.convert(moneyAmount,card.currencyUnit);
-                card.addMoneyToBalance(convertedMoney);
+                card.subtractMoneyFromBalance(convertedMoney);
             } catch (Exception e) {
                 e.printStackTrace();
             }
