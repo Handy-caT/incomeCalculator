@@ -6,7 +6,7 @@ import wallet.money.Money;
 
 public class AddTransaction extends Transaction {
 
-    AddTransaction(Card card, Money moneyAmount) {
+    public AddTransaction(Card card, Money moneyAmount) {
         this.card = card;
         this.moneyAmount = moneyAmount;
     }

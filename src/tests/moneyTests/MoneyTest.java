@@ -105,7 +105,6 @@ public class MoneyTest {
 
     @Test
     public void convertTest() throws IOException, ParseException {
-        CurrencyUpdaterProvider currencyUpdater = new CurrencyUpdaterWeb();
         CurrencyConverter currencyConverter = CurrencyConverter.getInstance();
 
         BigDecimal valueFirst = randomValue();
