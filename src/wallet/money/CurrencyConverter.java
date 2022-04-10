@@ -110,7 +110,7 @@ public class CurrencyConverter {
     }
 
     private static CurrencyConverter createInstance() throws IOException, ParseException {
-        FileInputStream fis = new FileInputStream("properties/json.properties");
+        FileInputStream fis = new FileInputStream(propertiesString);
         Properties properties = new Properties();
         properties.load(fis);
 

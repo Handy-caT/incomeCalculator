@@ -7,10 +7,8 @@ import org.json.simple.parser.ParseException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import wallet.card.AddTransaction;
-import wallet.card.Card;
-import wallet.card.HistoryKeeper;
-import wallet.card.JSONHistoryKeeper;
+import wallet.card.*;
+import wallet.money.CurrencyConverter;
 import wallet.money.CurrencyUnitJSONStorage;
 import wallet.money.Money;
 import wallet.money.StrictCurrencyUnit;
@@ -39,7 +37,8 @@ public class CardTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
+        CurrencyUnitJSONStorage.propertiesString = "testFiles/properties/config.properties";
         random = new SecureRandom();
     }
 
@@ -53,7 +52,7 @@ public class CardTest {
         Money beforeBalance = card.getBalance();
         Money money = Money.of(USDUnit,randomValue());
 
-        AddTransaction addTransaction = new AddTransaction(card,money);
+        Transaction addTransaction = new AddTransaction(card,money);
 
         card.receiveTransaction(addTransaction);
         historyKeeper.saveState();
@@ -75,4 +74,74 @@ public class CardTest {
         File file = new File(jsonFilePath);
         file.delete();
     }
+
+    @Test
+    public void receiveReduceTransaction() throws IOException, ParseException {
+        HistoryKeeper historyKeeper = new JSONHistoryKeeper(jsonFilePath);
+        CurrencyUnitJSONStorage currencyUnitJSONStorage = CurrencyUnitJSONStorage.getInstance();
+        StrictCurrencyUnit USDUnit = currencyUnitJSONStorage.getCurrencyUnitByCurrencyString("USD");
+        Money beforeBalance = Money.of(USDUnit,BigDecimal.valueOf(10000));
+        Card card = new Card(historyKeeper,USDUnit,beforeBalance);
+
+        Money money = Money.of(USDUnit,randomValue());
+
+        Transaction reduceTransaction = new ReduceTransaction(card,money);
+
+        card.receiveTransaction(reduceTransaction);
+        historyKeeper.saveState();
+
+        Money balance = card.getBalance();
+        Assert.assertEquals(balance.getAmount(),beforeBalance.minus(money).getAmount());
+
+        JSONParser jsonParser = new JSONParser();
+
+        FileReader fileReader = new FileReader(jsonFilePath);
+        JSONArray array = (JSONArray) jsonParser.parse(fileReader);
+        fileReader.close();
+
+        JSONObject snapshotObject = (JSONObject) array.get(0);
+        Assert.assertEquals(snapshotObject.get("transactionAmount"),money.toString());
+        Assert.assertEquals(snapshotObject.get("beforeBalance"),beforeBalance.toString());
+        Assert.assertEquals(snapshotObject.get("afterBalance"),balance.toString());
+
+        File file = new File(jsonFilePath);
+        file.delete();
+    }
+
+    @Test
+    public void receiveAddTransactionAnotherCurrency() throws IOException, ParseException {
+        HistoryKeeper historyKeeper = new JSONHistoryKeeper(jsonFilePath);
+        CurrencyUnitJSONStorage currencyUnitJSONStorage = CurrencyUnitJSONStorage.getInstance();
+        CurrencyConverter currencyConverter = CurrencyConverter.getInstance();
+        StrictCurrencyUnit USDUnit = currencyUnitJSONStorage.getCurrencyUnitByCurrencyString("USD");
+        StrictCurrencyUnit EURUnit = currencyUnitJSONStorage.getCurrencyUnitByCurrencyString("EUR");
+        Card card = new Card(historyKeeper,USDUnit);
+
+        Money beforeBalance = card.getBalance();
+        Money money = Money.of(EURUnit,randomValue());
+
+        Transaction addTransaction = new AddTransaction(card,money);
+
+        card.receiveTransaction(addTransaction);
+        historyKeeper.saveState();
+
+        Money balance = card.getBalance();
+        Assert.assertEquals(balance.getAmount(), currencyConverter.convert(money,USDUnit).getAmount());
+
+        JSONParser jsonParser = new JSONParser();
+
+        FileReader fileReader = new FileReader(jsonFilePath);
+        JSONArray array = (JSONArray) jsonParser.parse(fileReader);
+        fileReader.close();
+
+        JSONObject snapshotObject = (JSONObject) array.get(0);
+        Assert.assertEquals(snapshotObject.get("transactionAmount"),currencyConverter.convert(money,USDUnit).toString());
+        Assert.assertEquals(snapshotObject.get("notConvertedTransactionAmount"),money.toString());
+        Assert.assertEquals(snapshotObject.get("beforeBalance"),beforeBalance.toString());
+        Assert.assertEquals(snapshotObject.get("afterBalance"),balance.toString());
+
+        File file = new File(jsonFilePath);
+        file.delete();
+    }
+
 }

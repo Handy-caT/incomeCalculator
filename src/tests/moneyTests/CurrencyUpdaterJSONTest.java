@@ -15,9 +15,8 @@ public class CurrencyUpdaterJSONTest {
 
     @Before
     public void before() {
-        CurrencyUpdaterJSON.propertiesString = "testFiles/properties/json.properties";
+        CurrencyUpdaterJSON.propertiesString = "testFiles/properties/config.properties";
     }
-
     @Test
     public void getCurScale() throws IOException, ParseException {
         CurrencyUpdaterJSON c = CurrencyUpdaterJSON.getInstance();

@@ -14,7 +14,7 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
 
     private static CurrencyUpdaterJSON instance;
 
-    public static String propertiesString = "properties/json.properties";
+    public static String propertiesString = "properties/config.properties";
     private static String jsonPathString;
     private static JSONArray currencyJSONArray;
 
@@ -64,7 +64,7 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
     }
 
     private static CurrencyUpdaterJSON createInstance() throws IOException, ParseException {
-        FileInputStream fis = new FileInputStream("properties/json.properties");
+        FileInputStream fis = new FileInputStream(propertiesString);
         Properties properties = new Properties();
         properties.load(fis);
 
@@ -126,16 +126,16 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
         } else {
             if(!Objects.equals(currencyFrom, "BYN") && !Objects.equals(currencyTo, "BYN")) {
                 JSONObject currencyObject = getJSONObjectByCurrencyString(currencyFrom);
-                ratio = BigDecimal.valueOf((long)currencyObject.get("Ratio"));
+                ratio = (BigDecimal) currencyObject.get("Ratio");
                 JSONObject secondCurrencyObject = getJSONObjectByCurrencyString(currencyTo);
-                BigDecimal secondRatio = BigDecimal.valueOf((long)secondCurrencyObject.get("Ratio"));
+                BigDecimal secondRatio = (BigDecimal)secondCurrencyObject.get("Ratio");
                 ratio = ratio.divide(secondRatio, RoundingMode.DOWN);
             } else if(Objects.equals(currencyFrom, "BYN")) {
-                JSONObject currencyObject = getJSONObjectByCurrencyString(currencyFrom);
-                ratio = BigDecimal.valueOf((long)currencyObject.get("Ratio"));
-            } else {
                 JSONObject currencyObject = getJSONObjectByCurrencyString(currencyTo);
-                ratio = BigDecimal.valueOf((long)currencyObject.get("Ratio"));
+                ratio = (BigDecimal) currencyObject.get("Ratio");
+            } else {
+                JSONObject currencyObject = getJSONObjectByCurrencyString(currencyFrom);
+                ratio = (BigDecimal) currencyObject.get("Ratio");
                 ratio = BigDecimal.ONE.setScale(4).divide(ratio,RoundingMode.DOWN);
             }
         }

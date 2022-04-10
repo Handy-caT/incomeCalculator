@@ -5,7 +5,7 @@ import wallet.money.Money;
 
 public class ReduceTransaction extends Transaction {
 
-    ReduceTransaction(Card card, Money moneyAmount) {
+    public ReduceTransaction(Card card, Money moneyAmount) {
         this.card = card;
         this.moneyAmount = moneyAmount;
     }
