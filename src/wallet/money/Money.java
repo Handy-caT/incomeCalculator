@@ -5,19 +5,23 @@ import java.math.RoundingMode;
 
 public class Money {
 
-    private final CurrencyUnit currency;
+    private final StrictCurrencyUnit currency;
     private final BigDecimal amount;
 
     public BigDecimal getAmount() {
         return amount;
     }
 
-    public Money(CurrencyUnit currency,BigDecimal amount) {
+    public Money(StrictCurrencyUnit currency, BigDecimal amount) {
         this.currency = currency;
         this.amount = amount;
     }
+    public Money(String currencyString, BigDecimal amount) {
+        this.currency = CurrencyUnit.of(currencyString);
+        this.amount = amount;
+    }
 
-    public static Money of(CurrencyUnit currency,BigDecimal amount) {
+    public static Money of(StrictCurrencyUnit currency, BigDecimal amount) {
         return new Money(currency,amount);
     }
     public static Money of(String currencyString, BigDecimal amount) {
@@ -34,7 +38,7 @@ public class Money {
         return of(CurrencyUnit.of(currencyString),new BigDecimal(amountString));
     }
 
-    public CurrencyUnit getCurrency() {
+    public StrictCurrencyUnit getCurrency() {
         return currency;
     }
 

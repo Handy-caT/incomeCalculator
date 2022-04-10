@@ -8,11 +8,14 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 
 public class CurrencyUpdaterWeb implements CurrencyUpdaterProvider {
+
+    private static CurrencyUpdaterWeb instance;
 
     private JSONObject getCurrencyJSONFromWeb(String curName) throws ParseException, UnirestException {
         JSONParser jsonParser = new JSONParser();
@@ -64,6 +67,13 @@ public class CurrencyUpdaterWeb implements CurrencyUpdaterProvider {
         BigDecimal ratioFirst = BigDecimal.valueOf((double) currencyFrom.get("Cur_OfficialRate"));
         BigDecimal ratioSecond = BigDecimal.valueOf((double) currencyTo.get("Cur_OfficialRate"));
         return  ratioFirst.divide(ratioSecond, RoundingMode.DOWN);
+    }
+
+    public static CurrencyUpdaterWeb getInstance() {
+        if(instance == null) {
+            instance = new CurrencyUpdaterWeb();
+        }
+        return instance;
     }
 
     @Override
@@ -174,6 +184,7 @@ public class CurrencyUpdaterWeb implements CurrencyUpdaterProvider {
 
         return currenciesHash;
     }
+
 }
 
 

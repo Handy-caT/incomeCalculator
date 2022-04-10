@@ -1,11 +1,13 @@
 package tests.moneyTests;
 
 
+import org.json.simple.parser.ParseException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import wallet.money.*;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.security.SecureRandom;
@@ -31,10 +33,21 @@ public class MoneyTest {
     public void parseTest() {
         BigDecimal value = randomValue();
         String currencyString = "USD";
-        String parseString = currencyString + " " + value ;
+        String parseString = currencyString + " " + value;
         Money result = Money.parse(parseString);
 
         Assert.assertEquals(value,result.getAmount());
+        Assert.assertEquals(CurrencyUnit.of(currencyString),result.getCurrency());
+    }
+
+    @Test
+    public void parseNegativeTest() {
+        BigDecimal value = randomValue();
+        String currencyString = "USD";
+        String parseString = currencyString + " " + value.negate();
+        Money result = Money.parse(parseString);
+
+        Assert.assertEquals(value.negate(),result.getAmount());
         Assert.assertEquals(CurrencyUnit.of(currencyString),result.getCurrency());
     }
 
@@ -91,9 +104,8 @@ public class MoneyTest {
     }
 
     @Test
-    public void convertTest() {
-        CurrencyUpdaterProvider currencyUpdater = new CurrencyUpdaterWeb();
-        CurrencyConverter currencyConverter = new CurrencyConverter(currencyUpdater);
+    public void convertTest() throws IOException, ParseException {
+        CurrencyConverter currencyConverter = CurrencyConverter.getInstance();
 
         BigDecimal valueFirst = randomValue();
         BigDecimal valueSecond = randomValue();

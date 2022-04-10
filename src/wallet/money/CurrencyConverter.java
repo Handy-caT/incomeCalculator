@@ -1,9 +1,17 @@
 package wallet.money;
 
+import org.json.simple.parser.ParseException;
+
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 
 public class CurrencyConverter {
+
+    private static CurrencyConverter instance;
+
+    public static String propertiesString = "properties/config.properties";
 
     private short mapSize;
     private TreeMap<String,BigDecimal> priorityHash;
@@ -12,14 +20,14 @@ public class CurrencyConverter {
     private List<String> currencyNamesList;
     private Map<String,Map<String, BigDecimal>> converterMapSell;
 
-    public CurrencyConverter(CurrencyUpdaterProvider currencyUpdater, short mapSize,List<String> currencyNamesList) {
+    private CurrencyConverter(CurrencyUpdaterProvider currencyUpdater, short mapSize,List<String> currencyNamesList) {
         this.currencyUpdater = currencyUpdater;
         this.mapSize = mapSize;
         this.currencyNamesList = currencyNamesList;
 
         buildHashes(currencyNamesList);
     }
-    public CurrencyConverter(CurrencyUpdaterProvider currencyUpdater) {
+    private CurrencyConverter(CurrencyUpdaterProvider currencyUpdater) {
         this.currencyUpdater = currencyUpdater;
         mapSize = 3;
         List<String> currencyNamesList = new LinkedList<>();
@@ -32,7 +40,7 @@ public class CurrencyConverter {
         buildHashes(currencyNamesList);
     }
 
-    public  BigDecimal getConvertSellRatio(CurrencyUnit currencyFromUnit,CurrencyUnit currencyToUnit) {
+    public  BigDecimal getConvertSellRatio(StrictCurrencyUnit currencyFromUnit, StrictCurrencyUnit currencyToUnit) {
 
         if(!currencyNamesList.contains(currencyFromUnit.toString())) {
             addCurrency(currencyFromUnit);
@@ -54,11 +62,11 @@ public class CurrencyConverter {
 
         return converterMapSell.get(currencyFromUnit.toString()).get(currencyToUnit.toString());
     }
-    private void setConvertSellRatio(CurrencyUnit currencyFromUnit,CurrencyUnit currencyToUnit,BigDecimal ratio) {
+    private void setConvertSellRatio(StrictCurrencyUnit currencyFromUnit, StrictCurrencyUnit currencyToUnit, BigDecimal ratio) {
         converterMapSell.get(currencyFromUnit.toString()).remove(currencyToUnit.toString());
         converterMapSell.get(currencyFromUnit.toString()).put(currencyToUnit.toString(),ratio);
     }
-    public Money convert(Money money, CurrencyUnit currencyToConvertToUnit) {
+    public Money convert(Money money, StrictCurrencyUnit currencyToConvertToUnit) {
         BigDecimal newAmount = money.getAmount().multiply(getConvertSellRatio(currencyToConvertToUnit,money.getCurrency()));
         return new Money(currencyToConvertToUnit,newAmount);
     }
@@ -67,7 +75,7 @@ public class CurrencyConverter {
         mapSize = size;
     }
 
-    private void addCurrency(CurrencyUnit currencyUnit) {
+    private void addCurrency(StrictCurrencyUnit currencyUnit) {
         if(!currencyNamesList.contains(currencyUnit.toString())) {
             if (currencyNamesList.size() >= mapSize) {
                 String currencyToRemove = priorityHash.firstKey();
@@ -82,7 +90,7 @@ public class CurrencyConverter {
             converterMapSell.put(currencyUnit.toString(), temp);
         }
     }
-    private void addRatioForAllCurrencies(CurrencyUnit currencyToUnit) {
+    private void addRatioForAllCurrencies(StrictCurrencyUnit currencyToUnit) {
         for(String currencyFrom : currencyNamesList) {
             BigDecimal ratio = currencyUpdater.getRatio(currencyFrom,currencyToUnit.toString());
             converterMapSell.get(currencyFrom).put(currencyToUnit.toString(),ratio);
@@ -90,7 +98,6 @@ public class CurrencyConverter {
     }
 
     private void buildHashes(List<String> currencyNamesList) {
-        int i = 0;
         priorityHash = new TreeMap<>();
 
         converterMapSell = new HashMap<>();
@@ -100,5 +107,25 @@ public class CurrencyConverter {
             priorityHash.put(currencyTo,BigDecimal.ZERO);
         }
 
+    }
+
+    private static CurrencyConverter createInstance() throws IOException, ParseException {
+        FileInputStream fis = new FileInputStream(propertiesString);
+        Properties properties = new Properties();
+        properties.load(fis);
+
+        String jsonPathString = (String) properties.get("CurrencyUnitStorageType");
+        if(jsonPathString == null) {
+            return new CurrencyConverter(CurrencyUpdaterWeb.getInstance());
+        } else {
+            return new CurrencyConverter(CurrencyUpdaterJSON.getInstance());
+        }
+    }
+
+    public static CurrencyConverter getInstance() throws IOException, ParseException {
+        if(instance == null) {
+            instance = createInstance();
+        }
+        return instance;
     }
 }

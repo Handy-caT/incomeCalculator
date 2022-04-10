@@ -1,27 +1,20 @@
 package wallet.money;
 
-import java.util.HashMap;
-import java.util.Objects;
+import java.math.BigDecimal;
 import java.util.regex.Pattern;
 
-public class CurrencyUnit {
+public class CurrencyUnit extends StrictCurrencyUnit {
 
     private static final Pattern CURRENCY_PATTERN = Pattern.compile("[A-Z]{3}");
 
-    private final String code;
-    private final short decimalPlaces;
-
-    public CurrencyUnit() {
-        code = "USD";
-        decimalPlaces = 2;
+    protected CurrencyUnit(String currencyString) {
+        super();
+        this.currencyName = currencyString;
+        this.currencyId = null;
+        this.currencyScale = BigDecimal.ONE;
     }
-    public CurrencyUnit(String currencyString) {
-        code = currencyString;
-        this.decimalPlaces = 2;
-    }
-    public CurrencyUnit(String currencyString, short decimalPlaces) {
-        code = currencyString;
-        this.decimalPlaces = decimalPlaces;
+    public CurrencyUnit(StrictCurrencyUnit currencyUnit) {
+        super(currencyUnit);
     }
 
     public static CurrencyUnit of(String currencyString) {
@@ -33,29 +26,6 @@ public class CurrencyUnit {
         } catch (Exception e) {
             throw new IllegalArgumentException("Can't find currency " + currencyString);
         }
-
-
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CurrencyUnit that = (CurrencyUnit) o;
-        return decimalPlaces == that.decimalPlaces && Objects.equals(code, that.code);
-    }
-
-    public boolean equals(String currencyString) {
-        return Objects.equals(code, currencyString);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(code, decimalPlaces);
-    }
-
-    public String toString() {
-        return code;
     }
 
 
