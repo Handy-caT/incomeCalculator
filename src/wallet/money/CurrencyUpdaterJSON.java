@@ -126,16 +126,16 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
         } else {
             if(!Objects.equals(currencyFrom, "BYN") && !Objects.equals(currencyTo, "BYN")) {
                 JSONObject currencyObject = getJSONObjectByCurrencyString(currencyFrom);
-                ratio = (BigDecimal) currencyObject.get("Ratio");
+                ratio = BigDecimal.valueOf((double) currencyObject.get("Ratio"));
                 JSONObject secondCurrencyObject = getJSONObjectByCurrencyString(currencyTo);
-                BigDecimal secondRatio = (BigDecimal)secondCurrencyObject.get("Ratio");
+                BigDecimal secondRatio = BigDecimal.valueOf((double)secondCurrencyObject.get("Ratio"));
                 ratio = ratio.divide(secondRatio, RoundingMode.DOWN);
             } else if(Objects.equals(currencyFrom, "BYN")) {
                 JSONObject currencyObject = getJSONObjectByCurrencyString(currencyTo);
-                ratio = (BigDecimal) currencyObject.get("Ratio");
+                ratio = BigDecimal.valueOf((double) currencyObject.get("Ratio"));
             } else {
                 JSONObject currencyObject = getJSONObjectByCurrencyString(currencyFrom);
-                ratio = (BigDecimal) currencyObject.get("Ratio");
+                ratio = BigDecimal.valueOf((double)currencyObject.get("Ratio"));
                 ratio = BigDecimal.ONE.setScale(4).divide(ratio,RoundingMode.DOWN);
             }
         }

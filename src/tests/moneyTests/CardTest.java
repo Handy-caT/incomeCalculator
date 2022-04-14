@@ -8,10 +8,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import wallet.card.*;
-import wallet.money.CurrencyConverter;
-import wallet.money.CurrencyUnitJSONStorage;
-import wallet.money.Money;
-import wallet.money.StrictCurrencyUnit;
+import wallet.money.*;
 
 import java.io.File;
 import java.io.FileReader;
@@ -27,6 +24,7 @@ public class CardTest {
     SecureRandom random;
 
     String jsonFilePath = "testFiles/json/cardHistory.json";
+    String id = "7658123";
 
     private BigDecimal randomValue() {
         BigDecimal value = BigDecimal.valueOf(random.nextInt(9999));
@@ -39,6 +37,7 @@ public class CardTest {
     @Before
     public void setUp() {
         CurrencyUnitJSONStorage.propertiesString = "testFiles/properties/config.properties";
+        CurrencyUpdaterJSON.propertiesString = "testFiles/properties/config.properties";
         random = new SecureRandom();
     }
 
@@ -47,7 +46,7 @@ public class CardTest {
         HistoryKeeper historyKeeper = new JSONHistoryKeeper(jsonFilePath);
         CurrencyUnitJSONStorage currencyUnitJSONStorage = CurrencyUnitJSONStorage.getInstance();
         StrictCurrencyUnit USDUnit = currencyUnitJSONStorage.getCurrencyUnitByCurrencyString("USD");
-        Card card = new Card(historyKeeper,USDUnit);
+        Card card = new Card(historyKeeper,USDUnit,id);
 
         Money beforeBalance = card.getBalance();
         Money money = Money.of(USDUnit,randomValue());
@@ -81,7 +80,7 @@ public class CardTest {
         CurrencyUnitJSONStorage currencyUnitJSONStorage = CurrencyUnitJSONStorage.getInstance();
         StrictCurrencyUnit USDUnit = currencyUnitJSONStorage.getCurrencyUnitByCurrencyString("USD");
         Money beforeBalance = Money.of(USDUnit,BigDecimal.valueOf(10000));
-        Card card = new Card(historyKeeper,USDUnit,beforeBalance);
+        Card card = new Card(historyKeeper,USDUnit,beforeBalance,id);
 
         Money money = Money.of(USDUnit,randomValue());
 
@@ -115,7 +114,7 @@ public class CardTest {
         CurrencyConverter currencyConverter = CurrencyConverter.getInstance();
         StrictCurrencyUnit USDUnit = currencyUnitJSONStorage.getCurrencyUnitByCurrencyString("USD");
         StrictCurrencyUnit EURUnit = currencyUnitJSONStorage.getCurrencyUnitByCurrencyString("EUR");
-        Card card = new Card(historyKeeper,USDUnit);
+        Card card = new Card(historyKeeper,USDUnit,id);
 
         Money beforeBalance = card.getBalance();
         Money money = Money.of(EURUnit,randomValue());

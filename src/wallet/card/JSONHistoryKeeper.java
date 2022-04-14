@@ -7,6 +7,9 @@ import org.json.simple.parser.JSONParser;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.Objects;
+import java.util.function.BiConsumer;
 
 public class JSONHistoryKeeper implements HistoryKeeper{
 
@@ -54,6 +57,7 @@ public class JSONHistoryKeeper implements HistoryKeeper{
     @Override
     public void saveTransaction(Card.Memento snapshot) {
         JSONObject snapshotObject = new JSONObject();
+        snapshotObject.put("id",snapshot.id);
         if(snapshot.beforeBalance.isSameCurrency(snapshot.transactionAmount)) {
             snapshotObject.put("beforeBalance",snapshot.beforeBalance.toString());
             snapshotObject.put("transactionAmount",snapshot.transactionAmount.toString());
@@ -65,5 +69,28 @@ public class JSONHistoryKeeper implements HistoryKeeper{
             snapshotObject.put("afterBalance",snapshot.afterBalance.toString());
         }
         snapshotsArray.add(snapshotObject);
+    }
+
+    @Override
+    public Transaction getTransaction(String id) {
+
+        JSONObject transactionJSON = new JSONObject();
+
+        for(Object transactionObject : snapshotsArray) {
+            transactionJSON = (JSONObject) transactionObject;
+            String tempId = (String) transactionJSON.get("id");
+            if(Objects.equals(id, tempId)) {
+                break;
+            }
+        }
+
+        BigDecimal beforeBalance = (BigDecimal) transactionJSON.get("beforeBalance");
+        BigDecimal afterBalance = (BigDecimal) transactionJSON.get("afterBalance");
+
+        if(afterBalance.compareTo(beforeBalance) > 0) {
+            return new ReduceTransaction()
+        }
+
+        return null;
     }
 }

@@ -10,24 +10,33 @@ public class Card {
 
     private Money balance;
     protected StrictCurrencyUnit currencyUnit;
+    protected String id;
 
     protected HistoryKeeper historyKeeper;
+    protected IdGenerator idGenerator;
 
-    public Card(HistoryKeeper historyKeeper,StrictCurrencyUnit currencyUnit) {
+    public Card(HistoryKeeper historyKeeper,StrictCurrencyUnit currencyUnit,String id) {
         this.currencyUnit = currencyUnit;
         this.historyKeeper = historyKeeper;
         this.balance = Money.of(currencyUnit, BigDecimal.ZERO);
+
+        this.id = id;
+        this.idGenerator = new IdGenerator(this);
     }
-    public Card(HistoryKeeper historyKeeper,StrictCurrencyUnit currencyUnit,Money balance) {
+    public Card(HistoryKeeper historyKeeper,StrictCurrencyUnit currencyUnit,Money balance,String id) {
         this.currencyUnit = currencyUnit;
         this.historyKeeper = historyKeeper;
         this.balance = balance;
+
+        this.id = id;
+        this.idGenerator = new IdGenerator(this);
     }
 
     public void receiveTransaction(Transaction transaction) {
         Money beforeBalance = balance;
         transaction.Execute();
-        Memento snapshot = new Memento(beforeBalance,balance,transaction.moneyAmount);
+        String id = idGenerator.getId(transaction);
+        Memento snapshot = new Memento(beforeBalance,balance,transaction.moneyAmount,id);
         historyKeeper.saveTransaction(snapshot);
     }
     protected void addMoneyToBalance(Money money) {
@@ -40,17 +49,21 @@ public class Card {
     }
 
     protected class Memento {
+        String id;
+
         Money beforeBalance;
         Money afterBalance;
         Money transactionAmount;
 
-        Memento(Money beforeBalance,Money afterBalance, Money transactionAmount) {
+        Memento(Money beforeBalance,Money afterBalance, Money transactionAmount, String id) {
             this.afterBalance = afterBalance;
             this.beforeBalance = beforeBalance;
             this.transactionAmount = transactionAmount;
+
+            this.id = id;
         }
 
-        public void restore() {
+        public void restore(String id) {
 
         }
     }
