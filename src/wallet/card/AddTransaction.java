@@ -6,13 +6,12 @@ import wallet.money.Money;
 
 public class AddTransaction extends Transaction {
 
-    public AddTransaction(Card card, Money moneyAmount) {
-        this.card = card;
+    public AddTransaction( Money moneyAmount) {
         this.moneyAmount = moneyAmount;
     }
 
     @Override
-    public void Execute() {
+    public void Execute(Card card) {
         if(card.currencyUnit.equals(moneyAmount.getCurrency())) {
             card.addMoneyToBalance(moneyAmount);
         } else {

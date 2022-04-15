@@ -51,7 +51,7 @@ public class CardTest {
         Money beforeBalance = card.getBalance();
         Money money = Money.of(USDUnit,randomValue());
 
-        Transaction addTransaction = new AddTransaction(card,money);
+        Transaction addTransaction = new AddTransaction(money);
 
         card.receiveTransaction(addTransaction);
         historyKeeper.saveState();
@@ -84,7 +84,7 @@ public class CardTest {
 
         Money money = Money.of(USDUnit,randomValue());
 
-        Transaction reduceTransaction = new ReduceTransaction(card,money);
+        Transaction reduceTransaction = new ReduceTransaction(money);
 
         card.receiveTransaction(reduceTransaction);
         historyKeeper.saveState();
@@ -119,7 +119,7 @@ public class CardTest {
         Money beforeBalance = card.getBalance();
         Money money = Money.of(EURUnit,randomValue());
 
-        Transaction addTransaction = new AddTransaction(card,money);
+        Transaction addTransaction = new AddTransaction(money);
 
         card.receiveTransaction(addTransaction);
         historyKeeper.saveState();

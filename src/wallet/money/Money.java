@@ -92,5 +92,9 @@ public class Money {
         return new StringBuilder().append(currency.toString()).append(" ").append(amount.toString()).toString();
     }
 
+    public int compareTo(Money other) {
+        return amount.compareTo(other.amount);
+    }
+
 }
 

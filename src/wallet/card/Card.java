@@ -34,7 +34,7 @@ public class Card {
 
     public void receiveTransaction(Transaction transaction) {
         Money beforeBalance = balance;
-        transaction.Execute();
+        transaction.Execute(this);
         String id = idGenerator.getId(transaction);
         Memento snapshot = new Memento(beforeBalance,balance,transaction.moneyAmount,id);
         historyKeeper.saveTransaction(snapshot);
@@ -64,7 +64,8 @@ public class Card {
         }
 
         public void restore(String id) {
-
+            Transaction restoreTransaction = historyKeeper.getTransaction(id);
+            receiveTransaction(restoreTransaction);
         }
     }
 

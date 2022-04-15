@@ -5,13 +5,12 @@ import wallet.money.Money;
 
 public class ReduceTransaction extends Transaction {
 
-    public ReduceTransaction(Card card, Money moneyAmount) {
-        this.card = card;
+    public ReduceTransaction(Money moneyAmount) {
         this.moneyAmount = moneyAmount;
     }
 
     @Override
-    public void Execute() {
+    public void Execute(Card card) {
         if(card.currencyUnit.equals(moneyAmount.getCurrency())) {
             card.subtractMoneyFromBalance(moneyAmount);
         } else {

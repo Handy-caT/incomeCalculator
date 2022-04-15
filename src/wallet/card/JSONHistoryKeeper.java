@@ -3,6 +3,7 @@ package wallet.card;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import wallet.money.Money;
 
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -84,13 +85,28 @@ public class JSONHistoryKeeper implements HistoryKeeper{
             }
         }
 
-        BigDecimal beforeBalance = (BigDecimal) transactionJSON.get("beforeBalance");
-        BigDecimal afterBalance = (BigDecimal) transactionJSON.get("afterBalance");
+        Money beforeBalance = Money.parse((String)transactionJSON.get("beforeBalance"));
+        Money afterBalance = Money.parse((String)transactionJSON.get("afterBalance"));
 
         if(afterBalance.compareTo(beforeBalance) > 0) {
-            return new ReduceTransaction()
+            return new ReduceTransaction(afterBalance.minus(beforeBalance));
+        } else {
+            return new AddTransaction(beforeBalance.minus(afterBalance));
+        }
+    }
+
+    @Override
+    public void deleteTransaction(String id) {
+        JSONObject transactionJSON = new JSONObject();
+
+        for(Object transactionObject : snapshotsArray) {
+            transactionJSON = (JSONObject) transactionObject;
+            String tempId = (String) transactionJSON.get("id");
+            if(Objects.equals(id, tempId)) {
+                break;
+            }
         }
 
-        return null;
+        snapshotsArray.remove(transactionJSON);
     }
 }
