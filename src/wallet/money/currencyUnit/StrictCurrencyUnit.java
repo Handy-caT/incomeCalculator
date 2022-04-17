@@ -7,10 +7,10 @@ public class StrictCurrencyUnit {
 
     protected String currencyName;
     protected long currencyId;
-    protected BigDecimal currencyScale;
+    protected long currencyScale;
 
     protected StrictCurrencyUnit(){}
-    protected StrictCurrencyUnit(String currencyString, long id, BigDecimal scale) {
+    protected StrictCurrencyUnit(String currencyString, long id, long scale) {
         currencyName = currencyString;
         this.currencyId = id;
         this.currencyScale = scale;

@@ -37,7 +37,7 @@ public class CurrencyUnitWebStorage implements CurrencyUnitStorage {
         }
 
         String currencyString = (String) currencyObject.get("Cur_Abbreviation");
-        BigDecimal scale = BigDecimal.valueOf((long)currencyObject.get("Cur_Scale"));
+        long scale = (long)currencyObject.get("Cur_Scale");
 
         return new StrictCurrencyUnit(currencyString,currencyId,scale);
     }
@@ -59,7 +59,7 @@ public class CurrencyUnitWebStorage implements CurrencyUnitStorage {
         }
 
         long currencyId = (long)currencyObject.get("Cur_ID");
-        BigDecimal scale = BigDecimal.valueOf((long)currencyObject.get("Cur_Scale"));
+        long scale = (long)currencyObject.get("Cur_Scale");
 
         return new StrictCurrencyUnit(currencyString,currencyId,scale);
     }

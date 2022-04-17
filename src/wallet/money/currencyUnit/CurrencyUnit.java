@@ -11,7 +11,7 @@ public class CurrencyUnit extends StrictCurrencyUnit {
         super();
         this.currencyName = currencyString;
         this.currencyId = 0;
-        this.currencyScale = BigDecimal.ONE;
+        this.currencyScale = 1;
     }
     public CurrencyUnit(StrictCurrencyUnit currencyUnit) {
         super(currencyUnit);

@@ -96,7 +96,7 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
             if(Objects.equals(tempCurrencyString, currencyString)) break;
         }
         long currencyId = (long)currencyObject.get("currencyId");
-        BigDecimal currencyScale = BigDecimal.valueOf((long)currencyObject.get("currencyScale"));
+        long currencyScale = (long)currencyObject.get("currencyScale");
 
         return new StrictCurrencyUnit(currencyString,currencyId,currencyScale);
     }
@@ -110,7 +110,7 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
             if(Objects.equals(currencyId, tempCurrencyId)) break;
         }
         String currencyString = (String) currencyObject.get("currencyName");
-        BigDecimal currencyScale = BigDecimal.valueOf((long)currencyObject.get("currencyScale"));
+        long currencyScale = (long)currencyObject.get("currencyScale");
 
         return new StrictCurrencyUnit(currencyString,currencyId,currencyScale);
     }

@@ -35,7 +35,7 @@ public class ConnectionFactory {
         return instance;
     }
 
-    Connection getConnection() throws SQLException {
+    public Connection getConnection() throws SQLException {
         return DriverManager.getConnection(dbUrl);
     }
 }
