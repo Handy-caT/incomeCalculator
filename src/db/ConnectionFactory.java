@@ -10,7 +10,7 @@ import java.util.Properties;
 public class ConnectionFactory {
 
     private static ConnectionFactory instance;
-    String dbUrl;
+    private String dbUrl;
     public String propertiesString = "properties/config.properties";
 
     private ConnectionFactory() {

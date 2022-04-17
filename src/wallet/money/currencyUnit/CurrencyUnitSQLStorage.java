@@ -9,7 +9,7 @@ import java.util.List;
 
 public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
 
-    private CurrencyUnitSQLStorage instance;
+    private static CurrencyUnitSQLStorage instance;
     private Connection dbConnection;
 
     public static String propertiesString = "properties/config.properties";
@@ -22,8 +22,9 @@ public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
         CurrencyUnitSQLStorageBuilder builder = CurrencyUnitSQLStorageBuilder.getInstance("currencyUnits",dbConnection);
         List<String> buildingPlan = builder.getBuildPlan();
 
-
-
+        for (String currencyString : buildingPlan) {
+            builder.buildCurrencyUnit(currencyString);
+        }
     }
     private CurrencyUnitSQLStorage(List<String> buildingPlan) {
 
@@ -55,6 +56,13 @@ public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
     @Override
     public StrictCurrencyUnit getCurrencyUnitByCurrencyID(long currencyId) {
         return null;
+    }
+
+    public static CurrencyUnitSQLStorage getInstance() throws SQLException {
+        if(instance == null) {
+            instance = new CurrencyUnitSQLStorage();
+        }
+        return instance;
     }
 
 }
