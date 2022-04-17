@@ -95,14 +95,14 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
             String tempCurrencyString = (String) currencyObject.get("currencyName");
             if(Objects.equals(tempCurrencyString, currencyString)) break;
         }
-        BigDecimal currencyId = BigDecimal.valueOf((long)currencyObject.get("currencyId"));
+        long currencyId = (long)currencyObject.get("currencyId");
         BigDecimal currencyScale = BigDecimal.valueOf((long)currencyObject.get("currencyScale"));
 
         return new StrictCurrencyUnit(currencyString,currencyId,currencyScale);
     }
 
     @Override
-    public StrictCurrencyUnit getCurrencyUnitByCurrencyID(BigDecimal currencyId) {
+    public StrictCurrencyUnit getCurrencyUnitByCurrencyID(long currencyId) {
         JSONObject currencyObject = null;
         for(Object object : currencyJSONArray) {
             currencyObject = (JSONObject) object;

@@ -6,11 +6,11 @@ import java.util.Objects;
 public class StrictCurrencyUnit {
 
     protected String currencyName;
-    protected BigDecimal currencyId;
+    protected long currencyId;
     protected BigDecimal currencyScale;
 
     protected StrictCurrencyUnit(){}
-    protected StrictCurrencyUnit(String currencyString, BigDecimal id, BigDecimal scale) {
+    protected StrictCurrencyUnit(String currencyString, long id, BigDecimal scale) {
         currencyName = currencyString;
         this.currencyId = id;
         this.currencyScale = scale;

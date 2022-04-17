@@ -35,20 +35,9 @@ public class JSONHistoryKeeper implements HistoryKeeper{
     }
 
     public void saveState() {
-        JSONArray arrayToSave;
-        try {
-            JSONParser jsonParser = new JSONParser();
-
-            FileReader fileReader = new FileReader(jsonArrayString);
-            arrayToSave = (JSONArray) jsonParser.parse(fileReader);
-            fileReader.close();
-        } catch (Exception e) {
-            arrayToSave = new JSONArray();
-        }
-        arrayToSave.addAll(snapshotsArray);
         try {
             FileWriter fileWriter = new FileWriter(jsonArrayString);
-            arrayToSave.writeJSONString(fileWriter);
+            snapshotsArray.writeJSONString(fileWriter);
             fileWriter.close();
         } catch (Exception e) {
             e.printStackTrace();

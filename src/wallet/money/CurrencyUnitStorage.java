@@ -6,6 +6,6 @@ public interface CurrencyUnitStorage {
 
     boolean isCurrencyExists(String currencyString);
     StrictCurrencyUnit getCurrencyUnitByCurrencyString(String currencyString);
-    StrictCurrencyUnit getCurrencyUnitByCurrencyID(BigDecimal currencyId);
+    StrictCurrencyUnit getCurrencyUnitByCurrencyID(long currencyId);
 
 }

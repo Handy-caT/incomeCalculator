@@ -6,6 +6,7 @@
 *.iws
 .idea/
 out/
+lib/
 generated_src/
 
 .DS_Store

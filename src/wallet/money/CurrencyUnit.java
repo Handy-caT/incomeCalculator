@@ -10,7 +10,7 @@ public class CurrencyUnit extends StrictCurrencyUnit {
     protected CurrencyUnit(String currencyString) {
         super();
         this.currencyName = currencyString;
-        this.currencyId = null;
+        this.currencyId = 0;
         this.currencyScale = BigDecimal.ONE;
     }
     public CurrencyUnit(StrictCurrencyUnit currencyUnit) {

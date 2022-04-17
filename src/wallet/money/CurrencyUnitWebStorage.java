@@ -22,7 +22,7 @@ public class CurrencyUnitWebStorage implements  CurrencyUnitStorage {
     }
 
     @Override
-    public StrictCurrencyUnit getCurrencyUnitByCurrencyID(BigDecimal currencyId)  {
+    public StrictCurrencyUnit getCurrencyUnitByCurrencyID(long currencyId)  {
         JSONParser jsonParser = new JSONParser();
         JSONObject currencyObject = null;
 
@@ -59,7 +59,7 @@ public class CurrencyUnitWebStorage implements  CurrencyUnitStorage {
             e.printStackTrace();
         }
 
-        BigDecimal currencyId = BigDecimal.valueOf((long)currencyObject.get("Cur_ID"));
+        long currencyId = (long)currencyObject.get("Cur_ID");
         BigDecimal scale = BigDecimal.valueOf((long)currencyObject.get("Cur_Scale"));
 
         return new StrictCurrencyUnit(currencyString,currencyId,scale);
