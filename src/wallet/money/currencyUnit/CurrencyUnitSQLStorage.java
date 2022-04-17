@@ -19,23 +19,27 @@ public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
         dbConnection = connectionFactory.getConnection();
         createTable();
 
+        CurrencyUnitSQLStorageBuilder builder = CurrencyUnitSQLStorageBuilder.getInstance("currencyUnits",dbConnection);
+        List<String> buildingPlan = builder.getBuildPlan();
+
+
+
     }
     private CurrencyUnitSQLStorage(List<String> buildingPlan) {
 
 
     }
-    private CurrencyUnitSQLStorage(String tableName) throws SQLException {
-        Statement statement = dbConnection.createStatement();
-        statement.execute("USE " + tableName);
+    private CurrencyUnitSQLStorage(Connection dbConnection) throws SQLException {
+        this.dbConnection = dbConnection;
     }
 
     private void createTable() throws SQLException {
         Statement statement = dbConnection.createStatement();
-        String sqlStatement = "CREATE TABLE currencyUnits(" +
+        String sqlStatement = "CREATE TABLE currencyUnits (" +
                 "currencyId BIGINT PRIMARY KEY," +
                 "currencyName VARCHAR(3) NOT NULL," +
                 "currencyScale BIGINT NOT NULL DEFAULT 1)";
-        statement.execute(sqlStatement);
+        statement.executeUpdate(sqlStatement);
     }
 
     @Override

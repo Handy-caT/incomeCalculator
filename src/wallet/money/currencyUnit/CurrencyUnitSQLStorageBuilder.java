@@ -8,19 +8,22 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-public class CurrencyUnitJSONStorageBuilder implements CurrencyUnitStorageBuilder {
+public class CurrencyUnitSQLStorageBuilder implements CurrencyUnitStorageBuilder{
 
-    private static CurrencyUnitJSONStorageBuilder instance;
+    private static CurrencyUnitSQLStorageBuilder instance;
+    private static String tableName;
+    private static Connection dbConnection;
 
     private static JSONArray currenciesWebJSONArray;
-    private static JSONArray currenciesJSONArray;
 
-    private CurrencyUnitJSONStorageBuilder() {
+    private CurrencyUnitSQLStorageBuilder() {
         JSONParser jsonParser = new JSONParser();
 
         String url = "https://www.nbrb.by/api/exrates/currencies";
@@ -32,15 +35,6 @@ public class CurrencyUnitJSONStorageBuilder implements CurrencyUnitStorageBuilde
         } catch (UnirestException | ParseException e) {
             e.printStackTrace();
         }
-
-        currenciesJSONArray = new JSONArray();
-    }
-
-    public static CurrencyUnitJSONStorageBuilder getInstance() {
-        if(instance == null) {
-            instance = new CurrencyUnitJSONStorageBuilder();
-        }
-        return instance;
     }
 
     public List<String> getBuildPlan() {
@@ -54,11 +48,6 @@ public class CurrencyUnitJSONStorageBuilder implements CurrencyUnitStorageBuilde
     }
 
     @Override
-    public void reset() {
-        currenciesJSONArray = new JSONArray();
-    }
-
-    @Override
     public void buildCurrencyUnit(String currencyString) {
         JSONObject currencyObject = null;
         for(Object object : currenciesWebJSONArray) {
@@ -69,17 +58,34 @@ public class CurrencyUnitJSONStorageBuilder implements CurrencyUnitStorageBuilde
 
         long currencyId = (long)currencyObject.get("Cur_ID");
         long currencyScale = (long)currencyObject.get("Cur_Scale");
-
-        JSONObject localCurrencyObject = new JSONObject();
-        localCurrencyObject.put("currencyName",currencyString);
-        localCurrencyObject.put("currencyId",currencyId);
-        localCurrencyObject.put("currencyScale",currencyScale);
-
-        currenciesJSONArray.add(localCurrencyObject);
+        try {
+            Statement statement = dbConnection.createStatement();
+            statement.execute("INSERT INTO" + tableName + "(currencyId,currencyName,currencyScale)" +
+                     "VALUES (" + currencyId + "," + currencyString + "," + currencyScale + ")");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    public JSONArray getResult() {
-        return currenciesJSONArray;
+    @Override
+    public void reset() {
+        try {
+            Statement statement = dbConnection.createStatement();
+            statement.execute("DROP TABLE " + tableName);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
+
+    public static CurrencyUnitSQLStorageBuilder getInstance(String tableName, Connection dbConnection) throws SQLException {
+        CurrencyUnitSQLStorageBuilder.tableName = tableName;
+        CurrencyUnitSQLStorageBuilder.dbConnection = dbConnection;
+
+        if(instance == null) {
+            instance = new CurrencyUnitSQLStorageBuilder();
+        }
+        return instance;
+    }
+
 
 }
