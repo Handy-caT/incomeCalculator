@@ -1,4 +1,4 @@
-package wallet.money;
+package wallet.money.currencyUnit;
 
 import java.math.BigDecimal;
 import java.util.regex.Pattern;

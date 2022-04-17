@@ -1,5 +1,8 @@
 package wallet.money;
 
+import wallet.money.currencyUnit.CurrencyUnit;
+import wallet.money.currencyUnit.StrictCurrencyUnit;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 

@@ -9,6 +9,10 @@ import org.junit.Before;
 import org.junit.Test;
 import wallet.card.*;
 import wallet.money.*;
+import wallet.money.Money;
+import wallet.money.currencyUnit.StrictCurrencyUnit;
+import wallet.money.currencyUnit.CurrencyUnitJSONStorage;
+import wallet.money.currencyUpdater.CurrencyUpdaterJSON;
 
 import java.io.File;
 import java.io.FileReader;
@@ -16,8 +20,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.security.SecureRandom;
-
-import static org.junit.Assert.*;
 
 public class CardTest {
 

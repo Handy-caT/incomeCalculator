@@ -2,7 +2,7 @@ package wallet.card;
 
 
 import wallet.money.Money;
-import wallet.money.StrictCurrencyUnit;
+import wallet.money.currencyUnit.StrictCurrencyUnit;
 
 import java.math.BigDecimal;
 

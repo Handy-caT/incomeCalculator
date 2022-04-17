@@ -1,9 +1,10 @@
-package wallet.money;
+package wallet.money.currencyUpdater;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import wallet.money.currencyUnit.CurrencyUnitJSONStorageBuilder;
 
 import java.io.*;
 import java.math.BigDecimal;

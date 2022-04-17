@@ -1,4 +1,4 @@
-package wallet.money;
+package wallet.money.currencyUpdater;
 
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
@@ -13,17 +13,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-public class CurrencyUnitJSONStorageBuilder implements CurrencyUnitStorageBuilder {
+public class CurrencyUpdaterJSONBuilder implements CurrencyUpdaterBuilder {
 
-    private static CurrencyUnitJSONStorageBuilder instance;
+    private static CurrencyUpdaterJSONBuilder instance;
 
     private static JSONArray currenciesWebJSONArray;
     private static JSONArray currenciesJSONArray;
 
-    private CurrencyUnitJSONStorageBuilder() {
+    private CurrencyUpdaterJSONBuilder() {
         JSONParser jsonParser = new JSONParser();
 
-        String url = "https://www.nbrb.by/api/exrates/currencies";
+        String url = "https://www.nbrb.by/api/exrates/rates?periodicity=0";
         HttpResponse<String> httpResponse;
         try {
             httpResponse = Unirest.get(url).asString();
@@ -32,13 +32,12 @@ public class CurrencyUnitJSONStorageBuilder implements CurrencyUnitStorageBuilde
         } catch (UnirestException | ParseException e) {
             e.printStackTrace();
         }
-
         currenciesJSONArray = new JSONArray();
     }
 
-    public static CurrencyUnitJSONStorageBuilder getInstance() {
+    public static CurrencyUpdaterJSONBuilder getInstance() {
         if(instance == null) {
-            instance = new CurrencyUnitJSONStorageBuilder();
+            instance = new CurrencyUpdaterJSONBuilder();
         }
         return instance;
     }
@@ -57,9 +56,8 @@ public class CurrencyUnitJSONStorageBuilder implements CurrencyUnitStorageBuilde
     public void reset() {
         currenciesJSONArray = new JSONArray();
     }
-
     @Override
-    public void buildCurrencyUnit(String currencyString) {
+    public void buildCurrency(String currencyString) {
         JSONObject currencyObject = null;
         for(Object object : currenciesWebJSONArray) {
             currencyObject = (JSONObject) object;
@@ -69,11 +67,13 @@ public class CurrencyUnitJSONStorageBuilder implements CurrencyUnitStorageBuilde
 
         BigDecimal currencyId = BigDecimal.valueOf((long)currencyObject.get("Cur_ID"));
         BigDecimal currencyScale = BigDecimal.valueOf((long)currencyObject.get("Cur_Scale"));
+        double ratio = (double)currencyObject.get("Cur_OfficialRate");
 
         JSONObject localCurrencyObject = new JSONObject();
         localCurrencyObject.put("currencyName",currencyString);
         localCurrencyObject.put("currencyId",currencyId.longValue());
         localCurrencyObject.put("currencyScale",currencyScale.longValue());
+        localCurrencyObject.put("Ratio",ratio);
 
         currenciesJSONArray.add(localCurrencyObject);
     }

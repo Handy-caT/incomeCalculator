@@ -1,4 +1,4 @@
-package wallet.money;
+package wallet.money.currencyUnit;
 
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
@@ -7,10 +7,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 
-public class CurrencyUnitWebStorage implements  CurrencyUnitStorage {
+public class CurrencyUnitWebStorage implements CurrencyUnitStorage {
 
     private static CurrencyUnitWebStorage instance;
 

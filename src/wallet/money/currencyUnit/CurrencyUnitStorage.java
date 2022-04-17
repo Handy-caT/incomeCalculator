@@ -1,6 +1,6 @@
-package wallet.money;
+package wallet.money.currencyUnit;
 
-import java.math.BigDecimal;
+import wallet.money.currencyUnit.StrictCurrencyUnit;
 
 public interface CurrencyUnitStorage {
 

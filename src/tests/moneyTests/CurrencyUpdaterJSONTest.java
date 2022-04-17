@@ -4,12 +4,10 @@ import org.json.simple.parser.ParseException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import wallet.money.CurrencyUpdaterJSON;
+import wallet.money.currencyUpdater.CurrencyUpdaterJSON;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-
-import static org.junit.Assert.*;
 
 public class CurrencyUpdaterJSONTest {
 

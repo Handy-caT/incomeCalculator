@@ -1,6 +1,10 @@
 package wallet.money;
 
 import org.json.simple.parser.ParseException;
+import wallet.money.currencyUnit.StrictCurrencyUnit;
+import wallet.money.currencyUpdater.CurrencyUpdaterJSON;
+import wallet.money.currencyUpdater.CurrencyUpdaterProvider;
+import wallet.money.currencyUpdater.CurrencyUpdaterWeb;
 
 import java.io.FileInputStream;
 import java.io.IOException;
