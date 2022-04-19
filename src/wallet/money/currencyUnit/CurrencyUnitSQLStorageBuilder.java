@@ -9,6 +9,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
@@ -59,9 +60,14 @@ public class CurrencyUnitSQLStorageBuilder implements CurrencyUnitStorageBuilder
         long currencyId = (long)currencyObject.get("Cur_ID");
         long currencyScale = (long)currencyObject.get("Cur_Scale");
         try {
-            Statement statement = dbConnection.createStatement();
-            statement.execute("INSERT INTO" + tableName + "(currencyId,currencyName,currencyScale)" +
-                     "VALUES (" + currencyId + "," + currencyString + "," + currencyScale + ")");
+            PreparedStatement preparedStatement = dbConnection.prepareStatement("INSERT INTO " + tableName +
+                    " (currencyId, currencyName, currencyScale) VALUES (?, ?, ?)");
+            preparedStatement.setLong(1,currencyId);
+            preparedStatement.setString(2,currencyString);
+            preparedStatement.setLong(3,currencyScale);
+
+            preparedStatement.executeUpdate();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -86,6 +92,5 @@ public class CurrencyUnitSQLStorageBuilder implements CurrencyUnitStorageBuilder
         }
         return instance;
     }
-
 
 }

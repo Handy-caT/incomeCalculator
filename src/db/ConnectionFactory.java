@@ -11,7 +11,7 @@ public class ConnectionFactory {
 
     private static ConnectionFactory instance;
     private String dbUrl;
-    public String propertiesString = "properties/config.properties";
+    public static String propertiesString = "properties/config.properties";
 
     private ConnectionFactory() {
         Properties properties = new Properties();

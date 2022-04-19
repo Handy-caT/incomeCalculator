@@ -37,7 +37,8 @@ public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
     private void createTable() throws SQLException {
         Statement statement = dbConnection.createStatement();
         String sqlStatement = "CREATE TABLE currencyUnits (" +
-                "currencyId BIGINT PRIMARY KEY," +
+                "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
+                "currencyId BIGINT," +
                 "currencyName VARCHAR(3) NOT NULL," +
                 "currencyScale BIGINT NOT NULL DEFAULT 1)";
         statement.executeUpdate(sqlStatement);
