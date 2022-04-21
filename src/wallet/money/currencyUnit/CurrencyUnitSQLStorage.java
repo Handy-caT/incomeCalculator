@@ -2,10 +2,12 @@ package wallet.money.currencyUnit;
 
 import db.ConnectionFactory;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.sql.*;
 import java.util.List;
+import java.util.Objects;
+import java.util.Properties;
 
 public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
 
@@ -14,28 +16,60 @@ public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
 
     public static String propertiesString = "properties/config.properties";
 
-    private CurrencyUnitSQLStorage() throws SQLException {
+    private static String tableName;
+
+    private CurrencyUnitSQLStorage() throws SQLException, IOException {
         ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
         dbConnection = connectionFactory.getConnection();
         createTable();
-
+        addTableNameToProperties(tableName);
         CurrencyUnitSQLStorageBuilder builder = CurrencyUnitSQLStorageBuilder.getInstance("currencyUnits",dbConnection);
         List<String> buildingPlan = builder.getBuildPlan();
 
         for (String currencyString : buildingPlan) {
             builder.buildCurrencyUnit(currencyString);
         }
+        dbConnection.close();
     }
-    private CurrencyUnitSQLStorage(List<String> buildingPlan) {
+    private CurrencyUnitSQLStorage(List<String> buildingPlan) throws SQLException, IOException {
+        ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
+        dbConnection = connectionFactory.getConnection();
+        createTable();
+        addTableNameToProperties(tableName);
+        CurrencyUnitSQLStorageBuilder builder = CurrencyUnitSQLStorageBuilder.getInstance("currencyUnits",dbConnection);
 
-
+        for (String currencyString : buildingPlan) {
+            builder.buildCurrencyUnit(currencyString);
+        }
+        dbConnection.close();
     }
-    private CurrencyUnitSQLStorage(Connection dbConnection) throws SQLException {
-        this.dbConnection = dbConnection;
+    private CurrencyUnitSQLStorage(String tableName) {
+        CurrencyUnitSQLStorage.tableName = tableName;
     }
 
+    private static CurrencyUnitSQLStorage createInstance() throws IOException, SQLException {
+        FileInputStream fis = new FileInputStream(propertiesString);
+        Properties properties = new Properties();
+        properties.load(fis);
+
+        String tableName = (String) properties.get("CurrencyUnitSQLTableName");
+        if(tableName == null) {
+            return new CurrencyUnitSQLStorage();
+        } else {
+            return new CurrencyUnitSQLStorage(tableName);
+        }
+    }
+    private static void addTableNameToProperties(String tableName) throws IOException {
+        FileInputStream fis = new FileInputStream(propertiesString);
+        Properties properties = new Properties();
+        properties.load(fis);
+
+        properties.put("CurrencyUnitSQLTableName",tableName);
+    }
+    
     private void createTable() throws SQLException {
         Statement statement = dbConnection.createStatement();
+        CurrencyUnitSQLStorage.tableName = "currencyUnits";
         String sqlStatement = "CREATE TABLE currencyUnits (" +
                 "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
                 "currencyId BIGINT," +
@@ -46,22 +80,61 @@ public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
 
     @Override
     public StrictCurrencyUnit getCurrencyUnitByCurrencyString(String currencyString) {
-        return null;
+        ResultSet resultSet;
+        StrictCurrencyUnit result = null;
+        ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
+        try {
+            dbConnection = connectionFactory.getConnection();
+
+            PreparedStatement preparedStatement = dbConnection.prepareStatement("SELECT currencyId, currencyName, "
+                    + "currencyScale FROM " + tableName + " WHERE currencyName = ?");
+            preparedStatement.setString(1,currencyString);
+            resultSet = preparedStatement.executeQuery();
+            dbConnection.close();
+            result = new StrictCurrencyUnit(currencyString,resultSet.getLong(1),resultSet.getLong(3));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     @Override
     public boolean isCurrencyExists(String currencyString) {
-        return false;
+        try {
+            PreparedStatement preparedStatement = dbConnection.prepareStatement("SELECT currencyId, currencyName, "
+                    + "currencyScale FROM " + tableName + " WHERE currencyName = ?");
+            preparedStatement.setString(1, currencyString);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            return Objects.equals(resultSet.getString(2), currencyString);
+        } catch (SQLException e) {
+            return false;
+        }
     }
 
     @Override
     public StrictCurrencyUnit getCurrencyUnitByCurrencyID(long currencyId) {
-        return null;
+        ResultSet resultSet;
+        StrictCurrencyUnit result = null;
+        ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
+        try {
+            dbConnection = connectionFactory.getConnection();
+
+            PreparedStatement preparedStatement = dbConnection.prepareStatement("SELECT currencyId, currencyName, "
+                    + "currencyScale FROM " + tableName + " WHERE currencyId = ?");
+            preparedStatement.setLong(1,currencyId);
+            resultSet = preparedStatement.executeQuery();
+            dbConnection.close();
+            result = new StrictCurrencyUnit(resultSet.getString(2),currencyId,resultSet.getLong(3));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
-    public static CurrencyUnitSQLStorage getInstance() throws SQLException {
+    public static CurrencyUnitSQLStorage getInstance() throws SQLException, IOException {
         if(instance == null) {
-            instance = new CurrencyUnitSQLStorage();
+            instance = createInstance();
         }
         return instance;
     }
