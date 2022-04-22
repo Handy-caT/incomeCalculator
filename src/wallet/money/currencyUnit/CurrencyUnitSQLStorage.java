@@ -3,6 +3,7 @@ package wallet.money.currencyUnit;
 import db.ConnectionFactory;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.*;
 import java.util.List;
@@ -15,6 +16,7 @@ public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
     private Connection dbConnection;
 
     public static String propertiesString = "properties/config.properties";
+    public static final String defaultTableName = "currencyUnits";
 
     private static String tableName;
 
@@ -23,7 +25,7 @@ public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
         dbConnection = connectionFactory.getConnection();
         createTable();
         addTableNameToProperties(tableName);
-        CurrencyUnitSQLStorageBuilder builder = CurrencyUnitSQLStorageBuilder.getInstance("currencyUnits",dbConnection);
+        CurrencyUnitSQLStorageBuilder builder = CurrencyUnitSQLStorageBuilder.getInstance(tableName,dbConnection);
         List<String> buildingPlan = builder.getBuildPlan();
 
         for (String currencyString : buildingPlan) {
@@ -36,7 +38,7 @@ public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
         dbConnection = connectionFactory.getConnection();
         createTable();
         addTableNameToProperties(tableName);
-        CurrencyUnitSQLStorageBuilder builder = CurrencyUnitSQLStorageBuilder.getInstance("currencyUnits",dbConnection);
+        CurrencyUnitSQLStorageBuilder builder = CurrencyUnitSQLStorageBuilder.getInstance(tableName,dbConnection);
 
         for (String currencyString : buildingPlan) {
             builder.buildCurrencyUnit(currencyString);
@@ -65,12 +67,14 @@ public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
         properties.load(fis);
 
         properties.put("CurrencyUnitSQLTableName",tableName);
+
+        properties.store(new FileOutputStream(propertiesString),null);
     }
-    
+
     private void createTable() throws SQLException {
         Statement statement = dbConnection.createStatement();
-        CurrencyUnitSQLStorage.tableName = "currencyUnits";
-        String sqlStatement = "CREATE TABLE currencyUnits (" +
+        CurrencyUnitSQLStorage.tableName = defaultTableName;
+        String sqlStatement = "CREATE TABLE " + tableName + " (" +
                 "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
                 "currencyId BIGINT," +
                 "currencyName VARCHAR(3) NOT NULL," +
@@ -139,4 +143,7 @@ public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
         return instance;
     }
 
+    public String getTableName() {
+        return tableName;
+    }
 }

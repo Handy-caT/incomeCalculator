@@ -78,6 +78,8 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
         properties.load(fis);
 
         properties.put("CurrencyUnitStoragePath",jsonPathString);
+
+        properties.store(new FileOutputStream(propertiesString),null);
     }
 
     public static CurrencyUnitJSONStorage getInstance() throws IOException, ParseException {
