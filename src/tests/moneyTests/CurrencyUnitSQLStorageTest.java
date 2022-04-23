@@ -48,26 +48,7 @@ public class CurrencyUnitSQLStorageTest {
         connection.close();
 
         File file = new File("testFiles/properties/configConstructorTest.properties");
-        //file.delete();
-    }
-
-    @Test
-    public void ExistingTest() throws SQLException, IOException {
-        CurrencyUnitSQLStorage.propertiesString = "testFiles/properties/config.properties";
-        CurrencyUnitSQLStorage storage = CurrencyUnitSQLStorage.getInstance();
-        String tableName = storage.getTableName();
-
-        ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
-        Connection connection = connectionFactory.getConnection();
-
-        Assert.assertTrue(containsUnit("USD", connection, tableName));
-        Assert.assertTrue(containsUnit("EUR", connection, tableName));
-        Assert.assertTrue(containsUnit("RUB", connection, tableName));
-        Assert.assertTrue(containsUnit("AMD", connection, tableName));
-        Assert.assertTrue(containsUnit("UAH", connection, tableName));
-        Assert.assertTrue(containsUnit("PLN", connection, tableName));
-        connection.close();
-
+        file.delete();
     }
 
     @AfterClass
