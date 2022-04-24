@@ -7,7 +7,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import wallet.money.currencyUnit.builders.CurrencyUnitSQLStorageBuilder;
 
 import java.math.BigDecimal;
 import java.sql.Connection;

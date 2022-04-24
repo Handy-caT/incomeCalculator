@@ -105,9 +105,9 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
     }
 
     @Override
-    public BigDecimal getCurScale(String currencyName) {
+    public long getCurScale(String currencyName) {
         JSONObject currencyObject = getJSONObjectByCurrencyString(currencyName);
-        return BigDecimal.valueOf((long)currencyObject.get("currencyScale"));
+        return (long)currencyObject.get("currencyScale");
     }
 
     @Override
@@ -132,12 +132,6 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
             }
         }
         return ratio;
-    }
-
-    @Override
-    public BigDecimal getCurID(String currencyName) {
-        JSONObject currencyObject = getJSONObjectByCurrencyString(currencyName);
-        return BigDecimal.valueOf((long)currencyObject.get("currencyId"));
     }
 
     @Override

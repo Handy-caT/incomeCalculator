@@ -103,31 +103,17 @@ public class CurrencyUpdaterWeb implements CurrencyUpdaterProvider {
     }
 
     @Override
-    public BigDecimal getCurScale(String currencyName) {
-        BigDecimal scale = null;
+    public long getCurScale(String currencyName) {
+        long scale = 0;
         try{
             JSONObject currencyObject = getCurrencyJSONFromWeb(currencyName);
-             scale = BigDecimal.valueOf((long) currencyObject.get("Cur_Scale"));
+             scale = (long) currencyObject.get("Cur_Scale");
         } catch (UnirestException e) {
             e.printStackTrace();
         } catch (ParseException e) {
             e.printStackTrace();
         }
         return scale;
-    }
-
-    @Override
-    public BigDecimal getCurID(String currencyName) {
-        BigDecimal id = null;
-        try{
-            JSONObject currencyObject = getCurrencyJSONFromWeb(currencyName);
-            id = BigDecimal.valueOf((long) currencyObject.get("Cur_ID"));
-        } catch (UnirestException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return id;
     }
 
     @Override
