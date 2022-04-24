@@ -1,5 +1,7 @@
 package db;
 
+import wallet.PropertiesStorage;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -11,17 +13,13 @@ public class ConnectionFactory {
 
     private static ConnectionFactory instance;
     private String dbUrl;
-    public static String propertiesString = "properties/config.properties";
+    private static final PropertiesStorage propertiesStorage = PropertiesStorage.getInstance();
 
     private ConnectionFactory() {
-        Properties properties = new Properties();
-        try(FileInputStream fis = new FileInputStream(propertiesString)) {
-            properties.load(fis);
-            dbUrl = (String) properties.get("DatabaseUrl");
-            String dbDriver = (String) properties.get("DatabaseDriver");
+        try {
+            dbUrl = (String) propertiesStorage.getProperty("DatabaseUrl");
+            String dbDriver = (String) propertiesStorage.getProperty("DatabaseDriver");
             Class.forName(dbDriver);
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }

@@ -1,6 +1,7 @@
 package wallet.money.currencyUnit;
 
 import db.ConnectionFactory;
+import wallet.PropertiesStorage;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -15,16 +16,17 @@ public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
     private static CurrencyUnitSQLStorage instance;
     private Connection dbConnection;
 
-    public static String propertiesString = "properties/config.properties";
     public static final String defaultTableName = "currencyUnits";
 
+    private static final PropertiesStorage propertiesStorage = PropertiesStorage.getInstance();
     private static String tableName;
 
     private CurrencyUnitSQLStorage() throws SQLException, IOException {
         ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
         dbConnection = connectionFactory.getConnection();
         createTable();
-        addTableNameToProperties(tableName);
+        propertiesStorage.addProperty("CurrencyUnitSQLTableName",tableName);
+
         CurrencyUnitSQLStorageBuilder builder = CurrencyUnitSQLStorageBuilder.getInstance(tableName,dbConnection);
         List<String> buildingPlan = builder.getBuildPlan();
 
@@ -37,7 +39,7 @@ public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
         ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
         dbConnection = connectionFactory.getConnection();
         createTable();
-        addTableNameToProperties(tableName);
+        propertiesStorage.addProperty("CurrencyUnitSQLTableName",tableName);
         CurrencyUnitSQLStorageBuilder builder = CurrencyUnitSQLStorageBuilder.getInstance(tableName,dbConnection);
 
         for (String currencyString : buildingPlan) {
@@ -50,25 +52,12 @@ public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
     }
 
     private static CurrencyUnitSQLStorage createInstance() throws IOException, SQLException {
-        FileInputStream fis = new FileInputStream(propertiesString);
-        Properties properties = new Properties();
-        properties.load(fis);
-
-        String tableName = (String) properties.get("CurrencyUnitSQLTableName");
+        String tableName = (String) propertiesStorage.getProperty("CurrencyUnitSQLTableName");
         if(tableName == null) {
             return new CurrencyUnitSQLStorage();
         } else {
             return new CurrencyUnitSQLStorage(tableName);
         }
-    }
-    private static void addTableNameToProperties(String tableName) throws IOException {
-        FileInputStream fis = new FileInputStream(propertiesString);
-        Properties properties = new Properties();
-        properties.load(fis);
-
-        properties.put("CurrencyUnitSQLTableName",tableName);
-
-        properties.store(new FileOutputStream(propertiesString),null);
     }
 
     private void createTable() throws SQLException {

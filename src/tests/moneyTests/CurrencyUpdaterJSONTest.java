@@ -3,7 +3,9 @@ package tests.moneyTests;
 import org.json.simple.parser.ParseException;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import wallet.PropertiesStorage;
 import wallet.money.currencyUpdater.CurrencyUpdaterJSON;
 
 import java.io.IOException;
@@ -11,9 +13,12 @@ import java.math.BigDecimal;
 
 public class CurrencyUpdaterJSONTest {
 
-    @Before
-    public void before() {
-        CurrencyUpdaterJSON.propertiesString = "testFiles/properties/config.properties";
+    static PropertiesStorage propertiesStorage;
+
+    @BeforeClass
+    public static void before() throws IOException {
+        propertiesStorage = PropertiesStorage.getInstance();
+        propertiesStorage.setPropertiesPath("testFiles/properties/config.properties");
     }
     @Test
     public void getCurScale() throws IOException, ParseException {

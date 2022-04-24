@@ -1,5 +1,7 @@
 package wallet.money.currencyUpdater;
 
+import db.ConnectionFactory;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -12,8 +14,10 @@ public class CurrencyUpdaterDateStorageSQL {
 
     public static final String defaultTableName = "currencyUpdatersStorage";
 
-    private CurrencyUpdaterDateStorageSQL() {
-
+    private CurrencyUpdaterDateStorageSQL() throws SQLException {
+        ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
+        dbConnection = connectionFactory.getConnection();
+        createTable();
     }
     private  CurrencyUpdaterDateStorageSQL(String tableName) {
 

@@ -5,14 +5,14 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import wallet.PropertiesStorage;
 import wallet.card.*;
 import wallet.money.*;
 import wallet.money.Money;
 import wallet.money.currencyUnit.StrictCurrencyUnit;
 import wallet.money.currencyUnit.CurrencyUnitJSONStorage;
-import wallet.money.currencyUpdater.CurrencyUpdaterJSON;
 
 import java.io.File;
 import java.io.FileReader;
@@ -23,7 +23,8 @@ import java.security.SecureRandom;
 
 public class CardTest {
 
-    SecureRandom random;
+    static SecureRandom random;
+    static PropertiesStorage propertiesStorage;
 
     String jsonFilePath = "testFiles/json/cardHistory.json";
     String id = "7658123";
@@ -36,10 +37,10 @@ public class CardTest {
         return value;
     }
 
-    @Before
-    public void setUp() {
-        CurrencyUnitJSONStorage.propertiesString = "testFiles/properties/config.properties";
-        CurrencyUpdaterJSON.propertiesString = "testFiles/properties/config.properties";
+    @BeforeClass
+    public static void setUp() throws IOException {
+        propertiesStorage = PropertiesStorage.getInstance();
+        propertiesStorage.setPropertiesPath("testFiles/properties/config.properties");
         random = new SecureRandom();
     }
 

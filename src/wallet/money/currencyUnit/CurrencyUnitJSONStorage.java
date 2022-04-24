@@ -4,6 +4,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import wallet.PropertiesStorage;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -16,7 +17,7 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
     private static CurrencyUnitJSONStorage instance;
     private static String jsonPathString;
 
-    public static String propertiesString = "properties/config.properties";
+    private static final PropertiesStorage propertiesStorage = PropertiesStorage.getInstance();
     private static JSONArray currencyJSONArray;
 
     private CurrencyUnitJSONStorage() throws IOException {
@@ -29,7 +30,7 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
         currencyJSONArray = builder.getResult();
 
         jsonPathString = "json/currencyUnitStorage.json";
-        addJsonPathToProperties(jsonPathString);
+        propertiesStorage.addProperty("CurrencyUnitStoragePath",jsonPathString);
 
         FileWriter fileWriter = new FileWriter(jsonPathString);
         currencyJSONArray.writeJSONString(fileWriter);
@@ -44,7 +45,7 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
         currencyJSONArray = builder.getResult();
 
         jsonPathString = "json/currencyUnitStorage.json";
-        addJsonPathToProperties(jsonPathString);
+        propertiesStorage.addProperty("CurrencyUnitStoragePath",jsonPathString);
 
         FileWriter fileWriter = new FileWriter(jsonPathString);
         currencyJSONArray.writeJSONString(fileWriter);
@@ -61,25 +62,13 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
     }
 
     private static CurrencyUnitJSONStorage createInstance() throws IOException, ParseException {
-        FileInputStream fis = new FileInputStream(propertiesString);
-        Properties properties = new Properties();
-        properties.load(fis);
 
-        String jsonPathString = (String) properties.get("CurrencyUnitStoragePath");
+        String jsonPathString = (String) propertiesStorage.getProperty("CurrencyUnitStoragePath");
         if(jsonPathString == null) {
             return new CurrencyUnitJSONStorage();
         } else {
             return new CurrencyUnitJSONStorage(jsonPathString);
         }
-    }
-    private static void addJsonPathToProperties(String jsonPathString) throws IOException {
-        FileInputStream fis = new FileInputStream(propertiesString);
-        Properties properties = new Properties();
-        properties.load(fis);
-
-        properties.put("CurrencyUnitStoragePath",jsonPathString);
-
-        properties.store(new FileOutputStream(propertiesString),null);
     }
 
     public static CurrencyUnitJSONStorage getInstance() throws IOException, ParseException {

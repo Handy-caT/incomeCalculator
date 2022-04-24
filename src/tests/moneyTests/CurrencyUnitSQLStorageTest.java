@@ -2,6 +2,7 @@ package tests.moneyTests;
 
 import db.ConnectionFactory;
 import org.junit.*;
+import wallet.PropertiesStorage;
 import wallet.money.currencyUnit.CurrencyUnitSQLStorage;
 import wallet.money.currencyUpdater.CurrencyUpdaterJSON;
 
@@ -15,9 +16,11 @@ import static org.junit.Assert.*;
 
 public class CurrencyUnitSQLStorageTest {
 
-    @Before
-    public void before() {
-        ConnectionFactory.propertiesString = "testFiles/properties/config.properties";
+    static PropertiesStorage propertiesStorage;
+
+    @BeforeClass
+    public static void before() {
+        propertiesStorage = PropertiesStorage.getInstance();
     }
 
     public boolean containsUnit(String currencyString, Connection connection, String tableName) throws SQLException {
@@ -34,7 +37,7 @@ public class CurrencyUnitSQLStorageTest {
     public void ConstructorTest() throws SQLException, IOException {
         Files.copy(Paths.get("testFiles/properties/configConstructor.properties"),
                 Paths.get("testFiles/properties/configConstructorTest.properties"), StandardCopyOption.REPLACE_EXISTING);
-        CurrencyUnitSQLStorage.propertiesString = "testFiles/properties/configConstructorTest.properties";
+        propertiesStorage.setPropertiesPath("testFiles/properties/configConstructorTest.properties");
         CurrencyUnitSQLStorage storage = CurrencyUnitSQLStorage.getInstance();
         ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
         Connection connection = connectionFactory.getConnection();

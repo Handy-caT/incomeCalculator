@@ -4,6 +4,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import wallet.PropertiesStorage;
 import wallet.money.currencyUnit.CurrencyUnitJSONStorageBuilder;
 
 import java.io.*;
@@ -15,7 +16,7 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
 
     private static CurrencyUpdaterJSON instance;
 
-    public static String propertiesString = "properties/config.properties";
+    private static final PropertiesStorage propertiesStorage = PropertiesStorage.getInstance();
     private static String jsonPathString;
     private static JSONArray currencyJSONArray;
 
@@ -28,7 +29,7 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
         currencyJSONArray = builder.getResult();
 
         jsonPathString = "json/currencyUpdater.json";
-        addJsonPathToProperties(jsonPathString);
+        propertiesStorage.addProperty("CurrencyUpdaterPath",jsonPathString);
 
         File file = new File(jsonPathString);
         File dir = new File("json/");
@@ -48,7 +49,7 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
         currencyJSONArray = builder.getResult();
 
         jsonPathString = "json/currencyUpdater.json";
-        addJsonPathToProperties(jsonPathString);
+        propertiesStorage.addProperty("CurrencyUpdaterPath",jsonPathString);
 
         FileWriter fileWriter = new FileWriter(jsonPathString);
         currencyJSONArray.writeJSONString(fileWriter);
@@ -65,23 +66,13 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
     }
 
     private static CurrencyUpdaterJSON createInstance() throws IOException, ParseException {
-        FileInputStream fis = new FileInputStream(propertiesString);
-        Properties properties = new Properties();
-        properties.load(fis);
 
-        String jsonPathString = (String) properties.get("CurrencyUpdaterPath");
+        String jsonPathString = (String) propertiesStorage.getProperty("CurrencyUpdaterPath");
         if(jsonPathString == null) {
             return new CurrencyUpdaterJSON();
         } else {
             return new CurrencyUpdaterJSON(jsonPathString);
         }
-    }
-    private static void addJsonPathToProperties(String jsonPathString) throws IOException {
-        FileInputStream fis = new FileInputStream(propertiesString);
-        Properties properties = new Properties();
-        properties.load(fis);
-
-        properties.put("CurrencyUpdaterPath",jsonPathString);
     }
 
     public static CurrencyUpdaterJSON getInstance() throws IOException, ParseException {
@@ -90,7 +81,6 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
         }
         return instance;
     }
-
 
     private JSONObject getJSONObjectByCurrencyString(String currencyName) {
         JSONObject currencyJSONObject;
