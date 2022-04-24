@@ -39,7 +39,6 @@ public class CurrencyUpdaterSQL implements CurrencyUpdaterProvider {
         String sqlStatement = "CREATE TABLE " + tableName + formatter.format(date) +
                 " (id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
                 "currencyFrom VARCHAR(3) NOT NULL," +
-                "currencyTo VARCHAR(3) NOT NULL," +
                 "currencyScale BIGINT NOT NULL DEFAULT 1," +
                 "ratio DECIMAL(2,4) NOT NULL)";
         statement.executeUpdate(sqlStatement);
