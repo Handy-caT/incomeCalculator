@@ -2,14 +2,12 @@ package wallet.money.currencyUnit;
 
 import db.ConnectionFactory;
 import wallet.PropertiesStorage;
+import wallet.money.currencyUnit.builders.CurrencyUnitSQLStorageBuilder;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.*;
 import java.util.List;
 import java.util.Objects;
-import java.util.Properties;
 
 public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
 

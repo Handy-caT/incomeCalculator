@@ -1,4 +1,4 @@
-package wallet.money.currencyUpdater;
+package wallet.money.currencyUpdater.builders;
 
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;

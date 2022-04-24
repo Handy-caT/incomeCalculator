@@ -5,12 +5,12 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import wallet.PropertiesStorage;
+import wallet.money.currencyUnit.builders.CurrencyUnitJSONStorageBuilder;
 
 import java.io.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
-import java.util.Properties;
 
 public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
 

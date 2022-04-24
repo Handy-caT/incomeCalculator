@@ -5,7 +5,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import wallet.PropertiesStorage;
-import wallet.money.currencyUnit.CurrencyUnitJSONStorageBuilder;
+import wallet.money.currencyUnit.builders.CurrencyUnitJSONStorageBuilder;
+import wallet.money.currencyUpdater.builders.CurrencyUpdaterJSONBuilder;
 
 import java.io.*;
 import java.math.BigDecimal;
