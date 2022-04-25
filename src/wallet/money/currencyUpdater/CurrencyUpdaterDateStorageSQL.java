@@ -53,6 +53,10 @@ public class CurrencyUpdaterDateStorageSQL {
         dbConnection.close();
     }
 
+    public boolean isUpdaterExist(String tableName) {
+        return false;
+    }
+
     private static CurrencyUpdaterDateStorageSQL createInstance() throws SQLException, IOException {
         String tableName = (String) propertiesStorage.getProperty("CurrencyUpdatersStorageTableName");
         if(tableName == null) {

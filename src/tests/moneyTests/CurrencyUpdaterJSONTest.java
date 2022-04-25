@@ -23,23 +23,23 @@ public class CurrencyUpdaterJSONTest {
     @Test
     public void getCurScale() throws IOException, ParseException {
         CurrencyUpdaterJSON c = CurrencyUpdaterJSON.getInstance();
-        Assert.assertEquals(c.getCurScale("AMD"), BigDecimal.valueOf(1000));
-        Assert.assertEquals(c.getCurScale("UAH"), BigDecimal.valueOf(100));
-        Assert.assertEquals(c.getCurScale("USD"), BigDecimal.valueOf(1));
-        Assert.assertEquals(c.getCurScale("EUR"), BigDecimal.valueOf(1));
-        Assert.assertEquals(c.getCurScale("PLN"), BigDecimal.valueOf(10));
-        Assert.assertEquals(c.getCurScale("JPY"), BigDecimal.valueOf(100));
-        Assert.assertEquals(c.getCurScale("CAD"), BigDecimal.valueOf(1));
-        Assert.assertEquals(c.getCurScale("CNY"), BigDecimal.valueOf(10));
+        Assert.assertEquals(c.getCurScale("AMD"), 1000);
+        Assert.assertEquals(c.getCurScale("UAH"), 100);
+        Assert.assertEquals(c.getCurScale("USD"), 1);
+        Assert.assertEquals(c.getCurScale("EUR"), 1);
+        Assert.assertEquals(c.getCurScale("PLN"), 10);
+        Assert.assertEquals(c.getCurScale("JPY"), 100);
+        Assert.assertEquals(c.getCurScale("CAD"), 1);
+        Assert.assertEquals(c.getCurScale("CNY"), 10);
     }
 
     @Test
     public void getRatio() throws IOException, ParseException {
         CurrencyUpdaterJSON c = CurrencyUpdaterJSON.getInstance();
-        Assert.assertEquals(c.getRatio("BYN","CAD"), BigDecimal.valueOf(2.3577));
-        Assert.assertEquals(c.getRatio("BYN","EUR"), BigDecimal.valueOf(3.2631));
-        Assert.assertEquals(c.getRatio("BYN","USD"), BigDecimal.valueOf(2.9436));
-        Assert.assertEquals(c.getRatio("BYN","PLN"), BigDecimal.valueOf(7.0029));
+        Assert.assertEquals(c.getRatio("CAD","BYN"), BigDecimal.valueOf(2.3577));
+        Assert.assertEquals(c.getRatio("EUR","BYN"), BigDecimal.valueOf(3.2631));
+        Assert.assertEquals(c.getRatio("USD","BYN"), BigDecimal.valueOf(2.9436));
+        Assert.assertEquals(c.getRatio("PLN","BYN"), BigDecimal.valueOf(7.0029));
     }
 
     @Test
