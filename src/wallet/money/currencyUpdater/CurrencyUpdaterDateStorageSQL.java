@@ -4,10 +4,7 @@ import db.ConnectionFactory;
 import wallet.PropertiesStorage;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class CurrencyUpdaterDateStorageSQL {
 
@@ -54,7 +51,21 @@ public class CurrencyUpdaterDateStorageSQL {
     }
 
     public boolean isUpdaterExist(String tableName) {
-        return false;
+        try {
+            ResultSet resultSet;
+            ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
+            dbConnection = connectionFactory.getConnection();
+
+            PreparedStatement preparedStatement = dbConnection.prepareStatement("SELECT updaterTableName "
+                    + "FROM " + tableName + " WHERE updaterTableName = ?");
+            preparedStatement.setString(1, tableName);
+            resultSet = preparedStatement.executeQuery();
+            resultSet.getString(1);
+            dbConnection.close();
+            return true;
+        } catch (SQLException e) {
+            return false;
+        }
     }
 
     private static CurrencyUpdaterDateStorageSQL createInstance() throws SQLException, IOException {

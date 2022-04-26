@@ -21,10 +21,11 @@ public class CurrencyUpdaterSQLBuilder implements CurrencyUpdaterBuilder {
     private static CurrencyUpdaterSQLBuilder instance;
     private static String tableName;
     private static Connection dbConnection;
+    private static String dateString;
 
     private static JSONArray currenciesWebJSONArray;
 
-    private CurrencyUpdaterSQLBuilder() {
+    public CurrencyUpdaterSQLBuilder(String tableName, Connection dbConnection, String dateString) {
         JSONParser jsonParser = new JSONParser();
 
         String url = "https://www.nbrb.by/api/exrates/rates?periodicity=0";
@@ -86,15 +87,5 @@ public class CurrencyUpdaterSQLBuilder implements CurrencyUpdaterBuilder {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    public static CurrencyUpdaterSQLBuilder getInstance(String tableName, Connection dbConnection) throws SQLException {
-        CurrencyUpdaterSQLBuilder.tableName = tableName;
-        CurrencyUpdaterSQLBuilder.dbConnection = dbConnection;
-
-        if(instance == null) {
-            instance = new CurrencyUpdaterSQLBuilder();
-        }
-        return instance;
     }
 }

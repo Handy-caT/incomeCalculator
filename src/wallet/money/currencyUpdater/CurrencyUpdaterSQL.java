@@ -30,14 +30,19 @@ public class CurrencyUpdaterSQL implements CurrencyUpdaterProvider {
         dateStorageSQL = CurrencyUpdaterDateStorageSQL.getInstance();
         ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
         dbConnection = connectionFactory.getConnection();
-        createTable();
+
+        Date date = new Date();
+        dateString = formatter.format(date);
+
+        createTable(dateString);
         propertiesStorage.addProperty("CurrencyUpdater",tableName+dateString);
+        if(!dateStorageSQL.isUpdaterExist(tableName+dateString)) {
+            CurrencyUpdaterSQLBuilder builder = new CurrencyUpdaterSQLBuilder(tableName, dbConnection,dateString);
+            List<String> buildingPlan = builder.getBuildPlan();
 
-        CurrencyUpdaterSQLBuilder builder = CurrencyUpdaterSQLBuilder.getInstance(tableName,dbConnection);
-        List<String> buildingPlan = builder.getBuildPlan();
-
-        for (String currencyString : buildingPlan) {
-            builder.buildCurrency(currencyString);
+            for (String currencyString : buildingPlan) {
+                builder.buildCurrency(currencyString);
+            }
         }
         dbConnection.close();
     }
@@ -45,10 +50,14 @@ public class CurrencyUpdaterSQL implements CurrencyUpdaterProvider {
         dateStorageSQL = CurrencyUpdaterDateStorageSQL.getInstance();
         ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
         dbConnection = connectionFactory.getConnection();
-        createTable();
+
+        Date date = new Date();
+        dateString = formatter.format(date);
+
+        createTable(dateString);
         propertiesStorage.addProperty("CurrencyUpdater",tableName+dateString);
 
-        CurrencyUpdaterSQLBuilder builder = CurrencyUpdaterSQLBuilder.getInstance(tableName,dbConnection);
+        CurrencyUpdaterSQLBuilder builder = new CurrencyUpdaterSQLBuilder(tableName, dbConnection,dateString);
 
         for (String currencyString : buildingPlan) {
             builder.buildCurrency(currencyString);
@@ -60,12 +69,10 @@ public class CurrencyUpdaterSQL implements CurrencyUpdaterProvider {
         CurrencyUpdaterSQL.tableName = tableName;
     }
 
-    private void createTable() throws SQLException {
+    private void createTable(String dateString) throws SQLException {
         Statement statement = dbConnection.createStatement();
         CurrencyUpdaterSQL.tableName = defaultTableName;
 
-        Date date = new Date();
-        dateString = formatter.format(date);
         String sqlStatement = "CREATE TABLE " + tableName + dateString +
                 " (id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
                 "currencyFrom VARCHAR(3) NOT NULL," +
@@ -74,7 +81,7 @@ public class CurrencyUpdaterSQL implements CurrencyUpdaterProvider {
         statement.executeUpdate(sqlStatement);
     }
 
-    private ResultSet getCurrencyResultSet(String currencyName) throws SQLException {
+    private ResultSet getCurrencyResultSet(String currencyName, String dateString) throws SQLException {
         ResultSet resultSet;
         ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
         dbConnection = connectionFactory.getConnection();
@@ -96,11 +103,11 @@ public class CurrencyUpdaterSQL implements CurrencyUpdaterProvider {
         } else {
             try {
                 if (!Objects.equals(currencyFrom, "BYN") && !Objects.equals(currencyTo, "BYN")) {
-                    ResultSet fromSet = getCurrencyResultSet(currencyFrom);
+                    ResultSet fromSet = getCurrencyResultSet(currencyFrom,dateString);
                     long scaleFrom = fromSet.getLong(2);
                     ratio = fromSet.getBigDecimal(3);
 
-                    ResultSet toSet = getCurrencyResultSet(currencyTo);
+                    ResultSet toSet = getCurrencyResultSet(currencyTo,dateString);
                     long scaleTo = toSet.getLong(2);
                     BigDecimal secondRatio = toSet.getBigDecimal(3);
 
@@ -109,13 +116,13 @@ public class CurrencyUpdaterSQL implements CurrencyUpdaterProvider {
                     ratio = ratio.multiply(BigDecimal.valueOf(scaleTo));
 
                 } else if(Objects.equals(currencyFrom, "BYN")) {
-                    ResultSet toSet = getCurrencyResultSet(currencyTo);
+                    ResultSet toSet = getCurrencyResultSet(currencyTo,dateString);
                     ratio = toSet.getBigDecimal(3);
                     long scaleTo = toSet.getLong(2);
                     ratio = BigDecimal.ONE.setScale(4).divide(ratio,RoundingMode.DOWN);
                     ratio.multiply(BigDecimal.valueOf(scaleTo));
                 } else {
-                    ResultSet fromSet = getCurrencyResultSet(currencyFrom);
+                    ResultSet fromSet = getCurrencyResultSet(currencyFrom,dateString);
                     long scaleFrom = fromSet.getLong(2);
                     ratio = fromSet.getBigDecimal(3);
                     ratio = ratio.divide(BigDecimal.valueOf(scaleFrom));
@@ -132,7 +139,7 @@ public class CurrencyUpdaterSQL implements CurrencyUpdaterProvider {
         ResultSet resultSet;
         long result = 0;
         try {
-            resultSet = getCurrencyResultSet(currencyName);
+            resultSet = getCurrencyResultSet(currencyName,dateString);
             result = resultSet.getLong(2);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -142,7 +149,33 @@ public class CurrencyUpdaterSQL implements CurrencyUpdaterProvider {
 
     @Override
     public BigDecimal getRatioOnDate(String currencyFrom, String currencyTo, Date date) {
-        return null;
+        String dateString = formatter.format(date);
+
+        if(!dateStorageSQL.isUpdaterExist(tableName+dateString)) {
+            try {
+                ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
+                dbConnection = connectionFactory.getConnection();
+
+                createTable(dateString);
+
+                CurrencyUpdaterSQLBuilder builder = new CurrencyUpdaterSQLBuilder(tableName, dbConnection, dateString);
+                List<String> buildingPlan = builder.getBuildPlan();
+
+                for (String currencyString : buildingPlan) {
+                    builder.buildCurrency(currencyString);
+                }
+                dbConnection.close();
+
+                dateStorageSQL.addUpdater(tableName+dateString);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        String temp = CurrencyUpdaterSQL.dateString;
+        CurrencyUpdaterSQL.dateString = dateString;
+        BigDecimal result = getRatio(currencyFrom,currencyTo);
+        CurrencyUpdaterSQL.dateString = temp;
+        return result;
     }
 
     @Override
