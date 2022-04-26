@@ -15,6 +15,7 @@ public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
     private Connection dbConnection;
 
     public static final String defaultTableName = "currencyUnits";
+    public static final String propertyName = "CurrencyUnitSQLTableName";
 
     private static final PropertiesStorage propertiesStorage = PropertiesStorage.getInstance();
     private static String tableName;
@@ -23,7 +24,7 @@ public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
         ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
         dbConnection = connectionFactory.getConnection();
         createTable();
-        propertiesStorage.addProperty("CurrencyUnitSQLTableName",tableName);
+        propertiesStorage.addProperty(propertyName,tableName);
 
         CurrencyUnitSQLStorageBuilder builder = CurrencyUnitSQLStorageBuilder.getInstance(tableName,dbConnection);
         List<String> buildingPlan = builder.getBuildPlan();
@@ -37,7 +38,7 @@ public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
         ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
         dbConnection = connectionFactory.getConnection();
         createTable();
-        propertiesStorage.addProperty("CurrencyUnitSQLTableName",tableName);
+        propertiesStorage.addProperty(propertyName,tableName);
         CurrencyUnitSQLStorageBuilder builder = CurrencyUnitSQLStorageBuilder.getInstance(tableName,dbConnection);
 
         for (String currencyString : buildingPlan) {
@@ -50,7 +51,7 @@ public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
     }
 
     private static CurrencyUnitSQLStorage createInstance() throws IOException, SQLException {
-        String tableName = (String) propertiesStorage.getProperty("CurrencyUnitSQLTableName");
+        String tableName = (String) propertiesStorage.getProperty(propertyName);
         if(tableName == null) {
             return new CurrencyUnitSQLStorage();
         } else {

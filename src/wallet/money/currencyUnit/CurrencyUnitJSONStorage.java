@@ -20,6 +20,8 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
     private static final PropertiesStorage propertiesStorage = PropertiesStorage.getInstance();
     private static JSONArray currencyJSONArray;
 
+    public static final String propertyName = "CurrencyUnitStoragePath";
+
     private CurrencyUnitJSONStorage() throws IOException {
         CurrencyUnitJSONStorageBuilder builder = CurrencyUnitJSONStorageBuilder.getInstance();
         builder.reset();
@@ -30,7 +32,7 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
         currencyJSONArray = builder.getResult();
 
         jsonPathString = "json/currencyUnitStorage.json";
-        propertiesStorage.addProperty("CurrencyUnitStoragePath",jsonPathString);
+        propertiesStorage.addProperty(propertyName,jsonPathString);
 
         FileWriter fileWriter = new FileWriter(jsonPathString);
         currencyJSONArray.writeJSONString(fileWriter);
@@ -45,7 +47,7 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
         currencyJSONArray = builder.getResult();
 
         jsonPathString = "json/currencyUnitStorage.json";
-        propertiesStorage.addProperty("CurrencyUnitStoragePath",jsonPathString);
+        propertiesStorage.addProperty(propertyName,jsonPathString);
 
         FileWriter fileWriter = new FileWriter(jsonPathString);
         currencyJSONArray.writeJSONString(fileWriter);
@@ -63,7 +65,7 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
 
     private static CurrencyUnitJSONStorage createInstance() throws IOException, ParseException {
 
-        String jsonPathString = (String) propertiesStorage.getProperty("CurrencyUnitStoragePath");
+        String jsonPathString = (String) propertiesStorage.getProperty(propertyName);
         if(jsonPathString == null) {
             return new CurrencyUnitJSONStorage();
         } else {

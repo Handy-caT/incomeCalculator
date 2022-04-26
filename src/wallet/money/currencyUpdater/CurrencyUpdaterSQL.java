@@ -2,6 +2,7 @@ package wallet.money.currencyUpdater;
 
 import db.ConnectionFactory;
 import wallet.PropertiesStorage;
+import wallet.money.currencyUnit.CurrencyUnitSQLStorage;
 import wallet.money.currencyUpdater.builders.CurrencyUpdaterSQLBuilder;
 
 import java.io.IOException;
@@ -9,12 +10,12 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.*;
 import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 public class CurrencyUpdaterSQL implements CurrencyUpdaterProvider {
+
+    private static CurrencyUpdaterSQL instance;
 
     private Connection dbConnection;
     private static String tableName;
@@ -24,6 +25,7 @@ public class CurrencyUpdaterSQL implements CurrencyUpdaterProvider {
     private static String dateString;
 
     public static final String defaultTableName = "currencyRatios";
+    public static final String propertyName = "CurrencyUpdater";
     private static final PropertiesStorage propertiesStorage = PropertiesStorage.getInstance();
 
     private CurrencyUpdaterSQL() throws SQLException, IOException {
@@ -35,7 +37,7 @@ public class CurrencyUpdaterSQL implements CurrencyUpdaterProvider {
         dateString = formatter.format(date);
 
         createTable(dateString);
-        propertiesStorage.addProperty("CurrencyUpdater",tableName+dateString);
+        propertiesStorage.addProperty(propertyName,tableName+dateString);
         if(!dateStorageSQL.isUpdaterExist(tableName+dateString)) {
             CurrencyUpdaterSQLBuilder builder = new CurrencyUpdaterSQLBuilder(tableName, dbConnection,dateString);
             List<String> buildingPlan = builder.getBuildPlan();
@@ -55,7 +57,7 @@ public class CurrencyUpdaterSQL implements CurrencyUpdaterProvider {
         dateString = formatter.format(date);
 
         createTable(dateString);
-        propertiesStorage.addProperty("CurrencyUpdater",tableName+dateString);
+        propertiesStorage.addProperty(propertyName,tableName+dateString);
 
         CurrencyUpdaterSQLBuilder builder = new CurrencyUpdaterSQLBuilder(tableName, dbConnection,dateString);
 
@@ -79,6 +81,14 @@ public class CurrencyUpdaterSQL implements CurrencyUpdaterProvider {
                 "currencyScale BIGINT NOT NULL DEFAULT 1," +
                 "ratio DECIMAL(2,4) NOT NULL)";
         statement.executeUpdate(sqlStatement);
+    }
+    private static CurrencyUpdaterSQL createInstance() throws SQLException, IOException {
+        String tableName = (String) propertiesStorage.getProperty(propertyName);
+        if(tableName == null) {
+            return new CurrencyUpdaterSQL();
+        } else {
+            return new CurrencyUpdaterSQL(tableName);
+        }
     }
 
     private ResultSet getCurrencyResultSet(String currencyName, String dateString) throws SQLException {
@@ -179,8 +189,18 @@ public class CurrencyUpdaterSQL implements CurrencyUpdaterProvider {
     }
 
     @Override
-    public Map<String, BigDecimal> getCurrencyRatiosMap(String currencyFrom, List<String> currencyTo) {
-        return null;
+    public Map<String, BigDecimal> getCurrencyRatiosMap(String currencyFrom, List<String> currencyToList) {
+        Map<String,BigDecimal> currenciesHash = new HashMap<>();
+        for(String currencyTo : currencyToList) {
+            currenciesHash.put(currencyTo,getRatio(currencyFrom,currencyTo));
+        }
+        return currenciesHash;
     }
 
+    public static CurrencyUpdaterSQL getInstance() throws SQLException, IOException {
+        if(instance == null) {
+            instance = createInstance();
+        }
+        return instance;
+    }
 }

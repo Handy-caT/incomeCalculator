@@ -13,6 +13,7 @@ public class CurrencyUpdaterDateStorageSQL {
     private static CurrencyUpdaterDateStorageSQL instance;
     private static final PropertiesStorage propertiesStorage = PropertiesStorage.getInstance();
 
+    public static final String propertyName = "CurrencyUpdatersStorageTableName";
     public static final String defaultTableName = "currencyUpdatersStorage";
 
     private CurrencyUpdaterDateStorageSQL() throws SQLException, IOException {
@@ -20,7 +21,7 @@ public class CurrencyUpdaterDateStorageSQL {
         dbConnection = connectionFactory.getConnection();
         createTable();
 
-        propertiesStorage.addProperty("CurrencyUpdatersStorageTableName", tableName);
+        propertiesStorage.addProperty(propertyName, tableName);
 
         dbConnection.close();
     }
@@ -69,7 +70,7 @@ public class CurrencyUpdaterDateStorageSQL {
     }
 
     private static CurrencyUpdaterDateStorageSQL createInstance() throws SQLException, IOException {
-        String tableName = (String) propertiesStorage.getProperty("CurrencyUpdatersStorageTableName");
+        String tableName = (String) propertiesStorage.getProperty(propertyName);
         if(tableName == null) {
             return new CurrencyUpdaterDateStorageSQL();
         } else {
