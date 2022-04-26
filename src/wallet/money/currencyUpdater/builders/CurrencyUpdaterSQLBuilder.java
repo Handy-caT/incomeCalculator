@@ -18,14 +18,18 @@ import java.util.Objects;
 
 public class CurrencyUpdaterSQLBuilder implements CurrencyUpdaterBuilder {
 
-    private static CurrencyUpdaterSQLBuilder instance;
-    private static String tableName;
-    private static Connection dbConnection;
-    private static String dateString;
+    private String tableName;
+    private Connection dbConnection;
+    private String dateString;
 
-    private static JSONArray currenciesWebJSONArray;
+    private  JSONArray currenciesWebJSONArray;
 
     public CurrencyUpdaterSQLBuilder(String tableName, Connection dbConnection, String dateString) {
+
+        this.dateString = dateString;
+        this.dbConnection = dbConnection;
+        this.tableName = tableName;
+
         JSONParser jsonParser = new JSONParser();
 
         String url = "https://www.nbrb.by/api/exrates/rates?periodicity=0";
@@ -77,7 +81,7 @@ public class CurrencyUpdaterSQLBuilder implements CurrencyUpdaterBuilder {
         long currencyScale = (long)currencyObject.get("Cur_Scale");
         try {
             PreparedStatement preparedStatement = dbConnection.prepareStatement("INSERT INTO " + tableName +
-                    " (currencyFrom , currencyScale, ratio) VALUES (?, ?, ?)");
+                    dateString + " (currencyFrom , currencyScale, ratio) VALUES (?, ?, ?)");
             preparedStatement.setString(1,currencyString);
             preparedStatement.setLong(2,currencyScale);
             preparedStatement.setBigDecimal(3,ratio);
