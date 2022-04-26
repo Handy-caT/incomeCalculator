@@ -1,9 +1,12 @@
-package wallet.money;
+package wallet.money.currencyUpdater;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import wallet.PropertiesStorage;
+import wallet.money.currencyUnit.builders.CurrencyUnitJSONStorageBuilder;
+import wallet.money.currencyUpdater.builders.CurrencyUpdaterJSONBuilder;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -14,7 +17,7 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
 
     private static CurrencyUpdaterJSON instance;
 
-    public static String propertiesString = "properties/config.properties";
+    private static final PropertiesStorage propertiesStorage = PropertiesStorage.getInstance();
     private static String jsonPathString;
     private static JSONArray currencyJSONArray;
 
@@ -27,7 +30,7 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
         currencyJSONArray = builder.getResult();
 
         jsonPathString = "json/currencyUpdater.json";
-        addJsonPathToProperties(jsonPathString);
+        propertiesStorage.addProperty("CurrencyUpdaterPath",jsonPathString);
 
         File file = new File(jsonPathString);
         File dir = new File("json/");
@@ -47,7 +50,7 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
         currencyJSONArray = builder.getResult();
 
         jsonPathString = "json/currencyUpdater.json";
-        addJsonPathToProperties(jsonPathString);
+        propertiesStorage.addProperty("CurrencyUpdaterPath",jsonPathString);
 
         FileWriter fileWriter = new FileWriter(jsonPathString);
         currencyJSONArray.writeJSONString(fileWriter);
@@ -64,23 +67,13 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
     }
 
     private static CurrencyUpdaterJSON createInstance() throws IOException, ParseException {
-        FileInputStream fis = new FileInputStream(propertiesString);
-        Properties properties = new Properties();
-        properties.load(fis);
 
-        String jsonPathString = (String) properties.get("CurrencyUpdaterPath");
+        String jsonPathString = (String) propertiesStorage.getProperty("CurrencyUpdaterPath");
         if(jsonPathString == null) {
             return new CurrencyUpdaterJSON();
         } else {
             return new CurrencyUpdaterJSON(jsonPathString);
         }
-    }
-    private static void addJsonPathToProperties(String jsonPathString) throws IOException {
-        FileInputStream fis = new FileInputStream(propertiesString);
-        Properties properties = new Properties();
-        properties.load(fis);
-
-        properties.put("CurrencyUpdaterPath",jsonPathString);
     }
 
     public static CurrencyUpdaterJSON getInstance() throws IOException, ParseException {
@@ -89,7 +82,6 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
         }
         return instance;
     }
-
 
     private JSONObject getJSONObjectByCurrencyString(String currencyName) {
         JSONObject currencyJSONObject;
@@ -113,9 +105,9 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
     }
 
     @Override
-    public BigDecimal getCurScale(String currencyName) {
+    public long getCurScale(String currencyName) {
         JSONObject currencyObject = getJSONObjectByCurrencyString(currencyName);
-        return BigDecimal.valueOf((long)currencyObject.get("currencyScale"));
+        return (long)currencyObject.get("currencyScale");
     }
 
     @Override
@@ -126,26 +118,20 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
         } else {
             if(!Objects.equals(currencyFrom, "BYN") && !Objects.equals(currencyTo, "BYN")) {
                 JSONObject currencyObject = getJSONObjectByCurrencyString(currencyFrom);
-                ratio = (BigDecimal) currencyObject.get("Ratio");
+                ratio = BigDecimal.valueOf((double) currencyObject.get("Ratio"));
                 JSONObject secondCurrencyObject = getJSONObjectByCurrencyString(currencyTo);
-                BigDecimal secondRatio = (BigDecimal)secondCurrencyObject.get("Ratio");
+                BigDecimal secondRatio = BigDecimal.valueOf((double)secondCurrencyObject.get("Ratio"));
                 ratio = ratio.divide(secondRatio, RoundingMode.DOWN);
             } else if(Objects.equals(currencyFrom, "BYN")) {
                 JSONObject currencyObject = getJSONObjectByCurrencyString(currencyTo);
-                ratio = (BigDecimal) currencyObject.get("Ratio");
+                ratio = BigDecimal.valueOf((double)currencyObject.get("Ratio"));
+                ratio = BigDecimal.ONE.setScale(4).divide(ratio,RoundingMode.DOWN);
             } else {
                 JSONObject currencyObject = getJSONObjectByCurrencyString(currencyFrom);
-                ratio = (BigDecimal) currencyObject.get("Ratio");
-                ratio = BigDecimal.ONE.setScale(4).divide(ratio,RoundingMode.DOWN);
+                ratio = BigDecimal.valueOf((double) currencyObject.get("Ratio"));
             }
         }
         return ratio;
-    }
-
-    @Override
-    public BigDecimal getCurID(String currencyName) {
-        JSONObject currencyObject = getJSONObjectByCurrencyString(currencyName);
-        return BigDecimal.valueOf((long)currencyObject.get("currencyId"));
     }
 
     @Override

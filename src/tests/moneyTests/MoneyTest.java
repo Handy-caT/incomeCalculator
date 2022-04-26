@@ -6,6 +6,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import wallet.money.*;
+import wallet.money.currencyUnit.CurrencyUnit;
+import wallet.money.Money;
 
 import java.io.IOException;
 import java.math.BigDecimal;

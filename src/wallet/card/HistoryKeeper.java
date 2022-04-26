@@ -6,5 +6,7 @@ public interface HistoryKeeper {
 
     void saveTransaction(Card.Memento snapshot);
     void saveState();
+    Transaction getTransaction(String id);
+    void deleteTransaction(String id);
 
 }

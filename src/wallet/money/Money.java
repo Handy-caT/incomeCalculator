@@ -1,5 +1,8 @@
 package wallet.money;
 
+import wallet.money.currencyUnit.CurrencyUnit;
+import wallet.money.currencyUnit.StrictCurrencyUnit;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -90,6 +93,10 @@ public class Money {
 
     public String toString() {
         return new StringBuilder().append(currency.toString()).append(" ").append(amount.toString()).toString();
+    }
+
+    public int compareTo(Money other) {
+        return amount.compareTo(other.amount);
     }
 
 }

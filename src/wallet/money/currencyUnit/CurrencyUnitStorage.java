@@ -1,11 +1,11 @@
-package wallet.money;
+package wallet.money.currencyUnit;
 
-import java.math.BigDecimal;
+import wallet.money.currencyUnit.StrictCurrencyUnit;
 
 public interface CurrencyUnitStorage {
 
     boolean isCurrencyExists(String currencyString);
     StrictCurrencyUnit getCurrencyUnitByCurrencyString(String currencyString);
-    StrictCurrencyUnit getCurrencyUnitByCurrencyID(BigDecimal currencyId);
+    StrictCurrencyUnit getCurrencyUnitByCurrencyID(long currencyId);
 
 }

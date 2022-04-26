@@ -1,4 +1,4 @@
-package wallet.money;
+package wallet.money.currencyUnit.builders;
 
 public interface CurrencyUnitStorageBuilder {
 

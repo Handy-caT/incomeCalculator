@@ -5,13 +5,14 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import wallet.PropertiesStorage;
 import wallet.card.*;
-import wallet.money.CurrencyConverter;
-import wallet.money.CurrencyUnitJSONStorage;
+import wallet.money.*;
 import wallet.money.Money;
-import wallet.money.StrictCurrencyUnit;
+import wallet.money.currencyUnit.StrictCurrencyUnit;
+import wallet.money.currencyUnit.CurrencyUnitJSONStorage;
 
 import java.io.File;
 import java.io.FileReader;
@@ -20,13 +21,13 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.security.SecureRandom;
 
-import static org.junit.Assert.*;
-
 public class CardTest {
 
-    SecureRandom random;
+    static SecureRandom random;
+    static PropertiesStorage propertiesStorage;
 
     String jsonFilePath = "testFiles/json/cardHistory.json";
+    String id = "7658123";
 
     private BigDecimal randomValue() {
         BigDecimal value = BigDecimal.valueOf(random.nextInt(9999));
@@ -36,9 +37,10 @@ public class CardTest {
         return value;
     }
 
-    @Before
-    public void setUp() {
-        CurrencyUnitJSONStorage.propertiesString = "testFiles/properties/config.properties";
+    @BeforeClass
+    public static void setUp() throws IOException {
+        propertiesStorage = PropertiesStorage.getInstance();
+        propertiesStorage.setPropertiesPath("testFiles/properties/config.properties");
         random = new SecureRandom();
     }
 
@@ -47,12 +49,12 @@ public class CardTest {
         HistoryKeeper historyKeeper = new JSONHistoryKeeper(jsonFilePath);
         CurrencyUnitJSONStorage currencyUnitJSONStorage = CurrencyUnitJSONStorage.getInstance();
         StrictCurrencyUnit USDUnit = currencyUnitJSONStorage.getCurrencyUnitByCurrencyString("USD");
-        Card card = new Card(historyKeeper,USDUnit);
+        Card card = new Card(historyKeeper,USDUnit,id);
 
         Money beforeBalance = card.getBalance();
         Money money = Money.of(USDUnit,randomValue());
 
-        Transaction addTransaction = new AddTransaction(card,money);
+        Transaction addTransaction = new AddTransaction(money);
 
         card.receiveTransaction(addTransaction);
         historyKeeper.saveState();
@@ -81,11 +83,11 @@ public class CardTest {
         CurrencyUnitJSONStorage currencyUnitJSONStorage = CurrencyUnitJSONStorage.getInstance();
         StrictCurrencyUnit USDUnit = currencyUnitJSONStorage.getCurrencyUnitByCurrencyString("USD");
         Money beforeBalance = Money.of(USDUnit,BigDecimal.valueOf(10000));
-        Card card = new Card(historyKeeper,USDUnit,beforeBalance);
+        Card card = new Card(historyKeeper,USDUnit,beforeBalance,id);
 
         Money money = Money.of(USDUnit,randomValue());
 
-        Transaction reduceTransaction = new ReduceTransaction(card,money);
+        Transaction reduceTransaction = new ReduceTransaction(money);
 
         card.receiveTransaction(reduceTransaction);
         historyKeeper.saveState();
@@ -115,12 +117,12 @@ public class CardTest {
         CurrencyConverter currencyConverter = CurrencyConverter.getInstance();
         StrictCurrencyUnit USDUnit = currencyUnitJSONStorage.getCurrencyUnitByCurrencyString("USD");
         StrictCurrencyUnit EURUnit = currencyUnitJSONStorage.getCurrencyUnitByCurrencyString("EUR");
-        Card card = new Card(historyKeeper,USDUnit);
+        Card card = new Card(historyKeeper,USDUnit,id);
 
         Money beforeBalance = card.getBalance();
         Money money = Money.of(EURUnit,randomValue());
 
-        Transaction addTransaction = new AddTransaction(card,money);
+        Transaction addTransaction = new AddTransaction(money);
 
         card.receiveTransaction(addTransaction);
         historyKeeper.saveState();

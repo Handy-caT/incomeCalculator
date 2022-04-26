@@ -1,4 +1,4 @@
-package wallet.money;
+package wallet.money.currencyUnit;
 
 import java.math.BigDecimal;
 import java.util.regex.Pattern;
@@ -10,8 +10,8 @@ public class CurrencyUnit extends StrictCurrencyUnit {
     protected CurrencyUnit(String currencyString) {
         super();
         this.currencyName = currencyString;
-        this.currencyId = null;
-        this.currencyScale = BigDecimal.ONE;
+        this.currencyId = 0;
+        this.currencyScale = 1;
     }
     public CurrencyUnit(StrictCurrencyUnit currencyUnit) {
         super(currencyUnit);

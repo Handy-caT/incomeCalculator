@@ -1,4 +1,4 @@
-package wallet.money;
+package wallet.money.currencyUnit;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -6,11 +6,11 @@ import java.util.Objects;
 public class StrictCurrencyUnit {
 
     protected String currencyName;
-    protected BigDecimal currencyId;
-    protected BigDecimal currencyScale;
+    protected long currencyId;
+    protected long currencyScale;
 
     protected StrictCurrencyUnit(){}
-    protected StrictCurrencyUnit(String currencyString, BigDecimal id, BigDecimal scale) {
+    protected StrictCurrencyUnit(String currencyString, long id, long scale) {
         currencyName = currencyString;
         this.currencyId = id;
         this.currencyScale = scale;

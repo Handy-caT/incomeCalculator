@@ -1,6 +1,11 @@
 package wallet.money;
 
 import org.json.simple.parser.ParseException;
+import wallet.PropertiesStorage;
+import wallet.money.currencyUnit.StrictCurrencyUnit;
+import wallet.money.currencyUpdater.CurrencyUpdaterJSON;
+import wallet.money.currencyUpdater.CurrencyUpdaterProvider;
+import wallet.money.currencyUpdater.CurrencyUpdaterWeb;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -11,7 +16,8 @@ public class CurrencyConverter {
 
     private static CurrencyConverter instance;
 
-    public static String propertiesString = "properties/config.properties";
+    public static final String propertyName = "CurrencyUnitStorageType";
+    private static final PropertiesStorage propertiesStorage = PropertiesStorage.getInstance();
 
     private short mapSize;
     private TreeMap<String,BigDecimal> priorityHash;
@@ -110,11 +116,8 @@ public class CurrencyConverter {
     }
 
     private static CurrencyConverter createInstance() throws IOException, ParseException {
-        FileInputStream fis = new FileInputStream(propertiesString);
-        Properties properties = new Properties();
-        properties.load(fis);
 
-        String jsonPathString = (String) properties.get("CurrencyUnitStorageType");
+        String jsonPathString = (String) propertiesStorage.getProperty(propertyName);
         if(jsonPathString == null) {
             return new CurrencyConverter(CurrencyUpdaterWeb.getInstance());
         } else {

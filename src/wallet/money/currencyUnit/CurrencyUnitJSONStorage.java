@@ -1,23 +1,26 @@
-package wallet.money;
+package wallet.money.currencyUnit;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import wallet.PropertiesStorage;
+import wallet.money.currencyUnit.builders.CurrencyUnitJSONStorageBuilder;
 
 import java.io.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
-import java.util.Properties;
 
 public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
 
     private static CurrencyUnitJSONStorage instance;
     private static String jsonPathString;
 
-    public static String propertiesString = "properties/config.properties";
+    private static final PropertiesStorage propertiesStorage = PropertiesStorage.getInstance();
     private static JSONArray currencyJSONArray;
+
+    public static final String propertyName = "CurrencyUnitStoragePath";
 
     private CurrencyUnitJSONStorage() throws IOException {
         CurrencyUnitJSONStorageBuilder builder = CurrencyUnitJSONStorageBuilder.getInstance();
@@ -29,7 +32,7 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
         currencyJSONArray = builder.getResult();
 
         jsonPathString = "json/currencyUnitStorage.json";
-        addJsonPathToProperties(jsonPathString);
+        propertiesStorage.addProperty(propertyName,jsonPathString);
 
         FileWriter fileWriter = new FileWriter(jsonPathString);
         currencyJSONArray.writeJSONString(fileWriter);
@@ -44,7 +47,7 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
         currencyJSONArray = builder.getResult();
 
         jsonPathString = "json/currencyUnitStorage.json";
-        addJsonPathToProperties(jsonPathString);
+        propertiesStorage.addProperty(propertyName,jsonPathString);
 
         FileWriter fileWriter = new FileWriter(jsonPathString);
         currencyJSONArray.writeJSONString(fileWriter);
@@ -61,23 +64,13 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
     }
 
     private static CurrencyUnitJSONStorage createInstance() throws IOException, ParseException {
-        FileInputStream fis = new FileInputStream(propertiesString);
-        Properties properties = new Properties();
-        properties.load(fis);
 
-        String jsonPathString = (String) properties.get("CurrencyUnitStoragePath");
+        String jsonPathString = (String) propertiesStorage.getProperty(propertyName);
         if(jsonPathString == null) {
             return new CurrencyUnitJSONStorage();
         } else {
             return new CurrencyUnitJSONStorage(jsonPathString);
         }
-    }
-    private static void addJsonPathToProperties(String jsonPathString) throws IOException {
-        FileInputStream fis = new FileInputStream(propertiesString);
-        Properties properties = new Properties();
-        properties.load(fis);
-
-        properties.put("CurrencyUnitStoragePath",jsonPathString);
     }
 
     public static CurrencyUnitJSONStorage getInstance() throws IOException, ParseException {
@@ -95,14 +88,14 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
             String tempCurrencyString = (String) currencyObject.get("currencyName");
             if(Objects.equals(tempCurrencyString, currencyString)) break;
         }
-        BigDecimal currencyId = BigDecimal.valueOf((long)currencyObject.get("currencyId"));
-        BigDecimal currencyScale = BigDecimal.valueOf((long)currencyObject.get("currencyScale"));
+        long currencyId = (long)currencyObject.get("currencyId");
+        long currencyScale = (long)currencyObject.get("currencyScale");
 
         return new StrictCurrencyUnit(currencyString,currencyId,currencyScale);
     }
 
     @Override
-    public StrictCurrencyUnit getCurrencyUnitByCurrencyID(BigDecimal currencyId) {
+    public StrictCurrencyUnit getCurrencyUnitByCurrencyID(long currencyId) {
         JSONObject currencyObject = null;
         for(Object object : currencyJSONArray) {
             currencyObject = (JSONObject) object;
@@ -110,7 +103,7 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
             if(Objects.equals(currencyId, tempCurrencyId)) break;
         }
         String currencyString = (String) currencyObject.get("currencyName");
-        BigDecimal currencyScale = BigDecimal.valueOf((long)currencyObject.get("currencyScale"));
+        long currencyScale = (long)currencyObject.get("currencyScale");
 
         return new StrictCurrencyUnit(currencyString,currencyId,currencyScale);
     }

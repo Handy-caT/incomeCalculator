@@ -6,6 +6,9 @@
 *.iws
 .idea/
 out/
+lib/
+db/
+testFiles/
 generated_src/
 
 .DS_Store
