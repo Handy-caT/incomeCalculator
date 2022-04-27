@@ -17,7 +17,7 @@ public class test {
     public static final String DB_Driver = "org.sqlite.JDBC";
 
     public static void main(String[] args) throws IOException {
-
+        /*
         try {
             Class.forName(DB_Driver); //Проверяем наличие JDBC драйвера для работы с БД
             Connection connection = DriverManager.getConnection(DB_URL);//соединениесБД
@@ -30,7 +30,8 @@ public class test {
         } catch (SQLException e) {
             e.printStackTrace(); // обработка ошибок  DriverManager.getConnection
             System.out.println("Ошибка SQL !");
-        }
+        }*/
+
     }
 
 }

@@ -1,4 +1,4 @@
-package wallet.money.currencyUpdater;
+package wallet.money.currencyUpdaters;
 
 import java.math.BigDecimal;
 import java.util.Date;

@@ -1,4 +1,4 @@
-package wallet.money.currencyUpdater;
+package wallet.money.currencyUpdaters;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -6,11 +6,12 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import wallet.PropertiesStorage;
 import wallet.money.currencyUnit.builders.CurrencyUnitJSONStorageBuilder;
-import wallet.money.currencyUpdater.builders.CurrencyUpdaterJSONBuilder;
+import wallet.money.currencyUpdaters.builders.CurrencyUpdaterJSONBuilder;
 
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
@@ -21,6 +22,9 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
     private static String jsonPathString;
     private static JSONArray currencyJSONArray;
 
+    private static final SimpleDateFormat formatter = new SimpleDateFormat("dd_MM_yyyy");
+    private static String dateString;
+
     private CurrencyUpdaterJSON() throws IOException {
         CurrencyUpdaterJSONBuilder builder = CurrencyUpdaterJSONBuilder.getInstance();
         List<String> buildingPlan = builder.getBuildPlan();
@@ -29,19 +33,28 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
         }
         currencyJSONArray = builder.getResult();
 
-        jsonPathString = "json/currencyUpdater.json";
+        Date date = new Date();
+        dateString = formatter.format(date);
+        if(jsonPathString == null) {
+            jsonPathString = "json/currencyUpdater" + dateString + ".json";
+        } else {
+            File file = new File(jsonPathString);
+            jsonPathString = changeDateInString(jsonPathString);
+            File newFile = new File(jsonPathString);
+            file.renameTo(newFile);
+        }
         propertiesStorage.addProperty("CurrencyUpdaterPath",jsonPathString);
 
         File file = new File(jsonPathString);
-        File dir = new File("json/");
-        dir.mkdir();
-        file.createNewFile();
 
         FileWriter fileWriter = new FileWriter(file);
         currencyJSONArray.writeJSONString(fileWriter);
         fileWriter.close();
     }
     private CurrencyUpdaterJSON(List<String> buildingPlan) throws IOException {
+        Date date = new Date();
+        dateString = formatter.format(date);
+
         CurrencyUnitJSONStorageBuilder builder = CurrencyUnitJSONStorageBuilder.getInstance();
         builder.reset();
         for (String currencyString : buildingPlan) {
@@ -49,7 +62,7 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
         }
         currencyJSONArray = builder.getResult();
 
-        jsonPathString = "json/currencyUpdater.json";
+        jsonPathString = "json/currencyUpdater" +dateString + ".json";
         propertiesStorage.addProperty("CurrencyUpdaterPath",jsonPathString);
 
         FileWriter fileWriter = new FileWriter(jsonPathString);
@@ -57,13 +70,30 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
         fileWriter.close();
     }
     private CurrencyUpdaterJSON(String jsonPathString) throws IOException, ParseException {
-        this.jsonPathString = jsonPathString;
+        CurrencyUpdaterJSON.jsonPathString = jsonPathString;
+        Date date = new Date();
+        dateString = formatter.format(date);
+        if(Objects.equals(dateString,getDateFromName(jsonPathString))) {
 
-        JSONParser jsonParser = new JSONParser();
+            JSONParser jsonParser = new JSONParser();
 
-        FileReader fileReader = new FileReader(jsonPathString);
-        currencyJSONArray = (JSONArray) jsonParser.parse(fileReader);
-        fileReader.close();
+            FileReader fileReader = new FileReader(jsonPathString);
+            currencyJSONArray = (JSONArray) jsonParser.parse(fileReader);
+            fileReader.close();
+        } else {
+           new CurrencyUpdaterJSON();
+        }
+    }
+
+    private String getDateFromName(String name) {
+        String dateString = name.substring(name.length() - 15);
+        dateString = dateString.substring(0,10);
+        return dateString;
+    }
+    private String changeDateInString(String name) {
+        String start = name.substring(0,name.length()-15);
+        Date date = new Date();
+        return start + formatter.format(date) + ".json";
     }
 
     private static CurrencyUpdaterJSON createInstance() throws IOException, ParseException {

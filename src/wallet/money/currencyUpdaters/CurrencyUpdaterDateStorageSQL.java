@@ -1,4 +1,4 @@
-package wallet.money.currencyUpdater;
+package wallet.money.currencyUpdaters;
 
 import db.ConnectionFactory;
 import wallet.PropertiesStorage;

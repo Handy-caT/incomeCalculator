@@ -4,15 +4,12 @@ import db.ConnectionFactory;
 import org.junit.*;
 import wallet.PropertiesStorage;
 import wallet.money.currencyUnit.CurrencyUnitSQLStorage;
-import wallet.money.currencyUpdater.CurrencyUpdaterJSON;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.sql.*;
 import java.util.Objects;
-
-import static org.junit.Assert.*;
 
 public class CurrencyUnitSQLStorageTest {
 

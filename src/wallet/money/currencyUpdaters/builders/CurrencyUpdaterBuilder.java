@@ -1,4 +1,4 @@
-package wallet.money.currencyUpdater.builders;
+package wallet.money.currencyUpdaters.builders;
 
 public interface CurrencyUpdaterBuilder {
 

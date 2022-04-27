@@ -1,8 +1,8 @@
-package wallet.money.currencyUpdater;
+package wallet.money.currencyUpdaters;
 
 import db.ConnectionFactory;
 import wallet.PropertiesStorage;
-import wallet.money.currencyUpdater.builders.CurrencyUpdaterSQLBuilder;
+import wallet.money.currencyUpdaters.builders.CurrencyUpdaterSQLBuilder;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -91,6 +91,28 @@ public class CurrencyUpdaterSQL implements CurrencyUpdaterProvider {
         }
     }
 
+    public void createUpdaterOnDate(Date date) throws SQLException {
+        String dateString = sqlFormatter.format(date);
+        ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
+        dbConnection = connectionFactory.getConnection();
+
+        createTable(dateString);
+
+        String webDateString = webFormatter.format(date);
+        CurrencyUpdaterSQLBuilder builder = new CurrencyUpdaterSQLBuilder(tableName, dbConnection, webDateString);
+        List<String> buildingPlan = builder.getBuildPlan();
+
+        for (String currencyString : buildingPlan) {
+            builder.buildCurrency(currencyString);
+        }
+        dbConnection.close();
+
+        dateStorageSQL.addUpdater(tableName+dateString);
+    }
+    public boolean isUpdaterOnDateExist(Date date) {
+        return dateStorageSQL.isUpdaterExist(tableName + sqlFormatter.format(date));
+    }
+
     private ResultSet getCurrencyResultSet(String currencyName, String dateString) throws SQLException {
         ResultSet resultSet;
         ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
@@ -163,21 +185,7 @@ public class CurrencyUpdaterSQL implements CurrencyUpdaterProvider {
 
         if(!dateStorageSQL.isUpdaterExist(tableName+dateString)) {
             try {
-                ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
-                dbConnection = connectionFactory.getConnection();
-
-                createTable(dateString);
-
-                String webDateString = webFormatter.format(date);
-                CurrencyUpdaterSQLBuilder builder = new CurrencyUpdaterSQLBuilder(tableName, dbConnection, webDateString);
-                List<String> buildingPlan = builder.getBuildPlan();
-
-                for (String currencyString : buildingPlan) {
-                    builder.buildCurrency(currencyString);
-                }
-                dbConnection.close();
-
-                dateStorageSQL.addUpdater(tableName+dateString);
+                createUpdaterOnDate(date);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -204,4 +212,10 @@ public class CurrencyUpdaterSQL implements CurrencyUpdaterProvider {
         }
         return instance;
     }
+
+    public static String getTableName() {
+        return tableName;
+    }
+
+
 }
