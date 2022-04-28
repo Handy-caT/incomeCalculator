@@ -32,7 +32,7 @@ public class CurrencyUpdaterSQLBuilder implements CurrencyUpdaterBuilder {
 
         JSONParser jsonParser = new JSONParser();
 
-        String url = "https://www.nbrb.by/api/exrates/rates?periodicity=0";
+        String url = "https://www.nbrb.by/api/exrates/rates?ondate="+dateString+"&periodicity=0";
         HttpResponse<String> httpResponse;
         try {
             httpResponse = Unirest.get(url).asString();
