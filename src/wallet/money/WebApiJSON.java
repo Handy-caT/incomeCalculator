@@ -9,6 +9,7 @@ import org.json.simple.parser.ParseException;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 public class WebApiJSON {
 
@@ -46,11 +47,13 @@ public class WebApiJSON {
         instance = new WebApiJSON();
     }
 
-    public String getLastUpdateDateString() {
-        return dateString;
+    public boolean needToUpdate() {
+        Date date = new Date();
+        String nowDate = webFormatter.format(date);
+        return !Objects.equals(nowDate, dateString);
     }
 
-    public WebApiJSON getInstance() {
+    public static WebApiJSON getInstance() {
         if(instance == null) {
             instance = new WebApiJSON();
         }

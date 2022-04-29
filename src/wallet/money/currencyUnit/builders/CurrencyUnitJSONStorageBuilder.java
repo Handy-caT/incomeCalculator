@@ -7,6 +7,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import wallet.money.WebApiJSON;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -20,17 +21,9 @@ public class CurrencyUnitJSONStorageBuilder implements CurrencyUnitStorageBuilde
     private static JSONArray currenciesJSONArray;
 
     private CurrencyUnitJSONStorageBuilder() {
-        JSONParser jsonParser = new JSONParser();
-
-        String url = "https://www.nbrb.by/api/exrates/rates?periodicity=0";
-        HttpResponse<String> httpResponse;
-        try {
-            httpResponse = Unirest.get(url).asString();
-            String jsonString = httpResponse.getBody();
-            currenciesWebJSONArray = (JSONArray) jsonParser.parse(jsonString);
-        } catch (UnirestException | ParseException e) {
-            e.printStackTrace();
-        }
+        WebApiJSON webApiJSON = WebApiJSON.getInstance();
+        if(webApiJSON.needToUpdate()) webApiJSON.Update();
+        currenciesWebJSONArray = webApiJSON.getCurrenciesJSONArray();
 
         currenciesJSONArray = new JSONArray();
     }

@@ -7,6 +7,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import wallet.money.WebApiJSON;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -30,17 +31,8 @@ public class CurrencyUpdaterSQLBuilder implements CurrencyUpdaterBuilder {
         this.dbConnection = dbConnection;
         this.tableName = tableName;
 
-        JSONParser jsonParser = new JSONParser();
-
-        String url = "https://www.nbrb.by/api/exrates/rates?ondate="+dateString+"&periodicity=0";
-        HttpResponse<String> httpResponse;
-        try {
-            httpResponse = Unirest.get(url).asString();
-            String jsonString = httpResponse.getBody();
-            currenciesWebJSONArray = (JSONArray) jsonParser.parse(jsonString);
-        } catch (UnirestException | ParseException e) {
-            e.printStackTrace();
-        }
+        WebApiJSON webApiJSON = WebApiJSON.getInstance();
+        currenciesWebJSONArray = webApiJSON.getCurrenciesWebJSONArrayOnDate(dateString);
     }
 
     public List<String> getBuildPlan() {
@@ -55,17 +47,9 @@ public class CurrencyUpdaterSQLBuilder implements CurrencyUpdaterBuilder {
 
     @Override
     public void reset() {
-        JSONParser jsonParser = new JSONParser();
-
-        String url = "https://www.nbrb.by/api/exrates/rates?periodicity=0";
-        HttpResponse<String> httpResponse;
-        try {
-            httpResponse = Unirest.get(url).asString();
-            String jsonString = httpResponse.getBody();
-            currenciesWebJSONArray = (JSONArray) jsonParser.parse(jsonString);
-        } catch (UnirestException | ParseException e) {
-            e.printStackTrace();
-        }
+        WebApiJSON webApiJSON = WebApiJSON.getInstance();
+        if(webApiJSON.needToUpdate()) webApiJSON.Update();
+        currenciesWebJSONArray = webApiJSON.getCurrenciesJSONArray();
     }
 
     @Override

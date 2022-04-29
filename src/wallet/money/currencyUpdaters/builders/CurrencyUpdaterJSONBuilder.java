@@ -7,6 +7,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import wallet.money.WebApiJSON;
 
 import java.math.BigDecimal;
 import java.util.LinkedList;
@@ -21,17 +22,10 @@ public class CurrencyUpdaterJSONBuilder implements CurrencyUpdaterBuilder {
     private static JSONArray currenciesJSONArray;
 
     private CurrencyUpdaterJSONBuilder() {
-        JSONParser jsonParser = new JSONParser();
+        WebApiJSON webApiJSON = WebApiJSON.getInstance();
+        if(webApiJSON.needToUpdate()) webApiJSON.Update();
+        currenciesWebJSONArray = webApiJSON.getCurrenciesJSONArray();
 
-        String url = "https://www.nbrb.by/api/exrates/rates?periodicity=0";
-        HttpResponse<String> httpResponse;
-        try {
-            httpResponse = Unirest.get(url).asString();
-            String jsonString = httpResponse.getBody();
-            currenciesWebJSONArray = (JSONArray) jsonParser.parse(jsonString);
-        } catch (UnirestException | ParseException e) {
-            e.printStackTrace();
-        }
         currenciesJSONArray = new JSONArray();
     }
 
