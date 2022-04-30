@@ -19,8 +19,6 @@ public class JSONConverter {
     public static final String localCurName = "currencyName";
     public static final String localRatioName = "Ratio";
 
-
-
     public static List<String> getCurStringList(JSONArray currencyArray) {
         List<String> curList = new LinkedList<>();
         for(Object object : currencyArray) {
@@ -45,13 +43,13 @@ public class JSONConverter {
         long currencyId = (long)currencyObject.get("Cur_ID");
         long currencyScale = (long)currencyObject.get("Cur_Scale");
         String currencyString = (String) currencyObject.get("Cur_Abbreviation");
-        Object ratioObject = currencyObject.get("Cur_OfficialRate");
+        double ratio = (double) currencyObject.get("Cur_OfficialRate");
 
         JSONObject localCurrencyObject = new JSONObject();
         localCurrencyObject.put("currencyName",currencyString);
         localCurrencyObject.put("currencyId",currencyId);
         localCurrencyObject.put("currencyScale",currencyScale);
-        if(ratioObject != null) localCurrencyObject.put("Ratio",currencyScale);
+        if(ratio != 0) localCurrencyObject.put("Ratio",ratio);
 
         return localCurrencyObject;
     }

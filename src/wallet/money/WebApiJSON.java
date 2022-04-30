@@ -19,18 +19,10 @@ public class WebApiJSON {
     private static final SimpleDateFormat webFormatter = new SimpleDateFormat("dd-MM-yyyy");
     private String dateString;
 
-    private WebApiJSON() {
-        JSONParser jsonParser = new JSONParser();
+    private static APIProvider api;
 
-        String url = "https://www.nbrb.by/api/exrates/rates?periodicity=0";
-        HttpResponse<String> httpResponse;
-        try {
-            httpResponse = Unirest.get(url).asString();
-            String jsonString = httpResponse.getBody();
-            currenciesWebJSONArray = (JSONArray) jsonParser.parse(jsonString);
-        } catch (UnirestException | ParseException e) {
-            e.printStackTrace();
-        }
+    private WebApiJSON() {
+        currenciesWebJSONArray = api.getCurrenciesArray();
 
         Date date = new Date();
         dateString = webFormatter.format(date);
@@ -55,26 +47,22 @@ public class WebApiJSON {
 
     public static WebApiJSON getInstance() {
         if(instance == null) {
+            api = new NBRBAPI();
+            instance = new WebApiJSON();
+        }
+        return instance;
+    }
+
+    public static WebApiJSON getInstance(APIProvider api) {
+        if(instance == null) {
+            WebApiJSON.api = api;
             instance = new WebApiJSON();
         }
         return instance;
     }
 
     public JSONArray getCurrenciesWebJSONArrayOnDate(String dateString) {
-        JSONParser jsonParser = new JSONParser();
-        JSONArray result = new JSONArray();
-
-        String url = "https://www.nbrb.by/api/exrates/rates?ondate="+dateString+"&periodicity=0";
-        HttpResponse<String> httpResponse;
-        try {
-            httpResponse = Unirest.get(url).asString();
-            String jsonString = httpResponse.getBody();
-            result = (JSONArray) jsonParser.parse(jsonString);
-        } catch (UnirestException | ParseException e) {
-            e.printStackTrace();
-        }
-
-        return result;
+        return api.getRatiosArray(dateString);
     }
 
 }
