@@ -1,17 +1,12 @@
 package wallet.money.currencyUnit.builders;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import wallet.money.JSONConverter;
 import wallet.money.WebApiJSON;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
+
 
 public class CurrencyUnitJSONStorageBuilder implements CurrencyUnitStorageBuilder {
 
@@ -36,13 +31,7 @@ public class CurrencyUnitJSONStorageBuilder implements CurrencyUnitStorageBuilde
     }
 
     public List<String> getBuildPlan() {
-        List<String> buildPlanList = new LinkedList<>();
-        for(Object object : currenciesWebJSONArray) {
-            JSONObject currencyObject = (JSONObject) object;
-            String currencyString = (String) currencyObject.get("Cur_Abbreviation");
-            buildPlanList.add(currencyString);
-        }
-        return buildPlanList;
+        return JSONConverter.getCurStringList(currenciesWebJSONArray);
     }
 
     @Override
@@ -52,20 +41,8 @@ public class CurrencyUnitJSONStorageBuilder implements CurrencyUnitStorageBuilde
 
     @Override
     public void buildCurrencyUnit(String currencyString) {
-        JSONObject currencyObject = null;
-        for(Object object : currenciesWebJSONArray) {
-            currencyObject = (JSONObject) object;
-            String tempCurrencyString = (String) currencyObject.get("Cur_Abbreviation");
-            if(Objects.equals(tempCurrencyString, currencyString)) break;
-        }
-
-        long currencyId = (long)currencyObject.get("Cur_ID");
-        long currencyScale = (long)currencyObject.get("Cur_Scale");
-
-        JSONObject localCurrencyObject = new JSONObject();
-        localCurrencyObject.put("currencyName",currencyString);
-        localCurrencyObject.put("currencyId",currencyId);
-        localCurrencyObject.put("currencyScale",currencyScale);
+        JSONObject currencyObject = JSONConverter.getCurObjectByCurString(currenciesWebJSONArray,currencyString);
+        JSONObject localCurrencyObject = JSONConverter.convertWebCurObjectToLocal(currencyObject);
 
         currenciesJSONArray.add(localCurrencyObject);
     }

@@ -19,9 +19,9 @@ import java.util.Objects;
 
 public class CurrencyUpdaterSQLBuilder implements CurrencyUpdaterBuilder {
 
-    private String tableName;
-    private Connection dbConnection;
-    private String dateString;
+    private final String tableName;
+    private final Connection dbConnection;
+    private final String dateString;
 
     private  JSONArray currenciesWebJSONArray;
 
