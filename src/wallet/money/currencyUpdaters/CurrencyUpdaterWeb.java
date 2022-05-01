@@ -7,130 +7,88 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import wallet.money.APIProvider;
+import wallet.money.JSONConverter;
+import wallet.money.NBRBAPI;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class CurrencyUpdaterWeb implements CurrencyUpdaterProvider {
 
     private static CurrencyUpdaterWeb instance;
-
-    private JSONObject getCurrencyJSONFromWeb(String curName) throws ParseException, UnirestException {
-        JSONParser jsonParser = new JSONParser();
-
-        String url = "https://www.nbrb.by/api/exrates/rates/";
-        String params = "?parammode=2";
-        HttpResponse<String> httpResponse = Unirest.get(url + curName + params).asString();
-        String jsonString = httpResponse.getBody();
-
-        return (JSONObject) jsonParser.parse(jsonString);
-    }
-    private JSONObject getCurrencyJSONFromWebOnDate(String curName, Date date) throws ParseException, UnirestException {
-        JSONParser jsonParser = new JSONParser();
-
-        String url = "https://www.nbrb.by/api/exrates/rates/";
-        String dateString = date.toString();
-        String params = "parammode=2";
-        HttpResponse<String> httpResponse = Unirest.get(url + curName +"?"+ dateString + "&" + params).asString();
-        String jsonString = httpResponse.getBody();
-
-        return (JSONObject) jsonParser.parse(jsonString);
-    }
-
-    private JSONArray getCurrenciesJSONArrayFromWeb() throws UnirestException, ParseException {
-        JSONParser jsonParser = new JSONParser();
-
-        String url = "https://www.nbrb.by/api/exrates/rates?periodicity=0";
-        HttpResponse<String> httpResponse = Unirest.get(url).asString();
-        String jsonString = httpResponse.getBody();
-
-        return (JSONArray) jsonParser.parse(jsonString);
-    }
-    private JSONObject getCurrencyJSONFromJSONArray(JSONArray currenciesArray, String currencyName) {
-        JSONObject currencyJSONObject;
-        JSONObject result = null;
-
-        for( Object currencyObject : currenciesArray) {
-           currencyJSONObject = (JSONObject) currencyObject;
-           String tempCurrencyName = (String) currencyJSONObject.get("Cur_Abbreviation");
-           if(Objects.equals(tempCurrencyName, currencyName)) {
-               result = currencyJSONObject;
-               break;
-           }
-        }
-        return result;
-    }
-
-    private BigDecimal findRatioOfCurrencies(JSONObject currencyFrom, JSONObject currencyTo) {
-        BigDecimal ratioFirst = BigDecimal.valueOf((double) currencyFrom.get("Cur_OfficialRate"));
-        BigDecimal ratioSecond = BigDecimal.valueOf((double) currencyTo.get("Cur_OfficialRate"));
-        return  ratioFirst.divide(ratioSecond, RoundingMode.DOWN);
-    }
+    private static final SimpleDateFormat webFormatter = new SimpleDateFormat("dd-MM-yyyy");
+    private static APIProvider api;
 
     public static CurrencyUpdaterWeb getInstance() {
         if(instance == null) {
             instance = new CurrencyUpdaterWeb();
+            api = new NBRBAPI();
         }
         return instance;
     }
 
     @Override
     public BigDecimal getRatio(String currencyFrom, String currencyTo)  {
-
-        if(Objects.equals(currencyFrom, currencyTo)) {
-            return BigDecimal.ONE;
+        BigDecimal ratio;
+        if(Objects.equals(currencyFrom,currencyTo)) {
+            ratio = BigDecimal.ONE;
         } else {
-            BigDecimal ratio = null;
-            try {
-                JSONObject currencyObject= getCurrencyJSONFromWeb(currencyFrom);
-                BigDecimal ratioFirst = BigDecimal.valueOf((double) currencyObject.get("Cur_OfficialRate"));
+            JSONArray currenciesArray = api.getRatiosArray();
 
-                if(!Objects.equals(currencyFrom, "BYN")) {
-                    JSONObject secondCurrencyObject = getCurrencyJSONFromWeb(currencyTo);
-                    ratio = findRatioOfCurrencies(currencyObject,secondCurrencyObject);
-                } else if(!Objects.equals(currencyTo, "BYN")) {
-                    JSONObject secondCurrencyObject = getCurrencyJSONFromWeb(currencyFrom);
-                    ratio = BigDecimal.valueOf((double) secondCurrencyObject.get("Cur_OfficialRate"));
-                    ratio = BigDecimal.ONE.setScale(4).divide(ratio,RoundingMode.DOWN);
-                } else ratio = ratioFirst;
-
-            } catch (UnirestException | ParseException e) {
-                e.printStackTrace();
-            }
-            return ratio;
+            ratio = getRatioFromArray(currencyFrom, currencyTo, currenciesArray);
         }
+        return ratio;
+    }
+
+    private BigDecimal getRatioFromArray(String currencyFrom, String currencyTo, JSONArray currenciesArray) {
+        BigDecimal ratio;
+        JSONObject fromObject = JSONConverter.getCurObjectByCurString(currenciesArray,currencyFrom);
+        JSONObject toObject = JSONConverter.getCurObjectByCurString(currenciesArray,currencyTo);
+
+        if (!Objects.equals(currencyFrom, "BYN") && !Objects.equals(currencyTo, "BYN")) {
+            long scaleFrom = JSONConverter.getScaleFromObject(fromObject);
+            ratio = BigDecimal.valueOf(JSONConverter.getRatioFromObject(fromObject));
+
+            long scaleTo = JSONConverter.getScaleFromObject(toObject);
+            BigDecimal secondRatio = BigDecimal.valueOf(JSONConverter.getRatioFromObject(toObject));
+
+            ratio = ratio.divide(secondRatio, RoundingMode.DOWN);
+            ratio = ratio.divide(BigDecimal.valueOf(scaleFrom));
+            ratio = ratio.multiply(BigDecimal.valueOf(scaleTo));
+
+        } else if(Objects.equals(currencyFrom, "BYN")) {
+            long scaleTo = JSONConverter.getScaleFromObject(toObject);
+            ratio = BigDecimal.valueOf(JSONConverter.getRatioFromObject(toObject));
+            ratio = BigDecimal.ONE.setScale(4).divide(ratio,RoundingMode.DOWN);
+            ratio.multiply(BigDecimal.valueOf(scaleTo));
+        } else {
+            long scaleFrom = JSONConverter.getScaleFromObject(fromObject);
+            ratio = BigDecimal.valueOf(JSONConverter.getRatioFromObject(fromObject));
+            ratio = ratio.divide(BigDecimal.valueOf(scaleFrom));
+        }
+        return ratio;
     }
 
     @Override
     public long getCurScale(String currencyName) {
-        long scale = 0;
-        try{
-            JSONObject currencyObject = getCurrencyJSONFromWeb(currencyName);
-             scale = (long) currencyObject.get("Cur_Scale");
-        } catch (UnirestException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return scale;
+        JSONObject currencyObject = api.getCurrencyUnitObject(currencyName);
+        return JSONConverter.getScaleFromObject(currencyObject);
     }
 
     @Override
     public BigDecimal getRatioOnDate(String currencyFrom, String currencyTo, Date date) {
-        BigDecimal ratio = null;
-        try {
-            JSONObject currencyObject = getCurrencyJSONFromWebOnDate(currencyFrom,date);
-            BigDecimal ratioFirst = BigDecimal.valueOf((double) currencyObject.get("Cur_OfficialRate"));
+        BigDecimal ratio;
+        if(Objects.equals(currencyFrom,currencyTo)) {
+            ratio = BigDecimal.ONE;
+        } else {
+            String dateString = webFormatter.format(date);
+            JSONArray currenciesArray = api.getRatiosArray(dateString);
 
-            if(!Objects.equals(currencyTo, "BYN")) {
-                currencyObject = getCurrencyJSONFromWebOnDate(currencyTo,date);
-                BigDecimal ratioSecond = BigDecimal.valueOf((double) currencyObject.get("Cur_OfficialRate"));
-                ratio =  ratioFirst.divide(ratioSecond, RoundingMode.DOWN);
-            } else ratio = ratioFirst;
-
-        } catch (UnirestException | ParseException e) {
-            e.printStackTrace();
+            ratio = getRatioFromArray(currencyFrom, currencyTo, currenciesArray);
         }
         return ratio;
     }
@@ -138,35 +96,9 @@ public class CurrencyUpdaterWeb implements CurrencyUpdaterProvider {
     @Override
     public Map<String, BigDecimal> getCurrencyRatiosMap(String currencyFrom, List<String> currencyToList) {
         Map<String,BigDecimal> currenciesHash = new HashMap<>();
-
-        try {
-            JSONArray currenciesArray = getCurrenciesJSONArrayFromWeb();
-            JSONObject currencyFromObject = getCurrencyJSONFromJSONArray(currenciesArray,currencyFrom);
-
-            for(String currencyTo : currencyToList) {
-                if(Objects.equals(currencyTo, currencyFrom)) {
-                    currenciesHash.put(currencyTo,BigDecimal.ONE);
-                } else if(Objects.equals("BYN", currencyTo) ) {
-                    JSONObject currencyObject = getCurrencyJSONFromJSONArray(currenciesArray,currencyFrom);
-                    BigDecimal ratio = BigDecimal.valueOf((double) currencyObject.get("Cur_OfficialRate"));
-                    ratio = BigDecimal.ONE.setScale(4).divide(ratio,RoundingMode.DOWN);
-                    currenciesHash.put(currencyTo,ratio);
-                } else if(Objects.equals("BYN", currencyFrom)) {
-                    JSONObject currencyObject = getCurrencyJSONFromJSONArray(currenciesArray,currencyTo);
-                    BigDecimal ratio = BigDecimal.valueOf((double) currencyObject.get("Cur_OfficialRate"));
-                    currenciesHash.put(currencyTo,ratio);
-                } else {
-                    JSONObject currencyObject = getCurrencyJSONFromJSONArray(currenciesArray,currencyTo);
-                    BigDecimal ratio = findRatioOfCurrencies(currencyFromObject,currencyObject);
-                    currenciesHash.put(currencyTo,ratio);
-                }
-            }
-        } catch (UnirestException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
+        for(String currencyTo : currencyToList) {
+            currenciesHash.put(currencyTo,getRatio(currencyFrom,currencyTo));
         }
-
         return currenciesHash;
     }
 

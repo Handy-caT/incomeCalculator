@@ -23,7 +23,7 @@ public class JSONConverter {
         List<String> curList = new LinkedList<>();
         for(Object object : currencyArray) {
             JSONObject currencyObject = (JSONObject) object;
-            String currencyString = (String) currencyObject.get("Cur_Abbreviation");
+            String currencyString = (String) currencyObject.get(webCurName);
             curList.add(currencyString);
         }
         return curList;
@@ -33,25 +33,32 @@ public class JSONConverter {
         JSONObject currencyObject = null;
         for(Object object : currencyArray) {
             currencyObject = (JSONObject) object;
-            String tempCurrencyString = (String) currencyObject.get("Cur_Abbreviation");
+            String tempCurrencyString = (String) currencyObject.get(webCurName);
             if(Objects.equals(tempCurrencyString, currencyString)) break;
         }
         return currencyObject;
     }
 
     public static JSONObject convertWebCurObjectToLocal(JSONObject currencyObject) {
-        long currencyId = (long)currencyObject.get("Cur_ID");
-        long currencyScale = (long)currencyObject.get("Cur_Scale");
-        String currencyString = (String) currencyObject.get("Cur_Abbreviation");
-        double ratio = (double) currencyObject.get("Cur_OfficialRate");
+        long currencyId = (long)currencyObject.get(webIdName);
+        long currencyScale = (long)currencyObject.get(webScaleName);
+        String currencyString = (String) currencyObject.get(webCurName);
+        double ratio = (double) currencyObject.get(webRatioName);
 
         JSONObject localCurrencyObject = new JSONObject();
-        localCurrencyObject.put("currencyName",currencyString);
-        localCurrencyObject.put("currencyId",currencyId);
-        localCurrencyObject.put("currencyScale",currencyScale);
-        if(ratio != 0) localCurrencyObject.put("Ratio",ratio);
+        localCurrencyObject.put(localCurName,currencyString);
+        localCurrencyObject.put(localIdName,currencyId);
+        localCurrencyObject.put(localScaleName,currencyScale);
+        if(ratio != 0) localCurrencyObject.put(localRatioName,ratio);
 
         return localCurrencyObject;
     }
 
+    public static long getScaleFromObject(JSONObject currencyObject) {
+        return (long) currencyObject.get(webScaleName);
+    }
+
+    public static double getRatioFromObject(JSONObject currencyObject) {
+        return (double) currencyObject.get(webRatioName);
+    }
 }

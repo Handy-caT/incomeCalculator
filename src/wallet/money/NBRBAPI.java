@@ -101,4 +101,5 @@ public class NBRBAPI implements APIProvider{
         }
         return currencyObject;
     }
+
 }
