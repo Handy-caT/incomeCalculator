@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import wallet.money.APIProvider;
+import wallet.money.JSONConverter;
 import wallet.money.NBRBAPI;
 
 import java.math.BigDecimal;
@@ -37,8 +38,8 @@ public class CurrencyUnitWebStorage implements CurrencyUnitStorage {
 
         JSONObject currencyObject = api.getCurrencyUnitObject(currencyId);
 
-        String currencyString = (String) currencyObject.get("Cur_Abbreviation");
-        long scale = (long)currencyObject.get("Cur_Scale");
+        String currencyString = JSONConverter.getNameFromObject(currencyObject);
+        long scale = JSONConverter.getScaleFromObject(currencyObject);
 
         return new StrictCurrencyUnit(currencyString,currencyId,scale);
     }
@@ -48,8 +49,8 @@ public class CurrencyUnitWebStorage implements CurrencyUnitStorage {
 
         JSONObject currencyObject = api.getCurrencyUnitObject(currencyString);
 
-        long currencyId = (long)currencyObject.get("Cur_ID");
-        long scale = (long)currencyObject.get("Cur_Scale");
+        long currencyId = JSONConverter.getIdFromObject(currencyObject);
+        long scale = JSONConverter.getScaleFromObject(currencyObject);
 
         return new StrictCurrencyUnit(currencyString,currencyId,scale);
     }

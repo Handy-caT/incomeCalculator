@@ -17,12 +17,12 @@ public class WebApiJSON {
     private static WebApiJSON instance;
 
     private static final SimpleDateFormat webFormatter = new SimpleDateFormat("dd-MM-yyyy");
-    private String dateString;
+    private static String dateString;
 
     private static APIProvider api;
 
     private WebApiJSON() {
-        currenciesWebJSONArray = api.getCurrenciesArray();
+        currenciesWebJSONArray = api.getRatiosArray();
 
         Date date = new Date();
         dateString = webFormatter.format(date);

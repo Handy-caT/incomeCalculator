@@ -61,4 +61,13 @@ public class JSONConverter {
     public static double getRatioFromObject(JSONObject currencyObject) {
         return (double) currencyObject.get(webRatioName);
     }
+
+    public static String getNameFromObject(JSONObject currencyObject) {
+        return (String) currencyObject.get(webCurName);
+    }
+
+    public static long getIdFromObject(JSONObject currencyObject) {
+        return (long) currencyObject.get(webIdName);
+    }
+
 }
