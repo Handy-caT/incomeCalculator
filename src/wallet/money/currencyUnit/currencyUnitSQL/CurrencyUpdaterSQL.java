@@ -2,7 +2,7 @@ package wallet.money.currencyUnit.currencyUnitSQL;
 
 import db.ConnectionFactory;
 import wallet.PropertiesStorage;
-import wallet.money.currencyUnit.interfaces.CurrencyUpdaterProvider;
+import wallet.money.currencyUnit.interfaces.CurrencyUpdater;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -12,9 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
 
-public class CurrencyUpdaterSQL implements CurrencyUpdaterProvider {
-
-    private static CurrencyUpdaterSQL instance;
+public class CurrencyUpdaterSQL implements CurrencyUpdater {
 
     private Connection dbConnection;
     private static String tableName;
@@ -28,7 +26,7 @@ public class CurrencyUpdaterSQL implements CurrencyUpdaterProvider {
     public static final String propertyName = "CurrencyUpdaterSQLTableName";
     private static final PropertiesStorage propertiesStorage = PropertiesStorage.getInstance();
 
-    private CurrencyUpdaterSQL() throws SQLException, IOException {
+    protected CurrencyUpdaterSQL() throws SQLException, IOException {
         dateStorageSQL = CurrencyUpdaterDateStorageSQL.getInstance();
         ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
         dbConnection = connectionFactory.getConnection();
@@ -48,7 +46,7 @@ public class CurrencyUpdaterSQL implements CurrencyUpdaterProvider {
         }
         dbConnection.close();
     }
-    private CurrencyUpdaterSQL(List<String> buildingPlan) throws SQLException, IOException {
+    protected CurrencyUpdaterSQL(List<String> buildingPlan) throws SQLException, IOException {
         dateStorageSQL = CurrencyUpdaterDateStorageSQL.getInstance();
         ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
         dbConnection = connectionFactory.getConnection();
@@ -66,7 +64,7 @@ public class CurrencyUpdaterSQL implements CurrencyUpdaterProvider {
         }
         dbConnection.close();
     }
-    private CurrencyUpdaterSQL(String tableName) throws SQLException, IOException {
+    protected CurrencyUpdaterSQL(String tableName) throws SQLException, IOException {
         dateStorageSQL = CurrencyUpdaterDateStorageSQL.getInstance();
         CurrencyUpdaterSQL.tableName = tableName;
     }
@@ -81,14 +79,6 @@ public class CurrencyUpdaterSQL implements CurrencyUpdaterProvider {
                 "currencyScale BIGINT NOT NULL DEFAULT 1," +
                 "ratio DECIMAL(2,4) NOT NULL)";
         statement.executeUpdate(sqlStatement);
-    }
-    private static CurrencyUpdaterSQL createInstance() throws SQLException, IOException {
-        String tableName = (String) propertiesStorage.getProperty(propertyName);
-        if(tableName == null) {
-            return new CurrencyUpdaterSQL();
-        } else {
-            return new CurrencyUpdaterSQL(tableName);
-        }
     }
 
     public void createUpdaterOnDate(Date date) throws SQLException {
@@ -204,13 +194,6 @@ public class CurrencyUpdaterSQL implements CurrencyUpdaterProvider {
             currenciesHash.put(currencyTo,getRatio(currencyFrom,currencyTo));
         }
         return currenciesHash;
-    }
-
-    public static CurrencyUpdaterSQL getInstance() throws SQLException, IOException {
-        if(instance == null) {
-            instance = createInstance();
-        }
-        return instance;
     }
 
     public static String getTableName() {

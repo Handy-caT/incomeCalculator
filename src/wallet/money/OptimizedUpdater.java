@@ -2,7 +2,7 @@ package wallet.money;
 
 import org.json.simple.parser.ParseException;
 import wallet.money.currencyUnit.currencyUnitJSON.CurrencyUpdaterJSON;
-import wallet.money.currencyUnit.interfaces.CurrencyUpdaterProvider;
+import wallet.money.currencyUnit.interfaces.CurrencyUpdater;
 import wallet.money.currencyUnit.currencyUnitSQL.CurrencyUpdaterSQL;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public class OptimizedUpdater implements CurrencyUpdaterProvider {
+public class OptimizedUpdater implements CurrencyUpdater {
 
     private final CurrencyUpdaterJSON jsonUpdater = CurrencyUpdaterJSON.getInstance();
     private final CurrencyUpdaterSQL sqlUpdater = CurrencyUpdaterSQL.getInstance();

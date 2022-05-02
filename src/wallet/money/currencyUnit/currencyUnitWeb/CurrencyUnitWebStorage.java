@@ -12,23 +12,10 @@ import wallet.money.currencyUnit.StrictCurrencyUnit;
 
 public class CurrencyUnitWebStorage implements CurrencyUnitStorage {
 
-    private static CurrencyUnitWebStorage instance;
     private APIProvider api;
 
-    public static CurrencyUnitWebStorage getInstance() {
-        if(instance == null) {
-            instance = new CurrencyUnitWebStorage();
-            instance.api = new NBRBAPI();
-        }
-        return instance;
-    }
+    protected CurrencyUnitWebStorage() {
 
-    public static CurrencyUnitWebStorage getInstance(APIProvider api) {
-        if(instance == null) {
-            instance = new CurrencyUnitWebStorage();
-            instance.api = api;
-        }
-        return instance;
     }
 
     @Override
@@ -43,7 +30,7 @@ public class CurrencyUnitWebStorage implements CurrencyUnitStorage {
     }
 
     @Override
-    public StrictCurrencyUnit getCurrencyUnitByCurrencyString(String currencyString) {
+    public StrictCurrencyUnit getCurrencyUnitByCurrencyString(String currencyString)  {
 
         JSONObject currencyObject = api.getCurrencyUnitObject(currencyString);
 
@@ -64,6 +51,10 @@ public class CurrencyUnitWebStorage implements CurrencyUnitStorage {
             return false;
         }
         return true;
+    }
+
+    public void setApi(APIProvider api) {
+        this.api = api;
     }
 
 }

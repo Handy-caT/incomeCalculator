@@ -2,7 +2,7 @@ package wallet.money.currencyUnit.currencyUnitWeb;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import wallet.money.currencyUnit.interfaces.CurrencyUpdaterProvider;
+import wallet.money.currencyUnit.interfaces.CurrencyUpdater;
 import wallet.money.util.APIProvider;
 import wallet.money.util.JSONConverter;
 import wallet.money.util.NBRBAPI;
@@ -12,19 +12,12 @@ import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class CurrencyUpdaterWeb implements CurrencyUpdaterProvider {
+public class CurrencyUpdaterWeb implements CurrencyUpdater {
 
-    private static CurrencyUpdaterWeb instance;
     private static final SimpleDateFormat webFormatter = new SimpleDateFormat("dd-MM-yyyy");
     private static APIProvider api;
 
-    public static CurrencyUpdaterWeb getInstance() {
-        if(instance == null) {
-            instance = new CurrencyUpdaterWeb();
-            if(api == null) api = new NBRBAPI();
-        }
-        return instance;
-    }
+    protected CurrencyUpdaterWeb() {}
 
    public static void setApi(APIProvider api) {
        CurrencyUpdaterWeb.api = api;

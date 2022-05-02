@@ -4,7 +4,7 @@ import org.json.simple.parser.ParseException;
 import wallet.PropertiesStorage;
 import wallet.money.currencyUnit.StrictCurrencyUnit;
 import wallet.money.currencyUnit.currencyUnitJSON.CurrencyUpdaterJSON;
-import wallet.money.currencyUnit.interfaces.CurrencyUpdaterProvider;
+import wallet.money.currencyUnit.interfaces.CurrencyUpdater;
 import wallet.money.currencyUnit.currencyUnitWeb.CurrencyUpdaterWeb;
 
 import java.io.IOException;
@@ -20,19 +20,19 @@ public class CurrencyConverter {
 
     private short mapSize;
     private TreeMap<String,BigDecimal> priorityHash;
-    private CurrencyUpdaterProvider currencyUpdater;
+    private CurrencyUpdater currencyUpdater;
 
     private List<String> currencyNamesList;
     private Map<String,Map<String, BigDecimal>> converterMapSell;
 
-    private CurrencyConverter(CurrencyUpdaterProvider currencyUpdater, short mapSize,List<String> currencyNamesList) {
+    private CurrencyConverter(CurrencyUpdater currencyUpdater, short mapSize, List<String> currencyNamesList) {
         this.currencyUpdater = currencyUpdater;
         this.mapSize = mapSize;
         this.currencyNamesList = currencyNamesList;
 
         buildHashes(currencyNamesList);
     }
-    private CurrencyConverter(CurrencyUpdaterProvider currencyUpdater) {
+    private CurrencyConverter(CurrencyUpdater currencyUpdater) {
         this.currencyUpdater = currencyUpdater;
         mapSize = 3;
         List<String> currencyNamesList = new LinkedList<>();

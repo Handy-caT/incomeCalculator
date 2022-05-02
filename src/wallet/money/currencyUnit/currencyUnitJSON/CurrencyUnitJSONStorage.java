@@ -15,7 +15,6 @@ import java.util.Objects;
 
 public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
 
-    private static CurrencyUnitJSONStorage instance;
     private static String jsonPathString;
 
     private static final PropertiesStorage propertiesStorage = PropertiesStorage.getInstance();
@@ -23,7 +22,7 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
 
     public static final String propertyName = "CurrencyUnitStoragePath";
 
-    private CurrencyUnitJSONStorage() throws IOException {
+    protected CurrencyUnitJSONStorage() throws IOException {
         CurrencyUnitJSONStorageBuilder builder = CurrencyUnitJSONStorageBuilder.getInstance();
         builder.reset();
         List<String> buildingPlan = builder.getBuildPlan();
@@ -39,7 +38,7 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
         currencyJSONArray.writeJSONString(fileWriter);
         fileWriter.close();
     }
-    private CurrencyUnitJSONStorage(List<String> buildingPlan) throws IOException {
+    protected CurrencyUnitJSONStorage(List<String> buildingPlan) throws IOException {
         CurrencyUnitJSONStorageBuilder builder = CurrencyUnitJSONStorageBuilder.getInstance();
         builder.reset();
         for (String currencyString : buildingPlan) {
@@ -54,7 +53,7 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
         currencyJSONArray.writeJSONString(fileWriter);
         fileWriter.close();
     }
-    private CurrencyUnitJSONStorage(String jsonPathString) throws IOException, ParseException {
+    protected CurrencyUnitJSONStorage(String jsonPathString) throws IOException, ParseException {
         CurrencyUnitJSONStorage.jsonPathString = jsonPathString;
 
         JSONParser jsonParser = new JSONParser();
@@ -62,23 +61,6 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
         FileReader fileReader = new FileReader(jsonPathString);
         currencyJSONArray = (JSONArray) jsonParser.parse(fileReader);
         fileReader.close();
-    }
-
-    private static CurrencyUnitJSONStorage createInstance() throws IOException, ParseException {
-
-        String jsonPathString = (String) propertiesStorage.getProperty(propertyName);
-        if(jsonPathString == null) {
-            return new CurrencyUnitJSONStorage();
-        } else {
-            return new CurrencyUnitJSONStorage(jsonPathString);
-        }
-    }
-
-    public static CurrencyUnitJSONStorage getInstance() throws IOException, ParseException {
-        if(instance == null) {
-            instance = createInstance();
-        }
-        return instance;
     }
 
     @Override

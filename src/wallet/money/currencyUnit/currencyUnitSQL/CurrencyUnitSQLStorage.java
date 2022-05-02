@@ -12,16 +12,14 @@ import java.util.Objects;
 
 public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
 
-    private static CurrencyUnitSQLStorage instance;
     private Connection dbConnection;
 
     public static final String defaultTableName = "currencyUnits";
     public static final String propertyName = "CurrencyUnitSQLTableName";
-
     private static final PropertiesStorage propertiesStorage = PropertiesStorage.getInstance();
     private static String tableName;
 
-    private CurrencyUnitSQLStorage() throws SQLException, IOException {
+    protected CurrencyUnitSQLStorage() throws SQLException, IOException {
         ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
         dbConnection = connectionFactory.getConnection();
         createTable();
@@ -35,7 +33,7 @@ public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
         }
         dbConnection.close();
     }
-    private CurrencyUnitSQLStorage(List<String> buildingPlan) throws SQLException, IOException {
+    protected CurrencyUnitSQLStorage(List<String> buildingPlan) throws SQLException, IOException {
         ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
         dbConnection = connectionFactory.getConnection();
         createTable();
@@ -47,17 +45,8 @@ public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
         }
         dbConnection.close();
     }
-    private CurrencyUnitSQLStorage(String tableName) {
+    protected CurrencyUnitSQLStorage(String tableName) {
         CurrencyUnitSQLStorage.tableName = tableName;
-    }
-
-    private static CurrencyUnitSQLStorage createInstance() throws IOException, SQLException {
-        String tableName = (String) propertiesStorage.getProperty(propertyName);
-        if(tableName == null) {
-            return new CurrencyUnitSQLStorage();
-        } else {
-            return new CurrencyUnitSQLStorage(tableName);
-        }
     }
 
     private void createTable() throws SQLException {
@@ -123,13 +112,6 @@ public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
             e.printStackTrace();
         }
         return result;
-    }
-
-    public static CurrencyUnitSQLStorage getInstance() throws SQLException, IOException {
-        if(instance == null) {
-            instance = createInstance();
-        }
-        return instance;
     }
 
     public String getTableName() {

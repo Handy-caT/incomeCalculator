@@ -5,7 +5,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import wallet.PropertiesStorage;
-import wallet.money.currencyUnit.interfaces.CurrencyUpdaterProvider;
+import wallet.money.currencyUnit.currencyUnitWeb.CurrencyUpdaterWebFactory;
+import wallet.money.currencyUnit.interfaces.CurrencyUpdater;
 import wallet.money.currencyUnit.currencyUnitWeb.CurrencyUpdaterWeb;
 
 import java.io.*;
@@ -14,9 +15,7 @@ import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
-
-    private static CurrencyUpdaterJSON instance;
+public class CurrencyUpdaterJSON implements CurrencyUpdater {
 
     private static final PropertiesStorage propertiesStorage = PropertiesStorage.getInstance();
     private static String jsonPathString;
@@ -25,7 +24,7 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
     private static final SimpleDateFormat formatter = new SimpleDateFormat("dd_MM_yyyy");
     private static String dateString;
 
-    private CurrencyUpdaterJSON() throws IOException {
+    protected CurrencyUpdaterJSON() throws IOException {
         CurrencyUpdaterJSONBuilder builder = CurrencyUpdaterJSONBuilder.getInstance();
         List<String> buildingPlan = builder.getBuildPlan();
         for (String currencyString : buildingPlan) {
@@ -51,7 +50,7 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
         currencyJSONArray.writeJSONString(fileWriter);
         fileWriter.close();
     }
-    private CurrencyUpdaterJSON(List<String> buildingPlan) throws IOException {
+    protected CurrencyUpdaterJSON(List<String> buildingPlan) throws IOException {
         Date date = new Date();
         dateString = formatter.format(date);
 
@@ -69,7 +68,7 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
         currencyJSONArray.writeJSONString(fileWriter);
         fileWriter.close();
     }
-    private CurrencyUpdaterJSON(String jsonPathString) throws IOException, ParseException {
+    protected CurrencyUpdaterJSON(String jsonPathString) throws IOException, ParseException {
         CurrencyUpdaterJSON.jsonPathString = jsonPathString;
         Date date = new Date();
         dateString = formatter.format(date);
@@ -96,23 +95,6 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
         return start + formatter.format(date) + ".json";
     }
 
-    private static CurrencyUpdaterJSON createInstance() throws IOException, ParseException {
-
-        String jsonPathString = (String) propertiesStorage.getProperty("CurrencyUpdaterPath");
-        if(jsonPathString == null) {
-            return new CurrencyUpdaterJSON();
-        } else {
-            return new CurrencyUpdaterJSON(jsonPathString);
-        }
-    }
-
-    public static CurrencyUpdaterJSON getInstance() throws IOException, ParseException {
-        if(instance == null) {
-            instance = createInstance();
-        }
-        return instance;
-    }
-
     private JSONObject getJSONObjectByCurrencyString(String currencyName) {
         JSONObject currencyJSONObject;
         JSONObject result = null;
@@ -130,7 +112,8 @@ public class CurrencyUpdaterJSON implements CurrencyUpdaterProvider {
 
     @Override
     public BigDecimal getRatioOnDate(String currencyFrom, String currencyTo, Date date) {
-        CurrencyUpdaterWeb currencyUpdaterWeb = CurrencyUpdaterWeb.getInstance();
+        CurrencyUpdaterWebFactory factory = new CurrencyUpdaterWebFactory();
+        CurrencyUpdaterWeb currencyUpdaterWeb = (CurrencyUpdaterWeb) factory.createUpdater();
         return currencyUpdaterWeb.getRatioOnDate(currencyFrom,currencyTo,date);
     }
 
