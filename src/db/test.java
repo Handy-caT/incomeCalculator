@@ -1,12 +1,9 @@
 package db;
 
 import org.json.simple.JSONArray;
-import wallet.money.WebApiJSON;
+import wallet.money.util.WebApiJSON;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.sql.*;
-import java.util.Scanner;
 
 
 public class test {

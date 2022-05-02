@@ -10,7 +10,7 @@ public class StrictCurrencyUnit {
     protected long currencyScale;
 
     protected StrictCurrencyUnit(){}
-    protected StrictCurrencyUnit(String currencyString, long id, long scale) {
+    public StrictCurrencyUnit(String currencyString, long id, long scale) {
         currencyName = currencyString;
         this.currencyId = id;
         this.currencyScale = scale;

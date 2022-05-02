@@ -1,9 +1,9 @@
 package wallet.money;
 
 import org.json.simple.parser.ParseException;
-import wallet.money.currencyUpdaters.CurrencyUpdaterJSON;
-import wallet.money.currencyUpdaters.CurrencyUpdaterProvider;
-import wallet.money.currencyUpdaters.CurrencyUpdaterSQL;
+import wallet.money.currencyUnit.currencyUnitJSON.CurrencyUpdaterJSON;
+import wallet.money.currencyUnit.interfaces.CurrencyUpdaterProvider;
+import wallet.money.currencyUnit.currencyUnitSQL.CurrencyUpdaterSQL;
 
 import java.io.IOException;
 import java.math.BigDecimal;
