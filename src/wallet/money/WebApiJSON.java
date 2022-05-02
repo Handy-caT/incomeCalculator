@@ -47,15 +47,7 @@ public class WebApiJSON {
 
     public static WebApiJSON getInstance() {
         if(instance == null) {
-            api = new NBRBAPI();
-            instance = new WebApiJSON();
-        }
-        return instance;
-    }
-
-    public static WebApiJSON getInstance(APIProvider api) {
-        if(instance == null) {
-            WebApiJSON.api = api;
+            if(api == null) api = new NBRBAPI();
             instance = new WebApiJSON();
         }
         return instance;
@@ -63,6 +55,10 @@ public class WebApiJSON {
 
     public JSONArray getCurrenciesWebJSONArrayOnDate(String dateString) {
         return api.getRatiosArray(dateString);
+    }
+
+    public static void setApi(APIProvider api) {
+        WebApiJSON.api = api;
     }
 
 }

@@ -1,66 +1,66 @@
 package tests.moneyTests;
 
-import db.ConnectionFactory;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import wallet.PropertiesStorage;
+import wallet.money.WebApiJSON;
 import wallet.money.currencyUnit.CurrencyUnitSQLStorage;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
-import java.sql.*;
-import java.util.Objects;
+import java.sql.SQLException;
+
+import static org.junit.Assert.*;
 
 public class CurrencyUnitSQLStorageTest {
 
     static PropertiesStorage propertiesStorage;
 
     @BeforeClass
-    public static void before() {
+    public static void before() throws IOException {
         propertiesStorage = PropertiesStorage.getInstance();
-    }
-
-    public boolean containsUnit(String currencyString, Connection connection, String tableName) throws SQLException {
-        PreparedStatement preparedStatement = connection.prepareStatement("SELECT currencyId, currencyName, "
-                + "currencyScale FROM " + tableName + " WHERE currencyName = ?");
-        preparedStatement.setString(1, currencyString);
-        ResultSet resultSet = preparedStatement.executeQuery();
-
-
-        return Objects.equals(resultSet.getString(2), currencyString);
+        propertiesStorage.setPropertiesPath("testFiles/properties/config.properties");
     }
 
     @Test
-    public void ConstructorTest() throws SQLException, IOException {
-        Files.copy(Paths.get("testFiles/properties/configConstructor.properties"),
-                Paths.get("testFiles/properties/configConstructorTest.properties"), StandardCopyOption.REPLACE_EXISTING);
-        propertiesStorage.setPropertiesPath("testFiles/properties/configConstructorTest.properties");
+    public void getCurrencyUnitByCurrencyString() throws SQLException, IOException {
         CurrencyUnitSQLStorage storage = CurrencyUnitSQLStorage.getInstance();
-        ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
-        Connection connection = connectionFactory.getConnection();
 
-        Assert.assertTrue(containsUnit("USD", connection, CurrencyUnitSQLStorage.defaultTableName));
-        Assert.assertTrue(containsUnit("EUR", connection, CurrencyUnitSQLStorage.defaultTableName));
-        Assert.assertTrue(containsUnit("RUB", connection, CurrencyUnitSQLStorage.defaultTableName));
-        Assert.assertTrue(containsUnit("AMD", connection, CurrencyUnitSQLStorage.defaultTableName));
-        Assert.assertTrue(containsUnit("UAH", connection, CurrencyUnitSQLStorage.defaultTableName));
-        Assert.assertTrue(containsUnit("PLN", connection, CurrencyUnitSQLStorage.defaultTableName));
-        connection.close();
+        Assert.assertEquals("USD",
+                storage.getCurrencyUnitByCurrencyString("USD").getCurrencyName());
+        Assert.assertEquals("EUR",
+                storage.getCurrencyUnitByCurrencyString("EUR").getCurrencyName());
+        Assert.assertEquals("RUB",
+                storage.getCurrencyUnitByCurrencyString("RUB").getCurrencyName());
+        Assert.assertEquals("CAD",
+                storage.getCurrencyUnitByCurrencyString("CAD").getCurrencyName());
+        Assert.assertEquals("UAH",
+                storage.getCurrencyUnitByCurrencyString("UAH").getCurrencyName());
+        Assert.assertEquals("XDR",
+                storage.getCurrencyUnitByCurrencyString("XDR").getCurrencyName());
 
-        File file = new File("testFiles/properties/configConstructorTest.properties");
-        file.delete();
     }
 
-    @AfterClass
-    public static void after() throws SQLException {
-        ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
-        Connection connection = connectionFactory.getConnection();
+    @Test
+    public void isCurrencyExists() throws SQLException, IOException {
+        CurrencyUnitSQLStorage storage = CurrencyUnitSQLStorage.getInstance();
 
-        try {
-            Statement statement = connection.createStatement();
-            statement.execute("DROP TABLE " + CurrencyUnitSQLStorage.defaultTableName);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        Assert.assertFalse(storage.isCurrencyExists("ABC"));
+        Assert.assertFalse(storage.isCurrencyExists("ABCD"));
+        Assert.assertFalse(storage.isCurrencyExists("AB"));
+        Assert.assertFalse(storage.isCurrencyExists("abc"));
+        Assert.assertFalse(storage.isCurrencyExists("eur"));
+        Assert.assertFalse(storage.isCurrencyExists(null));
+    }
+
+    @Test
+    public void getCurrencyUnitByCurrencyID() throws SQLException, IOException {
+        CurrencyUnitSQLStorage storage = CurrencyUnitSQLStorage.getInstance();
+
+        Assert.assertEquals(456,storage.getCurrencyUnitByCurrencyID(456).getCurrencyId());
+        Assert.assertEquals(457,storage.getCurrencyUnitByCurrencyID(457).getCurrencyId());
+        Assert.assertEquals(449,storage.getCurrencyUnitByCurrencyID(449).getCurrencyId());
+        Assert.assertEquals(431,storage.getCurrencyUnitByCurrencyID(431).getCurrencyId());
+        Assert.assertEquals(451,storage.getCurrencyUnitByCurrencyID(451).getCurrencyId());
     }
 }

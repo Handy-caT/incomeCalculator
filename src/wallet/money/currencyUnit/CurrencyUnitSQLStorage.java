@@ -82,8 +82,8 @@ public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
                     + "currencyScale FROM " + tableName + " WHERE currencyName = ?");
             preparedStatement.setString(1,currencyString);
             resultSet = preparedStatement.executeQuery();
-            dbConnection.close();
             result = new StrictCurrencyUnit(currencyString,resultSet.getLong(1),resultSet.getLong(3));
+            dbConnection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -116,8 +116,8 @@ public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
                     + "currencyScale FROM " + tableName + " WHERE currencyId = ?");
             preparedStatement.setLong(1,currencyId);
             resultSet = preparedStatement.executeQuery();
-            dbConnection.close();
             result = new StrictCurrencyUnit(resultSet.getString(2),currencyId,resultSet.getLong(3));
+            dbConnection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -134,4 +134,5 @@ public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
     public String getTableName() {
         return tableName;
     }
+
 }

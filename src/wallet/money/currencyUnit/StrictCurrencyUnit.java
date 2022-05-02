@@ -46,4 +46,15 @@ public class StrictCurrencyUnit {
         return new StrictCurrencyUnit(this);
     }
 
+    public String getCurrencyName() {
+        return currencyName;
+    }
+
+    public long getCurrencyId() {
+        return currencyId;
+    }
+
+    public long getCurrencyScale() {
+        return currencyScale;
+    }
 }

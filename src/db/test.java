@@ -1,9 +1,9 @@
 package db;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import org.json.simple.JSONArray;
+import wallet.money.WebApiJSON;
+
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.Scanner;
@@ -31,7 +31,14 @@ public class test {
             e.printStackTrace(); // обработка ошибок  DriverManager.getConnection
             System.out.println("Ошибка SQL !");
         }*/
+        WebApiJSON webApiJSON = WebApiJSON.getInstance();
+        JSONArray array = webApiJSON.getCurrenciesJSONArray();
 
+        File file = new File("json/testapi.json");
+
+        FileWriter fileWriter = new FileWriter(file);
+        array.writeJSONString(fileWriter);
+        fileWriter.close();
     }
 
 }

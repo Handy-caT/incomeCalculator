@@ -10,6 +10,7 @@ import org.json.simple.parser.ParseException;
 import wallet.money.APIProvider;
 import wallet.money.JSONConverter;
 import wallet.money.NBRBAPI;
+import wallet.money.WebApiJSON;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -26,10 +27,14 @@ public class CurrencyUpdaterWeb implements CurrencyUpdaterProvider {
     public static CurrencyUpdaterWeb getInstance() {
         if(instance == null) {
             instance = new CurrencyUpdaterWeb();
-            api = new NBRBAPI();
+            if(api == null) api = new NBRBAPI();
         }
         return instance;
     }
+
+   public static void setApi(APIProvider api) {
+       CurrencyUpdaterWeb.api = api;
+   }
 
     @Override
     public BigDecimal getRatio(String currencyFrom, String currencyTo)  {
