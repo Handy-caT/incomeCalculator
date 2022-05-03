@@ -29,7 +29,7 @@ public class test {
             System.out.println("Ошибка SQL !");
         }*/
         WebApiJSON webApiJSON = WebApiJSON.getInstance();
-        JSONArray array = webApiJSON.getCurrenciesJSONArray();
+        JSONArray array = webApiJSON.getCurrenciesWebJSONArrayOnDate("2022-04-25");
 
         File file = new File("json/testapi.json");
 

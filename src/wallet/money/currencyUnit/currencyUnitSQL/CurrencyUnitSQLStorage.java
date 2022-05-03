@@ -82,7 +82,9 @@ public class CurrencyUnitSQLStorage implements CurrencyUnitStorage {
 
     @Override
     public boolean isCurrencyExists(String currencyString) {
+        ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
         try {
+            dbConnection = connectionFactory.getConnection();
             PreparedStatement preparedStatement = dbConnection.prepareStatement("SELECT currencyId, currencyName, "
                     + "currencyScale FROM " + tableName + " WHERE currencyName = ?");
             preparedStatement.setString(1, currencyString);

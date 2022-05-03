@@ -1,4 +1,4 @@
-package wallet.money.test;
+package wallet.test;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -13,6 +13,7 @@ import wallet.money.*;
 import wallet.money.Money;
 import wallet.money.currencyUnit.StrictCurrencyUnit;
 import wallet.money.currencyUnit.currencyUnitJSON.CurrencyUnitJSONStorage;
+import wallet.money.currencyUnit.currencyUnitJSON.CurrencyUnitJSONStorageFactory;
 
 import java.io.File;
 import java.io.FileReader;
@@ -47,7 +48,8 @@ public class CardTest {
     @Test
     public void receiveAddTransaction() throws IOException, ParseException {
         HistoryKeeper historyKeeper = new JSONHistoryKeeper(jsonFilePath);
-        CurrencyUnitJSONStorage currencyUnitJSONStorage = CurrencyUnitJSONStorage.getInstance();
+        CurrencyUnitJSONStorageFactory factory = new CurrencyUnitJSONStorageFactory();
+        CurrencyUnitJSONStorage currencyUnitJSONStorage = (CurrencyUnitJSONStorage) factory.createStorage();
         StrictCurrencyUnit USDUnit = currencyUnitJSONStorage.getCurrencyUnitByCurrencyString("USD");
         Card card = new Card(historyKeeper,USDUnit,id);
 
@@ -80,7 +82,8 @@ public class CardTest {
     @Test
     public void receiveReduceTransaction() throws IOException, ParseException {
         HistoryKeeper historyKeeper = new JSONHistoryKeeper(jsonFilePath);
-        CurrencyUnitJSONStorage currencyUnitJSONStorage = CurrencyUnitJSONStorage.getInstance();
+        CurrencyUnitJSONStorageFactory factory = new CurrencyUnitJSONStorageFactory();
+        CurrencyUnitJSONStorage currencyUnitJSONStorage = (CurrencyUnitJSONStorage) factory.createStorage();
         StrictCurrencyUnit USDUnit = currencyUnitJSONStorage.getCurrencyUnitByCurrencyString("USD");
         Money beforeBalance = Money.of(USDUnit,BigDecimal.valueOf(10000));
         Card card = new Card(historyKeeper,USDUnit,beforeBalance,id);
@@ -113,7 +116,8 @@ public class CardTest {
     @Test
     public void receiveAddTransactionAnotherCurrency() throws IOException, ParseException {
         HistoryKeeper historyKeeper = new JSONHistoryKeeper(jsonFilePath);
-        CurrencyUnitJSONStorage currencyUnitJSONStorage = CurrencyUnitJSONStorage.getInstance();
+        CurrencyUnitJSONStorageFactory factory = new CurrencyUnitJSONStorageFactory();
+        CurrencyUnitJSONStorage currencyUnitJSONStorage = (CurrencyUnitJSONStorage) factory.createStorage();
         CurrencyConverter currencyConverter = CurrencyConverter.getInstance();
         StrictCurrencyUnit USDUnit = currencyUnitJSONStorage.getCurrencyUnitByCurrencyString("USD");
         StrictCurrencyUnit EURUnit = currencyUnitJSONStorage.getCurrencyUnitByCurrencyString("EUR");

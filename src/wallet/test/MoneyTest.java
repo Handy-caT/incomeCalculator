@@ -1,4 +1,4 @@
-package wallet.money.test;
+package wallet.test;
 
 
 import org.json.simple.parser.ParseException;

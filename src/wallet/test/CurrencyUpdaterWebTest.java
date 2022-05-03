@@ -1,9 +1,10 @@
-package wallet.money.test;
+package wallet.test;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import wallet.money.currencyUnit.currencyUnitWeb.CurrencyUpdaterWeb;
+import wallet.money.currencyUnit.currencyUnitWeb.CurrencyUpdaterWebFactory;
 
 import java.math.BigDecimal;
 
@@ -20,7 +21,8 @@ public class CurrencyUpdaterWebTest {
 
     @Test
     public void getRatio() {
-        CurrencyUpdaterWeb updater = CurrencyUpdaterWeb.getInstance();
+        CurrencyUpdaterWebFactory factory = new CurrencyUpdaterWebFactory();
+        CurrencyUpdaterWeb updater = (CurrencyUpdaterWeb) factory.createUpdater();
         BigDecimal ratio = updater.getRatio("EUR","BYN");
         Assert.assertEquals(BigDecimal.valueOf(2.7896),ratio);
         ratio = updater.getRatio("USD","BYN");

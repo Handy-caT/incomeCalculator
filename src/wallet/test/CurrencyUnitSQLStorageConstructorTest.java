@@ -1,8 +1,9 @@
-package wallet.money.test;
+package wallet.test;
 
 import db.ConnectionFactory;
 import org.junit.*;
 import wallet.PropertiesStorage;
+import wallet.money.currencyUnit.currencyUnitSQL.CurrencyUnitSQLStorageFactory;
 import wallet.money.util.WebApiJSON;
 import wallet.money.currencyUnit.currencyUnitSQL.CurrencyUnitSQLStorage;
 
@@ -40,7 +41,9 @@ public class CurrencyUnitSQLStorageConstructorTest {
         Files.copy(Paths.get("testFiles/properties/configConstructor.properties"),
                 Paths.get("testFiles/properties/configConstructorTest.properties"), StandardCopyOption.REPLACE_EXISTING);
         propertiesStorage.setPropertiesPath("testFiles/properties/configConstructorTest.properties");
-        CurrencyUnitSQLStorage storage = CurrencyUnitSQLStorage.getInstance();
+
+        CurrencyUnitSQLStorageFactory factory = new CurrencyUnitSQLStorageFactory();
+        CurrencyUnitSQLStorage storage = (CurrencyUnitSQLStorage) factory.createStorage();
 
         ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
         Connection connection = connectionFactory.getConnection();

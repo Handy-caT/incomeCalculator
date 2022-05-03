@@ -2,6 +2,8 @@ package wallet.money;
 
 import org.json.simple.parser.ParseException;
 import wallet.money.currencyUnit.currencyUnitJSON.CurrencyUpdaterJSON;
+import wallet.money.currencyUnit.currencyUnitJSON.CurrencyUpdaterJSONFactory;
+import wallet.money.currencyUnit.currencyUnitSQL.CurrencyUpdaterSQLFactory;
 import wallet.money.currencyUnit.interfaces.CurrencyUpdater;
 import wallet.money.currencyUnit.currencyUnitSQL.CurrencyUpdaterSQL;
 
@@ -14,11 +16,15 @@ import java.util.Map;
 
 public class OptimizedUpdater implements CurrencyUpdater {
 
-    private final CurrencyUpdaterJSON jsonUpdater = CurrencyUpdaterJSON.getInstance();
-    private final CurrencyUpdaterSQL sqlUpdater = CurrencyUpdaterSQL.getInstance();
+    private CurrencyUpdaterJSON jsonUpdater;
+    private CurrencyUpdaterSQL sqlUpdater;
 
     private OptimizedUpdater() throws IOException, ParseException, SQLException {
+        CurrencyUpdaterJSONFactory jsonFactory = new CurrencyUpdaterJSONFactory();
+        CurrencyUpdaterSQLFactory sqlFactory = new CurrencyUpdaterSQLFactory();
 
+        jsonUpdater = (CurrencyUpdaterJSON) jsonFactory.createUpdater();
+        sqlUpdater = (CurrencyUpdaterSQL) sqlFactory.createUpdater();
     }
 
     @Override

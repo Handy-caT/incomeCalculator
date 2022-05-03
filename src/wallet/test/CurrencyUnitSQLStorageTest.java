@@ -1,10 +1,11 @@
-package wallet.money.test;
+package wallet.test;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import wallet.PropertiesStorage;
 import wallet.money.currencyUnit.currencyUnitSQL.CurrencyUnitSQLStorage;
+import wallet.money.currencyUnit.currencyUnitSQL.CurrencyUnitSQLStorageFactory;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -12,16 +13,18 @@ import java.sql.SQLException;
 public class CurrencyUnitSQLStorageTest {
 
     static PropertiesStorage propertiesStorage;
+    static CurrencyUnitSQLStorageFactory factory;
 
     @BeforeClass
     public static void before() throws IOException {
         propertiesStorage = PropertiesStorage.getInstance();
         propertiesStorage.setPropertiesPath("testFiles/properties/config.properties");
+        factory = new CurrencyUnitSQLStorageFactory();
     }
 
     @Test
     public void getCurrencyUnitByCurrencyString() throws SQLException, IOException {
-        CurrencyUnitSQLStorage storage = CurrencyUnitSQLStorage.getInstance();
+        CurrencyUnitSQLStorage storage = (CurrencyUnitSQLStorage) factory.createStorage();
 
         Assert.assertEquals("USD",
                 storage.getCurrencyUnitByCurrencyString("USD").getCurrencyName());
@@ -40,7 +43,7 @@ public class CurrencyUnitSQLStorageTest {
 
     @Test
     public void isCurrencyExists() throws SQLException, IOException {
-        CurrencyUnitSQLStorage storage = CurrencyUnitSQLStorage.getInstance();
+        CurrencyUnitSQLStorage storage = (CurrencyUnitSQLStorage) factory.createStorage();
 
         Assert.assertFalse(storage.isCurrencyExists("ABC"));
         Assert.assertFalse(storage.isCurrencyExists("ABCD"));
@@ -52,7 +55,7 @@ public class CurrencyUnitSQLStorageTest {
 
     @Test
     public void getCurrencyUnitByCurrencyID() throws SQLException, IOException {
-        CurrencyUnitSQLStorage storage = CurrencyUnitSQLStorage.getInstance();
+        CurrencyUnitSQLStorage storage = (CurrencyUnitSQLStorage) factory.createStorage();
 
         Assert.assertEquals(456,storage.getCurrencyUnitByCurrencyID(456).getCurrencyId());
         Assert.assertEquals(457,storage.getCurrencyUnitByCurrencyID(457).getCurrencyId());

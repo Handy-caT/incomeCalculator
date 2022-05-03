@@ -4,8 +4,12 @@ import org.json.simple.parser.ParseException;
 import wallet.PropertiesStorage;
 import wallet.money.currencyUnit.StrictCurrencyUnit;
 import wallet.money.currencyUnit.currencyUnitJSON.CurrencyUpdaterJSON;
+import wallet.money.currencyUnit.currencyUnitJSON.CurrencyUpdaterJSONFactory;
+import wallet.money.currencyUnit.currencyUnitSQL.CurrencyUpdaterSQLFactory;
+import wallet.money.currencyUnit.currencyUnitWeb.CurrencyUpdaterWebFactory;
 import wallet.money.currencyUnit.interfaces.CurrencyUpdater;
 import wallet.money.currencyUnit.currencyUnitWeb.CurrencyUpdaterWeb;
+import wallet.money.currencyUnit.interfaces.CurrencyUpdaterFactory;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -21,19 +25,20 @@ public class CurrencyConverter {
     private short mapSize;
     private TreeMap<String,BigDecimal> priorityHash;
     private CurrencyUpdater currencyUpdater;
+    private CurrencyUpdaterFactory currencyUpdaterFactory;
 
     private List<String> currencyNamesList;
     private Map<String,Map<String, BigDecimal>> converterMapSell;
 
-    private CurrencyConverter(CurrencyUpdater currencyUpdater, short mapSize, List<String> currencyNamesList) {
-        this.currencyUpdater = currencyUpdater;
+    private CurrencyConverter(CurrencyUpdaterFactory currencyUpdaterFactory, short mapSize, List<String> currencyNamesList) {
+        this.currencyUpdater = currencyUpdaterFactory.createUpdater();
         this.mapSize = mapSize;
         this.currencyNamesList = currencyNamesList;
 
         buildHashes(currencyNamesList);
     }
-    private CurrencyConverter(CurrencyUpdater currencyUpdater) {
-        this.currencyUpdater = currencyUpdater;
+    private CurrencyConverter(CurrencyUpdaterFactory currencyUpdaterFactory) {
+        this.currencyUpdater = currencyUpdaterFactory.createUpdater();
         mapSize = 3;
         List<String> currencyNamesList = new LinkedList<>();
         currencyNamesList.add("USD");
@@ -115,12 +120,13 @@ public class CurrencyConverter {
     }
 
     private static CurrencyConverter createInstance() throws IOException, ParseException {
-
-        String jsonPathString = (String) propertiesStorage.getProperty(propertyName);
-        if(jsonPathString == null) {
-            return new CurrencyConverter(CurrencyUpdaterWeb.getInstance());
+        String updaterType = (String) propertiesStorage.getProperty(propertyName);
+        if(updaterType.equals("CurrencyUnitJSONStorage")) {
+            return new CurrencyConverter(new CurrencyUpdaterJSONFactory());
+        } else if(updaterType.equals("CurrencyUnitSQLStorage")) {
+            return new CurrencyConverter(new CurrencyUpdaterSQLFactory());
         } else {
-            return new CurrencyConverter(CurrencyUpdaterJSON.getInstance());
+            return new CurrencyConverter(new CurrencyUpdaterWebFactory());
         }
     }
 

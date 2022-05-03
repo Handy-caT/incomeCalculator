@@ -1,9 +1,10 @@
-package wallet.money.test;
+package wallet.test;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import wallet.PropertiesStorage;
 import wallet.money.currencyUnit.currencyUnitSQL.CurrencyUpdaterSQL;
+import wallet.money.currencyUnit.currencyUnitSQL.CurrencyUpdaterSQLFactory;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -20,7 +21,8 @@ public class CurrencyUpdaterSQLTest {
     @Test
     public void getRatio() throws IOException, SQLException {
         propertiesStorage.setPropertiesPath("testFiles/properties/config.properties");
-        CurrencyUpdaterSQL currencyUpdater = CurrencyUpdaterSQL.getInstance();
+        CurrencyUpdaterSQLFactory factory = new CurrencyUpdaterSQLFactory();
+        CurrencyUpdaterSQL currencyUpdater = (CurrencyUpdaterSQL) factory.createUpdater();
 
     }
 

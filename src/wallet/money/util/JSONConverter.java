@@ -39,6 +39,16 @@ public class JSONConverter {
         return currencyObject;
     }
 
+    public static JSONObject getCurObjectByCurStringLocal(JSONArray currencyArray, String currencyString) {
+        JSONObject currencyObject = null;
+        for(Object object : currencyArray) {
+            currencyObject = (JSONObject) object;
+            String tempCurrencyString = (String) currencyObject.get(localCurName);
+            if(Objects.equals(tempCurrencyString, currencyString)) break;
+        }
+        return currencyObject;
+    }
+
     public static JSONObject convertWebCurObjectToLocal(JSONObject currencyObject) {
         long currencyId = (long)currencyObject.get(webIdName);
         long currencyScale = (long)currencyObject.get(webScaleName);
@@ -68,6 +78,22 @@ public class JSONConverter {
 
     public static long getIdFromObject(JSONObject currencyObject) {
         return (long) currencyObject.get(webIdName);
+    }
+
+    public static long getScaleFromLocalObject(JSONObject currencyObject) {
+        return (long) currencyObject.get(localScaleName);
+    }
+
+    public static double getRatioFromLocalObject(JSONObject currencyObject) {
+        return (double) currencyObject.get(localRatioName);
+    }
+
+    public static String getNameFromLocalObject(JSONObject currencyObject) {
+        return (String) currencyObject.get(localCurName);
+    }
+
+    public static long getIdFromLocalObject(JSONObject currencyObject) {
+        return (long) currencyObject.get(localIdName);
     }
 
 }

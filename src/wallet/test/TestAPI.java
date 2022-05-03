@@ -1,4 +1,4 @@
-package wallet.money.test;
+package wallet.test;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -26,7 +26,7 @@ public class TestAPI implements APIProvider {
         JSONArray currencyJSONArray = null;
         JSONParser jsonParser = new JSONParser();
         try {
-            FileReader fileReader = new FileReader(jsonPathString);
+            FileReader fileReader = new FileReader( jsonPathString);
             currencyJSONArray = (JSONArray) jsonParser.parse(fileReader);
             fileReader.close();
         } catch (Exception e) {
@@ -37,7 +37,16 @@ public class TestAPI implements APIProvider {
 
     @Override
     public JSONArray getRatiosArray(String date) {
-        return null;
+        JSONArray currencyJSONArray = null;
+        JSONParser jsonParser = new JSONParser();
+        try {
+            FileReader fileReader = new FileReader("OnDate_" +jsonPathString);
+            currencyJSONArray = (JSONArray) jsonParser.parse(fileReader);
+            fileReader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return currencyJSONArray;
     }
 
     @Override
