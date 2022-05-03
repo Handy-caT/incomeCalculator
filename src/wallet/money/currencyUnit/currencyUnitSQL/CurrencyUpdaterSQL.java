@@ -43,6 +43,7 @@ public class CurrencyUpdaterSQL implements CurrencyUpdater {
             for (String currencyString : buildingPlan) {
                 builder.buildCurrency(currencyString);
             }
+            dateStorageSQL.addUpdater(tableName + dateString);
         }
         dbConnection.close();
     }
@@ -66,7 +67,30 @@ public class CurrencyUpdaterSQL implements CurrencyUpdater {
     }
     protected CurrencyUpdaterSQL(String tableName) throws SQLException, IOException {
         dateStorageSQL = CurrencyUpdaterDateStorageSQL.getInstance();
-        CurrencyUpdaterSQL.tableName = tableName;
+        CurrencyUpdaterSQL.tableName = tableName.substring(0,tableName.length()-10);
+        CurrencyUpdaterSQL.dateString = tableName.substring(tableName.length()-10);
+
+        Date date = new Date();
+        String dateString = sqlFormatter.format(date);
+        if(!dateString.equals(CurrencyUpdaterSQL.dateString)) {
+            if (!dateStorageSQL.isUpdaterExist(CurrencyUpdaterSQL.tableName + dateString)) {
+                ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
+                dbConnection = connectionFactory.getConnection();
+
+                createTable(dateString);
+
+                CurrencyUpdaterSQLBuilder builder = new CurrencyUpdaterSQLBuilder(CurrencyUpdaterSQL.tableName, dbConnection,dateString);
+                List<String> buildingPlan = builder.getBuildPlan();
+
+                for (String currencyString : buildingPlan) {
+                    builder.buildCurrency(currencyString);
+                }
+                dbConnection.close();
+                dateStorageSQL.addUpdater(CurrencyUpdaterSQL.tableName + dateString);
+            }
+
+            CurrencyUpdaterSQL.dateString = dateString;
+        }
     }
 
     private void createTable(String dateString) throws SQLException {
@@ -103,17 +127,24 @@ public class CurrencyUpdaterSQL implements CurrencyUpdater {
         return dateStorageSQL.isUpdaterExist(tableName + sqlFormatter.format(date));
     }
 
-    private ResultSet getCurrencyResultSet(String currencyName, String dateString) throws SQLException {
+    private List<Object> getCurrencyResultSet(String currencyName, String dateString) throws SQLException {
         ResultSet resultSet;
         ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
         dbConnection = connectionFactory.getConnection();
 
-        PreparedStatement preparedStatement = dbConnection.prepareStatement("SELECT currencyId, currencyName, "
-                + "currencyScale FROM " + tableName + dateString + " WHERE currencyName = ?");
+        PreparedStatement preparedStatement = dbConnection.prepareStatement("SELECT currencyFrom , currencyScale, "
+                + " ratio FROM " + tableName + dateString + " WHERE currencyFrom = ?");
         preparedStatement.setString(1, currencyName);
         resultSet = preparedStatement.executeQuery();
+
+        List<Object> list = new LinkedList<>();
+        list.add("0");
+        list.add(resultSet.getString(1));
+        list.add(resultSet.getLong(2));
+        list.add(resultSet.getDouble(3));
+
         dbConnection.close();
-        return resultSet;
+        return list;
     }
 
     @Override
@@ -125,28 +156,29 @@ public class CurrencyUpdaterSQL implements CurrencyUpdater {
         } else {
             try {
                 if (!Objects.equals(currencyFrom, "BYN") && !Objects.equals(currencyTo, "BYN")) {
-                    ResultSet fromSet = getCurrencyResultSet(currencyFrom,dateString);
-                    long scaleFrom = fromSet.getLong(2);
-                    ratio = fromSet.getBigDecimal(3);
+                    List<Object> fromList = getCurrencyResultSet(currencyFrom,dateString);
+                    long scaleFrom = (long) fromList.get(2);
+                    ratio = BigDecimal.valueOf((double)fromList.get(3));
 
-                    ResultSet toSet = getCurrencyResultSet(currencyTo,dateString);
-                    long scaleTo = toSet.getLong(2);
-                    BigDecimal secondRatio = toSet.getBigDecimal(3);
+                    List<Object> toList = getCurrencyResultSet(currencyTo,dateString);
+                    long scaleTo = (long) toList.get(2);
+                    BigDecimal secondRatio = BigDecimal.valueOf((double)toList.get(3));
 
                     ratio = ratio.divide(secondRatio, RoundingMode.DOWN);
                     ratio = ratio.divide(BigDecimal.valueOf(scaleFrom));
                     ratio = ratio.multiply(BigDecimal.valueOf(scaleTo));
 
                 } else if(Objects.equals(currencyFrom, "BYN")) {
-                    ResultSet toSet = getCurrencyResultSet(currencyTo,dateString);
-                    ratio = toSet.getBigDecimal(3);
-                    long scaleTo = toSet.getLong(2);
+                    List<Object> toList = getCurrencyResultSet(currencyTo,dateString);
+                    long scaleTo = (long) toList.get(2);
+                    ratio = BigDecimal.valueOf((double)toList.get(3));
+
                     ratio = BigDecimal.ONE.setScale(4).divide(ratio,RoundingMode.DOWN);
                     ratio.multiply(BigDecimal.valueOf(scaleTo));
                 } else {
-                    ResultSet fromSet = getCurrencyResultSet(currencyFrom,dateString);
-                    long scaleFrom = fromSet.getLong(2);
-                    ratio = fromSet.getBigDecimal(3);
+                    List<Object> fromList = getCurrencyResultSet(currencyFrom,dateString);
+                    long scaleFrom = (long) fromList.get(2);
+                    ratio = BigDecimal.valueOf((double)fromList.get(3));
                     ratio = ratio.divide(BigDecimal.valueOf(scaleFrom));
                 }
             } catch (SQLException throwables) {
@@ -158,11 +190,10 @@ public class CurrencyUpdaterSQL implements CurrencyUpdater {
 
     @Override
     public long getCurScale(String currencyName) {
-        ResultSet resultSet;
         long result = 0;
         try {
-            resultSet = getCurrencyResultSet(currencyName,dateString);
-            result = resultSet.getLong(2);
+            List<Object> resultList = getCurrencyResultSet(currencyName,dateString);
+            result = (long) resultList.get(2);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -196,8 +227,8 @@ public class CurrencyUpdaterSQL implements CurrencyUpdater {
         return currenciesHash;
     }
 
-    public static String getTableName() {
-        return tableName;
+    public String getTableName() {
+        return tableName + dateString;
     }
 
 

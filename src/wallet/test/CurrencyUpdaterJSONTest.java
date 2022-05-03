@@ -7,6 +7,7 @@ import org.junit.Test;
 import wallet.PropertiesStorage;
 import wallet.money.currencyUnit.currencyUnitJSON.CurrencyUpdaterJSON;
 import wallet.money.currencyUnit.currencyUnitJSON.CurrencyUpdaterJSONFactory;
+import wallet.money.currencyUnit.currencyUnitWeb.CurrencyUpdaterWeb;
 import wallet.money.util.APIProvider;
 import wallet.money.util.WebApiJSON;
 
@@ -28,6 +29,7 @@ public class CurrencyUpdaterJSONTest {
     private static final String testPath = "testFiles/json/";
     private static final SimpleDateFormat formatter = new SimpleDateFormat("dd_MM_yyyy");
     private static String jsonPath = "testFiles/json/testapi.json";
+    private static String onDateString = "testFiles/json/OnDate_testapi.json";
     private static TestAPI testAPI;
 
 
@@ -50,6 +52,8 @@ public class CurrencyUpdaterJSONTest {
                 BigDecimal.valueOf(8.7716/100).round(m));
         Assert.assertEquals(updater.getRatio("RUB","BYN"),
                 BigDecimal.valueOf(3.6694/100).round(m));
+        Assert.assertEquals(updater.getRatio("BYN","EUR"), BigDecimal.valueOf(0.3584));
+        Assert.assertEquals(updater.getRatio("EUR","USD"), BigDecimal.valueOf(1.0513));
     }
     private void checkOldRatios(CurrencyUpdaterJSON updater) {
         MathContext m = new MathContext(5);
@@ -62,8 +66,9 @@ public class CurrencyUpdaterJSONTest {
                 BigDecimal.valueOf(9.0765/100).round(m));
         Assert.assertEquals(updater.getRatio("RUB","BYN"),
                 BigDecimal.valueOf(3.6227/100).round(m));
+        Assert.assertEquals(updater.getRatio("BYN","EUR"), BigDecimal.valueOf(0.3474));
+        Assert.assertEquals(updater.getRatio("EUR","USD"), BigDecimal.valueOf(1.0786));
     }
-
 
     @BeforeClass
     public static void before() throws IOException {
@@ -141,14 +146,13 @@ public class CurrencyUpdaterJSONTest {
 
     @Test
     public void constructorTest() throws IOException {
+        testAPI = new TestAPI(jsonPath);
+        WebApiJSON.setApi(testAPI);
+
         Files.copy(Paths.get("testFiles/properties/configNewConstructor.properties"),
                 Paths.get("testFiles/properties/configNewConstructorTest.properties"),
                 StandardCopyOption.REPLACE_EXISTING);
         propertiesStorage.setPropertiesPath("testFiles/properties/configNewConstructorTest.properties");
-
-        String jsonPath = "testFiles/json/testapi.json";
-        APIProvider testAPI = new TestAPI(jsonPath);
-        WebApiJSON.setApi(testAPI);
 
         CurrencyUpdaterJSONFactory factory = new CurrencyUpdaterJSONFactory();
         CurrencyUpdaterJSON updater = (CurrencyUpdaterJSON) factory.createUpdater();
@@ -166,4 +170,47 @@ public class CurrencyUpdaterJSONTest {
         file.delete();
 
     }
+
+    @Test
+    public void onDateTest() throws IOException {
+        testAPI = new TestAPI(jsonPath);
+        testAPI.setonDateString(onDateString);
+        WebApiJSON.setApi(testAPI);
+        CurrencyUpdaterWeb.setApi(testAPI);
+
+
+        Files.copy(Paths.get("testFiles/properties/configConstructor.properties"),
+                Paths.get("testFiles/properties/configConstructorTest.properties"),
+                StandardCopyOption.REPLACE_EXISTING);
+
+        Date date = new Date();
+        File jsonFile = new File(testPath + CurrencyUpdaterJSON.defaultFileName
+                + formatter.format(date) + ".json");
+        Files.copy(Paths.get("testFiles/json/currencyUpdater02_05_2022Test.json"),
+                jsonFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+        propertiesStorage.setPropertiesPath("testFiles/properties/configConstructorTest.properties");
+        propertiesStorage.addProperty(CurrencyUpdaterJSON.propertyName,jsonFile.toString());
+
+        CurrencyUpdaterJSONFactory factory = new CurrencyUpdaterJSONFactory();
+        CurrencyUpdaterJSON updater = (CurrencyUpdaterJSON) factory.createUpdater();
+
+        MathContext m = new MathContext(5);
+
+        Assert.assertEquals(updater.getRatioOnDate("EUR","BYN",new Date()), BigDecimal.valueOf(2.8785));
+        Assert.assertEquals(updater.getRatioOnDate("USD","BYN",new Date()), BigDecimal.valueOf(2.6685));
+        Assert.assertEquals(updater.getRatioOnDate("CAD","BYN",new Date()), BigDecimal.valueOf(2.105));
+        Assert.assertEquals(updater.getRatioOnDate("PLN","BYN",new Date()), BigDecimal.valueOf(6.2162/10));
+        Assert.assertEquals(updater.getRatioOnDate("UAH","BYN",new Date()),
+                BigDecimal.valueOf(9.0765/100).round(m));
+        Assert.assertEquals(updater.getRatioOnDate("RUB","BYN",new Date()),
+                BigDecimal.valueOf(3.6227/100).round(m));
+
+        jsonFile.delete();
+
+        File file = new File("testFiles/properties/configConstructorTest.properties");
+        file.delete();
+    }
+
+
 }

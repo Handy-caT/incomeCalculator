@@ -4,6 +4,9 @@ import org.json.simple.JSONArray;
 import wallet.money.util.WebApiJSON;
 
 import java.io.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 
 public class test {
@@ -13,7 +16,7 @@ public class test {
     public static final String DB_URL = "jdbc:h2:/Users/maksim/IdeaProjects/incomeCalculator/db/test";
     public static final String DB_Driver = "org.sqlite.JDBC";
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, SQLException {
         /*
         try {
             Class.forName(DB_Driver); //Проверяем наличие JDBC драйвера для работы с БД
@@ -27,7 +30,7 @@ public class test {
         } catch (SQLException e) {
             e.printStackTrace(); // обработка ошибок  DriverManager.getConnection
             System.out.println("Ошибка SQL !");
-        }*/
+        }
         WebApiJSON webApiJSON = WebApiJSON.getInstance();
         JSONArray array = webApiJSON.getCurrenciesWebJSONArrayOnDate("2022-04-25");
 
@@ -35,7 +38,7 @@ public class test {
 
         FileWriter fileWriter = new FileWriter(file);
         array.writeJSONString(fileWriter);
-        fileWriter.close();
+        fileWriter.close();*/
     }
 
 }

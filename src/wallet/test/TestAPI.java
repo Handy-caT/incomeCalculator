@@ -11,9 +11,13 @@ import java.util.Objects;
 public class TestAPI implements APIProvider {
 
     String jsonPathString;
+    String onDateString;
 
     public TestAPI(String jsonPath) {
         jsonPathString = jsonPath;
+    }
+    public void setonDateString(String path) {
+        onDateString = path;
     }
 
     @Override
@@ -23,24 +27,19 @@ public class TestAPI implements APIProvider {
 
     @Override
     public JSONArray getRatiosArray() {
-        JSONArray currencyJSONArray = null;
-        JSONParser jsonParser = new JSONParser();
-        try {
-            FileReader fileReader = new FileReader( jsonPathString);
-            currencyJSONArray = (JSONArray) jsonParser.parse(fileReader);
-            fileReader.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return currencyJSONArray;
+        return getJsonArrayFromFile(jsonPathString);
     }
 
     @Override
     public JSONArray getRatiosArray(String date) {
+        return getJsonArrayFromFile(onDateString);
+    }
+
+    private JSONArray getJsonArrayFromFile(String onDateString) {
         JSONArray currencyJSONArray = null;
         JSONParser jsonParser = new JSONParser();
         try {
-            FileReader fileReader = new FileReader("OnDate_" +jsonPathString);
+            FileReader fileReader = new FileReader(onDateString);
             currencyJSONArray = (JSONArray) jsonParser.parse(fileReader);
             fileReader.close();
         } catch (Exception e) {

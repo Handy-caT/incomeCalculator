@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -18,6 +20,7 @@ public class CurrencyUpdaterSQLBuilder implements CurrencyUpdaterBuilder {
     private final String tableName;
     private final Connection dbConnection;
     private final String dateString;
+    private static final SimpleDateFormat formatter = new SimpleDateFormat("dd_MM_yyyy");
 
     private  JSONArray currenciesWebJSONArray;
 
@@ -27,8 +30,13 @@ public class CurrencyUpdaterSQLBuilder implements CurrencyUpdaterBuilder {
         this.dbConnection = dbConnection;
         this.tableName = tableName;
 
+        Date date = new Date();
+        String currentDateString = formatter.format(date);
+
         WebApiJSON webApiJSON = WebApiJSON.getInstance();
-        currenciesWebJSONArray = webApiJSON.getCurrenciesWebJSONArrayOnDate(dateString);
+        if(currentDateString.equals(dateString)) {
+            currenciesWebJSONArray = webApiJSON.getCurrenciesJSONArray();
+        } else currenciesWebJSONArray = webApiJSON.getCurrenciesJSONArrayOnDate(dateString);
     }
 
     public List<String> getBuildPlan() {

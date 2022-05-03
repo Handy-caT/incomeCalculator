@@ -48,7 +48,7 @@ public class WebApiJSON {
         return instance;
     }
 
-    public JSONArray getCurrenciesWebJSONArrayOnDate(String dateString) {
+    public JSONArray getCurrenciesJSONArrayOnDate(String dateString) {
         return api.getRatiosArray(dateString);
     }
 
