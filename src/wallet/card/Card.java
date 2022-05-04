@@ -1,6 +1,8 @@
 package wallet.card;
 
 
+import wallet.card.historyKeeper.HistoryKeeper;
+import wallet.card.transaction.Transaction;
 import wallet.money.Money;
 import wallet.money.currencyUnit.StrictCurrencyUnit;
 
@@ -48,7 +50,7 @@ public class Card {
         return balance;
     }
 
-    protected class Memento {
+    public class Memento {
         String id;
 
         Money beforeBalance;

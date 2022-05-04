@@ -1,5 +1,7 @@
 package wallet.card;
 
+import wallet.card.transaction.Transaction;
+
 import java.math.BigInteger;
 
 public class IdGenerator {

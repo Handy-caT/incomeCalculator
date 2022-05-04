@@ -89,6 +89,14 @@ public class CurrencyUpdaterJSON implements CurrencyUpdater {
         }
     }
 
+    public void update() throws IOException {
+        new CurrencyUpdaterJSON();
+    }
+
+    public String getDate() {
+        return dateString;
+    }
+
     private String getDateFromName(String name) {
         String dateString = name.substring(name.length() - 15);
         dateString = dateString.substring(0,10);
@@ -180,4 +188,5 @@ public class CurrencyUpdaterJSON implements CurrencyUpdater {
     public static void setDir(String dir) {
         CurrencyUpdaterJSON.dir = dir;
     }
+
 }

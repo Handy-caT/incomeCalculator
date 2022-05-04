@@ -194,7 +194,7 @@ public class CurrencyUpdaterSQLTest {
         File file = new File("testFiles/properties/configOldConstructorTest.properties");
         file.delete();
     }
-    
+
     @After
     public void after() throws SQLException {
         ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
@@ -202,7 +202,7 @@ public class CurrencyUpdaterSQLTest {
 
         try {
             Statement statement = connection.createStatement();
-            statement.execute("DROP TABLE currencyRatios03_05_2022");
+            statement.execute("DROP TABLE currencyRatios" + formatter.format(new Date()));
         } catch (SQLException e) {
             e.printStackTrace();
         }

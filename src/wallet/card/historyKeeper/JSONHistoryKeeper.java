@@ -1,15 +1,20 @@
-package wallet.card;
+package wallet.card.historyKeeper;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import wallet.card.Card;
+import wallet.card.historyKeeper.HistoryKeeper;
+import wallet.card.transaction.AddTransaction;
+import wallet.card.transaction.ReduceTransaction;
+import wallet.card.transaction.Transaction;
 import wallet.money.Money;
 
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.Objects;
 
-public class JSONHistoryKeeper implements HistoryKeeper{
+public class JSONHistoryKeeper implements HistoryKeeper {
 
     private JSONArray snapshotsArray;
     private String jsonArrayString;

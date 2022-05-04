@@ -1,6 +1,7 @@
-package wallet.card;
+package wallet.card.historyKeeper;
 
-import java.io.IOException;
+import wallet.card.Card;
+import wallet.card.transaction.Transaction;
 
 public interface HistoryKeeper {
 
