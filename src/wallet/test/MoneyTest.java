@@ -5,9 +5,12 @@ import org.json.simple.parser.ParseException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import wallet.PropertiesStorage;
 import wallet.money.*;
 import wallet.money.currencyUnit.CurrencyUnit;
 import wallet.money.Money;
+import wallet.money.currencyUnit.currencyUnitWeb.CurrencyUpdaterWeb;
+import wallet.money.util.WebApiJSON;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -17,6 +20,8 @@ import java.security.SecureRandom;
 public class MoneyTest {
 
     SecureRandom random;
+    static PropertiesStorage propertiesStorage;
+    private static String jsonPath = "testFiles/json/testapi.json";
 
     private BigDecimal randomValue() {
         BigDecimal value = BigDecimal.valueOf(random.nextInt(9999));
@@ -107,6 +112,13 @@ public class MoneyTest {
 
     @Test
     public void convertTest() throws IOException, ParseException {
+        TestAPI testAPI = new TestAPI(jsonPath);
+        WebApiJSON.setApi(testAPI);
+        CurrencyUpdaterWeb.setApi(testAPI);
+
+        propertiesStorage = PropertiesStorage.getInstance();
+        propertiesStorage.setPropertiesPath("testFiles/properties/config.properties");
+
         CurrencyConverter currencyConverter = CurrencyConverter.getInstance();
 
         BigDecimal valueFirst = randomValue();
