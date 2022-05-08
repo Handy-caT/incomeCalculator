@@ -22,8 +22,6 @@ public class CurrencyUnitSQLStorageConstructorTest {
     @BeforeClass
     public static void before() {
         propertiesStorage = PropertiesStorage.getInstance();
-        testAPI = new TestAPI(jsonPath);
-        WebApiJSON.setApi(testAPI);
     }
 
     public boolean containsUnit(String currencyString, Connection connection, String tableName) throws SQLException {
@@ -31,7 +29,6 @@ public class CurrencyUnitSQLStorageConstructorTest {
                 + "currencyScale FROM " + tableName + " WHERE currencyName = ?");
         preparedStatement.setString(1, currencyString);
         ResultSet resultSet = preparedStatement.executeQuery();
-
 
         return Objects.equals(resultSet.getString(2), currencyString);
     }
@@ -41,6 +38,9 @@ public class CurrencyUnitSQLStorageConstructorTest {
         Files.copy(Paths.get("testFiles/properties/configConstructor.properties"),
                 Paths.get("testFiles/properties/configConstructorTest.properties"), StandardCopyOption.REPLACE_EXISTING);
         propertiesStorage.setPropertiesPath("testFiles/properties/configConstructorTest.properties");
+
+        testAPI = new TestAPI(jsonPath);
+        WebApiJSON.setApi(testAPI);
 
         CurrencyUnitSQLStorageFactory factory = new CurrencyUnitSQLStorageFactory();
         CurrencyUnitSQLStorage storage = (CurrencyUnitSQLStorage) factory.createStorage();

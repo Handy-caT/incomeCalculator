@@ -19,8 +19,8 @@ import java.util.*;
 public class CurrencyUpdaterJSON implements CurrencyUpdater {
 
     private static final PropertiesStorage propertiesStorage = PropertiesStorage.getInstance();
-    private static String jsonPathString;
-    private static JSONArray currencyJSONArray;
+    private String jsonPathString;
+    private JSONArray currencyJSONArray;
     private static String dir = "json/";
 
     public static final String defaultFileName = "currencyUpdater";
@@ -74,7 +74,7 @@ public class CurrencyUpdaterJSON implements CurrencyUpdater {
         fileWriter.close();
     }
     protected CurrencyUpdaterJSON(String jsonPathString) throws IOException, ParseException {
-        CurrencyUpdaterJSON.jsonPathString = jsonPathString;
+        this.jsonPathString = jsonPathString;
         Date date = new Date();
         dateString = formatter.format(date);
         if(Objects.equals(dateString,getDateFromName(jsonPathString))) {

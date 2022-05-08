@@ -1,9 +1,17 @@
 package wallet.card.transaction;
 
 import wallet.card.Card;
+import wallet.money.Money;
 
-public interface Transaction {
+public abstract class Transaction {
 
-    void execute(Card card);
+    protected Money transactionAmount;
+    Transaction(Money money) {
+        this.transactionAmount = money;
+    }
+    public abstract void execute(Card card);
+    public Money getTransactionAmount() {
+        return transactionAmount;
+    }
 
 }

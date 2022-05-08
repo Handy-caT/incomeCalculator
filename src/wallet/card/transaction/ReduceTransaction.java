@@ -7,21 +7,21 @@ import wallet.money.Money;
 
 import java.io.IOException;
 
-public class AddTransaction extends Transaction{
+public class ReduceTransaction extends Transaction{
 
-    AddTransaction(Money money) {
+    ReduceTransaction(Money money) {
         super(money);
     }
 
     @Override
     public void execute(Card card) {
         if(transactionAmount.getCurrency().equals(card.getCurrencyUnit())) {
-            card.addMoneyToBalance(transactionAmount);
+            card.subtractMoneyFromBalance(transactionAmount);
         } else {
             try {
                 CurrencyConverter converter = CurrencyConverter.getInstance();
                 Money convertedMoney = converter.convert(transactionAmount,card.getCurrencyUnit());
-                card.addMoneyToBalance(convertedMoney);
+                card.subtractMoneyFromBalance(convertedMoney);
             } catch (IOException | ParseException e) {
                 e.printStackTrace();
             }

@@ -32,4 +32,23 @@ public class Card {
         transaction.execute(this);
     }
 
+    public void addMoneyToBalance(Money money) {
+        if(!money.isSameCurrency(balance)) {
+            throw new IllegalArgumentException("Can't add not same currency");
+        } else {
+            balance = balance.plus(money);
+        }
+    }
+    public void subtractMoneyFromBalance(Money money) {
+        if(!money.isSameCurrency(balance)) {
+            throw new IllegalArgumentException("Can't add not same currency");
+        } else {
+            balance = balance.plus(money);
+        }
+    }
+
+    public StrictCurrencyUnit getCurrencyUnit() {
+        return currencyUnit;
+    }
+
 }
