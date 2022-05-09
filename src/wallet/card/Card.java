@@ -1,6 +1,7 @@
 package wallet.card;
 
 import org.json.simple.parser.ParseException;
+import wallet.card.historyKeeper.HistoryKeeper;
 import wallet.card.transaction.Transaction;
 import wallet.money.CurrencyConverter;
 import wallet.money.Money;
@@ -13,12 +14,18 @@ public class Card {
 
     private Money balance;
     protected StrictCurrencyUnit currencyUnit;
+    private HistoryKeeper historyKeeper;
 
-    public Card(StrictCurrencyUnit currencyUnit) {
+    public Card(StrictCurrencyUnit currencyUnit, HistoryKeeper historyKeeper) {
+        this.historyKeeper = historyKeeper;
+
         balance = Money.of(currencyUnit, BigDecimal.ZERO);
         this.currencyUnit = currencyUnit;
     }
-    public Card(StrictCurrencyUnit currencyUnit, Money balance) throws IOException, ParseException {
+    public Card(StrictCurrencyUnit currencyUnit, Money balance, HistoryKeeper historyKeeper)
+            throws IOException, ParseException {
+        this.historyKeeper = historyKeeper;
+
         this.currencyUnit = currencyUnit;
         if(balance.getCurrency().equals(currencyUnit)) {
             this.balance = balance;
@@ -29,7 +36,9 @@ public class Card {
     }
 
     public void receiveTransaction(Transaction transaction) {
+        Money beforeBalance = balance;
         transaction.execute(this);
+        historyKeeper.saveState(beforeBalance,balance,transaction.getTransactionAmount());
     }
 
     public void addMoneyToBalance(Money money) {
@@ -51,4 +60,7 @@ public class Card {
         return currencyUnit;
     }
 
+    public Money getBalance() {
+        return balance;
+    }
 }

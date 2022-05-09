@@ -8,7 +8,7 @@ import wallet.money.Money;
 
 import java.io.IOException;
 
-abstract class HistoryKeeper {
+public abstract class HistoryKeeper {
 
     protected void restoreTransaction(Card card, Transaction transaction, Money beforeBalance, Money afterBalance) {
         if(afterBalance.compareTo(beforeBalance) > 0) {
@@ -40,7 +40,7 @@ abstract class HistoryKeeper {
         }
     }
 
-    abstract void saveState(Money beforeBalance, Money afterBalance, Money transactionAmount);
-    abstract void restoreTransaction(Card card, Transaction transaction);
+    public abstract void saveState(Money beforeBalance, Money afterBalance, Money transactionAmount);
+    public abstract void restoreTransaction(Card card, Transaction transaction);
 
 }

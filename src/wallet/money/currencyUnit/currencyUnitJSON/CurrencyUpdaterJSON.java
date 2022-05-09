@@ -19,8 +19,8 @@ import java.util.*;
 public class CurrencyUpdaterJSON implements CurrencyUpdater {
 
     private static final PropertiesStorage propertiesStorage = PropertiesStorage.getInstance();
-    private String jsonPathString;
-    private JSONArray currencyJSONArray;
+    private static String jsonPathString;
+    private static JSONArray currencyJSONArray;
     private static String dir = "json/";
 
     public static final String defaultFileName = "currencyUpdater";

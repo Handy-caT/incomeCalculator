@@ -22,7 +22,7 @@ public class SQLHistoryKeeper extends HistoryKeeper {
     public static final String propertyName = "HistoryKeeperTableName";
     private static final PropertiesStorage propertiesStorage = PropertiesStorage.getInstance();
 
-    SQLHistoryKeeper() throws SQLException, IOException {
+    public SQLHistoryKeeper() throws SQLException, IOException {
         ConnectionFactory factory = ConnectionFactory.getInstance();
         dbConnection = factory.getConnection();
 
@@ -30,7 +30,7 @@ public class SQLHistoryKeeper extends HistoryKeeper {
         propertiesStorage.addProperty(propertyName,tableName);
         dbConnection.close();
     }
-    SQLHistoryKeeper(String tableName) throws SQLException {
+    public SQLHistoryKeeper(String tableName) throws SQLException {
         this.tableName = tableName;
 
         ConnectionFactory factory = ConnectionFactory.getInstance();

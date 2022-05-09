@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class AddTransaction extends Transaction{
 
-    AddTransaction(Money money) {
+    public AddTransaction(Money money) {
         super(money);
     }
 

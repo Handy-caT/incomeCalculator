@@ -10,6 +10,7 @@ import wallet.card.transaction.Transaction;
 import wallet.money.CurrencyConverter;
 import wallet.money.Money;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -22,14 +23,14 @@ public class JSONHistoryKeeper extends HistoryKeeper {
     private final PropertiesStorage propertiesStorage = PropertiesStorage.getInstance();
     private String jsonPathString;
     private JSONArray snapshotsJSONArray;
-    private String dir = "json/";
+    private static String dir = "json/";
 
     public static final String defaultFileName = "cardHistory";
     public static final String propertyName = "cardHistoryPath";
 
-    private static final String beforeBalanceJSONName = "beforeBalance";
-    private static final String afterBalanceJSONName = "afterBalance";
-    private static final String transactionAmountJSONName = "transactionAmount";
+    public static final String beforeBalanceJSONName = "beforeBalance";
+    public static final String afterBalanceJSONName = "afterBalance";
+    public static final String transactionAmountJSONName = "transactionAmount";
 
     private static final SimpleDateFormat formatter = new SimpleDateFormat("dd_MM_yyyy");
     private static String dateString;
@@ -40,14 +41,16 @@ public class JSONHistoryKeeper extends HistoryKeeper {
         return dateString;
     }
 
-    JSONHistoryKeeper() throws IOException {
+    public JSONHistoryKeeper() throws IOException {
         Date date = new Date();
         dateString = formatter.format(date);
 
         jsonPathString = dir + defaultFileName + dateString + ".json";
         propertiesStorage.addProperty(propertyName,jsonPathString);
+
+        snapshotsJSONArray = new JSONArray();
     }
-    JSONHistoryKeeper(String jsonFilePath) throws IOException, ParseException {
+    public JSONHistoryKeeper(String jsonFilePath) throws IOException, ParseException {
         jsonPathString = jsonFilePath;
         Date date = new Date();
         dateString = formatter.format(date);
@@ -92,17 +95,24 @@ public class JSONHistoryKeeper extends HistoryKeeper {
         snapshotsJSONArray.add(stateObject);
     }
 
-    @Override
-    protected void finalize() throws Throwable {
+    public void close() throws IOException {
         JSONParser jsonParser = new JSONParser();
+        JSONArray tempArray = new JSONArray();
 
-        FileReader fileReader = new FileReader(jsonPathString);
-        JSONArray tempArray = (JSONArray) jsonParser.parse(fileReader);
-        fileReader.close();
+        try {
+            FileReader fileReader = new FileReader(jsonPathString);
+            tempArray = (JSONArray) jsonParser.parse(fileReader);
+            fileReader.close();
+        } catch (IOException | ParseException ignored) {
+        }
+
         tempArray.addAll(snapshotsJSONArray);
-
         FileWriter fileWriter = new FileWriter(jsonPathString);
         tempArray.writeJSONString(fileWriter);
+        fileWriter.close();
     }
 
+    public static void setDir(String dir) {
+        JSONHistoryKeeper.dir = dir;
+    }
 }
