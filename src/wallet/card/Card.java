@@ -1,72 +1,66 @@
 package wallet.card;
 
-
+import org.json.simple.parser.ParseException;
+import wallet.card.historyKeeper.HistoryKeeper;
+import wallet.card.transaction.Transaction;
+import wallet.money.CurrencyConverter;
 import wallet.money.Money;
 import wallet.money.currencyUnit.StrictCurrencyUnit;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 
 public class Card {
 
     private Money balance;
     protected StrictCurrencyUnit currencyUnit;
-    protected String id;
+    private HistoryKeeper historyKeeper;
 
-    protected HistoryKeeper historyKeeper;
-    protected IdGenerator idGenerator;
-
-    public Card(HistoryKeeper historyKeeper,StrictCurrencyUnit currencyUnit,String id) {
-        this.currencyUnit = currencyUnit;
+    public Card(StrictCurrencyUnit currencyUnit, HistoryKeeper historyKeeper) {
         this.historyKeeper = historyKeeper;
-        this.balance = Money.of(currencyUnit, BigDecimal.ZERO);
 
-        this.id = id;
-        this.idGenerator = new IdGenerator(this);
+        balance = Money.of(currencyUnit, BigDecimal.ZERO);
+        this.currencyUnit = currencyUnit;
     }
-    public Card(HistoryKeeper historyKeeper,StrictCurrencyUnit currencyUnit,Money balance,String id) {
-        this.currencyUnit = currencyUnit;
+    public Card(StrictCurrencyUnit currencyUnit, Money balance, HistoryKeeper historyKeeper)
+            throws IOException, ParseException {
         this.historyKeeper = historyKeeper;
-        this.balance = balance;
 
-        this.id = id;
-        this.idGenerator = new IdGenerator(this);
+        this.currencyUnit = currencyUnit;
+        if(balance.getCurrency().equals(currencyUnit)) {
+            this.balance = balance;
+        } else {
+            CurrencyConverter converter = CurrencyConverter.getInstance();
+            this.balance = converter.convert(balance,currencyUnit);
+        }
     }
 
     public void receiveTransaction(Transaction transaction) {
         Money beforeBalance = balance;
-        transaction.Execute(this);
-        String id = idGenerator.getId(transaction);
-        Memento snapshot = new Memento(beforeBalance,balance,transaction.moneyAmount,id);
-        historyKeeper.saveTransaction(snapshot);
+        transaction.execute(this);
+        historyKeeper.saveState(beforeBalance,balance,transaction.getTransactionAmount());
     }
-    protected void addMoneyToBalance(Money money) {
-        balance = balance.plus(money);
+
+    public void addMoneyToBalance(Money money) {
+        if(!money.isSameCurrency(balance)) {
+            throw new IllegalArgumentException("Can't add not same currency");
+        } else {
+            balance = balance.plus(money);
+        }
     }
-    protected void subtractMoneyFromBalance(Money money) {balance = balance.minus(money);}
+    public void subtractMoneyFromBalance(Money money) {
+        if(!money.isSameCurrency(balance)) {
+            throw new IllegalArgumentException("Can't add not same currency");
+        } else {
+            balance = balance.plus(money);
+        }
+    }
+
+    public StrictCurrencyUnit getCurrencyUnit() {
+        return currencyUnit;
+    }
 
     public Money getBalance() {
         return balance;
     }
-
-    protected class Memento {
-        String id;
-
-        Money beforeBalance;
-        Money afterBalance;
-        Money transactionAmount;
-
-        Memento(Money beforeBalance,Money afterBalance, Money transactionAmount, String id) {
-            this.afterBalance = afterBalance;
-            this.beforeBalance = beforeBalance;
-            this.transactionAmount = transactionAmount;
-
-            this.id = id;
-        }
-
-        public void restore(String id) {
-            Transaction restoreTransaction = historyKeeper.getTransaction(id);
-            receiveTransaction(restoreTransaction);
-        }
-    }
-
 }
