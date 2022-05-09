@@ -17,12 +17,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
 
-public class JSONHistoryKeeper implements  HistoryKeeper{
+public class JSONHistoryKeeper extends HistoryKeeper {
 
-    private static final PropertiesStorage propertiesStorage = PropertiesStorage.getInstance();
-    private static String jsonPathString;
-    private static JSONArray snapshotsJSONArray;
-    private static String dir = "json/";
+    private final PropertiesStorage propertiesStorage = PropertiesStorage.getInstance();
+    private String jsonPathString;
+    private JSONArray snapshotsJSONArray;
+    private String dir = "json/";
 
     public static final String defaultFileName = "cardHistory";
     public static final String propertyName = "cardHistoryPath";
@@ -77,33 +77,7 @@ public class JSONHistoryKeeper implements  HistoryKeeper{
         } else {
             Money beforeBalance = Money.parse((String) snapshotObject.get(beforeBalanceJSONName));
             Money afterBalance = Money.parse((String) snapshotObject.get(afterBalanceJSONName));
-            if(afterBalance.compareTo(beforeBalance) > 0) {
-                if(transaction.getTransactionAmount().isSameCurrency(afterBalance)) {
-                    card.subtractMoneyFromBalance(transaction.getTransactionAmount());
-                } else {
-                    try {
-                        CurrencyConverter converter = CurrencyConverter.getInstance();
-                        Money convertedMoney = converter.convert(transaction.getTransactionAmount(),
-                                card.getCurrencyUnit());
-                        card.subtractMoneyFromBalance(convertedMoney);
-                    }  catch (IOException | ParseException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            } else {
-                if(transaction.getTransactionAmount().isSameCurrency(afterBalance)) {
-                    card.addMoneyToBalance(transaction.getTransactionAmount());
-                } else {
-                    try {
-                        CurrencyConverter converter = CurrencyConverter.getInstance();
-                        Money convertedMoney = converter.convert(transaction.getTransactionAmount(),
-                                card.getCurrencyUnit());
-                        card.addMoneyToBalance(convertedMoney);
-                    }  catch (IOException | ParseException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
+            restoreTransaction(card, transaction, beforeBalance, afterBalance);
         }
     }
 
@@ -130,4 +104,5 @@ public class JSONHistoryKeeper implements  HistoryKeeper{
         FileWriter fileWriter = new FileWriter(jsonPathString);
         tempArray.writeJSONString(fileWriter);
     }
+
 }
