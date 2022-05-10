@@ -5,6 +5,7 @@ import org.json.simple.JSONObject;
 import wallet.money.currencyUnit.interfaces.CurrencyUpdater;
 import wallet.money.util.APIProvider;
 import wallet.money.util.JSONConverter;
+import wallet.money.util.WebJSONConverter;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -15,6 +16,8 @@ public class CurrencyUpdaterWeb implements CurrencyUpdater {
 
     private static final SimpleDateFormat webFormatter = new SimpleDateFormat("dd-MM-yyyy");
     private static APIProvider api;
+
+    private static String BYNString = "BYN";
 
     protected CurrencyUpdaterWeb() {}
 
@@ -37,28 +40,28 @@ public class CurrencyUpdaterWeb implements CurrencyUpdater {
 
     private BigDecimal getRatioFromArray(String currencyFrom, String currencyTo, JSONArray currenciesArray) {
         BigDecimal ratio;
-        JSONObject fromObject = JSONConverter.getCurObjectByCurString(currenciesArray,currencyFrom);
-        JSONObject toObject = JSONConverter.getCurObjectByCurString(currenciesArray,currencyTo);
+        JSONObject fromObject = WebJSONConverter.getCurObjectByCurString(currenciesArray,currencyFrom);
+        JSONObject toObject = WebJSONConverter.getCurObjectByCurString(currenciesArray,currencyTo);
 
-        if (!Objects.equals(currencyFrom, "BYN") && !Objects.equals(currencyTo, "BYN")) {
-            long scaleFrom = JSONConverter.getScaleFromObject(fromObject);
-            ratio = BigDecimal.valueOf(JSONConverter.getRatioFromObject(fromObject));
+        if (!Objects.equals(currencyFrom, BYNString) && !Objects.equals(currencyTo, BYNString)) {
+            long scaleFrom = WebJSONConverter.getScaleFromObject(fromObject);
+            ratio = BigDecimal.valueOf(WebJSONConverter.getRatioFromObject(fromObject));
 
-            long scaleTo = JSONConverter.getScaleFromObject(toObject);
-            BigDecimal secondRatio = BigDecimal.valueOf(JSONConverter.getRatioFromObject(toObject));
+            long scaleTo = WebJSONConverter.getScaleFromObject(toObject);
+            BigDecimal secondRatio = BigDecimal.valueOf(WebJSONConverter.getRatioFromObject(toObject));
 
             ratio = ratio.divide(secondRatio, RoundingMode.DOWN);
             ratio = ratio.divide(BigDecimal.valueOf(scaleFrom));
             ratio = ratio.multiply(BigDecimal.valueOf(scaleTo));
 
-        } else if(Objects.equals(currencyFrom, "BYN")) {
-            long scaleTo = JSONConverter.getScaleFromObject(toObject);
-            ratio = BigDecimal.valueOf(JSONConverter.getRatioFromObject(toObject));
+        } else if(Objects.equals(currencyFrom, BYNString)) {
+            long scaleTo = WebJSONConverter.getScaleFromObject(toObject);
+            ratio = BigDecimal.valueOf(WebJSONConverter.getRatioFromObject(toObject));
             ratio = BigDecimal.ONE.setScale(4).divide(ratio,RoundingMode.DOWN);
             ratio.multiply(BigDecimal.valueOf(scaleTo));
         } else {
-            long scaleFrom = JSONConverter.getScaleFromObject(fromObject);
-            ratio = BigDecimal.valueOf(JSONConverter.getRatioFromObject(fromObject));
+            long scaleFrom = WebJSONConverter.getScaleFromObject(fromObject);
+            ratio = BigDecimal.valueOf(WebJSONConverter.getRatioFromObject(fromObject));
             ratio = ratio.divide(BigDecimal.valueOf(scaleFrom));
         }
         return ratio;
@@ -67,7 +70,7 @@ public class CurrencyUpdaterWeb implements CurrencyUpdater {
     @Override
     public long getCurScale(String currencyName) {
         JSONObject currencyObject = api.getCurrencyUnitObject(currencyName);
-        return JSONConverter.getScaleFromObject(currencyObject);
+        return WebJSONConverter.getScaleFromObject(currencyObject);
     }
 
     @Override

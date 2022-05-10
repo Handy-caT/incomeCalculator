@@ -9,6 +9,7 @@ import wallet.money.currencyUnit.currencyUnitWeb.CurrencyUpdaterWebFactory;
 import wallet.money.currencyUnit.interfaces.CurrencyUpdater;
 import wallet.money.currencyUnit.currencyUnitWeb.CurrencyUpdaterWeb;
 import wallet.money.util.JSONConverter;
+import wallet.money.util.LocalJSONConverter;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -22,6 +23,8 @@ public class CurrencyUpdaterJSON implements CurrencyUpdater {
     private static String jsonPathString;
     private static JSONArray currencyJSONArray;
     private static String dir = "json/";
+
+    private String BYNString = "BYN";
 
     public static final String defaultFileName = "currencyUpdater";
     public static final String propertyName = "CurrencyUpdaterPath";
@@ -138,28 +141,28 @@ public class CurrencyUpdaterJSON implements CurrencyUpdater {
 
     private BigDecimal getRatioFromArray(String currencyFrom, String currencyTo, JSONArray currenciesArray) {
         BigDecimal ratio;
-        JSONObject fromObject = JSONConverter.getCurObjectByCurStringLocal(currenciesArray,currencyFrom);
-        JSONObject toObject = JSONConverter.getCurObjectByCurStringLocal(currenciesArray,currencyTo);
+        JSONObject fromObject = LocalJSONConverter.getCurObjectByCurString(currenciesArray,currencyFrom);
+        JSONObject toObject = LocalJSONConverter.getCurObjectByCurString(currenciesArray,currencyTo);
 
-        if (!Objects.equals(currencyFrom, "BYN") && !Objects.equals(currencyTo, "BYN")) {
-            long scaleFrom = JSONConverter.getScaleFromLocalObject(fromObject);
-            ratio = BigDecimal.valueOf(JSONConverter.getRatioFromLocalObject(fromObject));
+        if (!Objects.equals(currencyFrom, BYNString) && !Objects.equals(currencyTo, BYNString)) {
+            long scaleFrom = LocalJSONConverter.getScaleFromObject(fromObject);
+            ratio = BigDecimal.valueOf(LocalJSONConverter.getRatioFromObject(fromObject));
 
-            long scaleTo = JSONConverter.getScaleFromLocalObject(toObject);
-            BigDecimal secondRatio = BigDecimal.valueOf(JSONConverter.getRatioFromLocalObject(toObject));
+            long scaleTo = LocalJSONConverter.getScaleFromObject(toObject);
+            BigDecimal secondRatio = BigDecimal.valueOf(LocalJSONConverter.getRatioFromObject(toObject));
 
             ratio = ratio.divide(secondRatio, RoundingMode.DOWN);
             ratio = ratio.divide(BigDecimal.valueOf(scaleFrom));
             ratio = ratio.multiply(BigDecimal.valueOf(scaleTo));
 
-        } else if(Objects.equals(currencyFrom, "BYN")) {
-            long scaleTo = JSONConverter.getScaleFromLocalObject(toObject);
-            ratio = BigDecimal.valueOf(JSONConverter.getRatioFromLocalObject(toObject));
+        } else if(Objects.equals(currencyFrom, BYNString)) {
+            long scaleTo = LocalJSONConverter.getScaleFromObject(toObject);
+            ratio = BigDecimal.valueOf(LocalJSONConverter.getRatioFromObject(toObject));
             ratio = BigDecimal.ONE.setScale(4).divide(ratio,RoundingMode.DOWN);
             ratio.multiply(BigDecimal.valueOf(scaleTo));
         } else {
-            long scaleFrom = JSONConverter.getScaleFromLocalObject(fromObject);
-            ratio = BigDecimal.valueOf(JSONConverter.getRatioFromLocalObject(fromObject));
+            long scaleFrom = LocalJSONConverter.getScaleFromObject(fromObject);
+            ratio = BigDecimal.valueOf(LocalJSONConverter.getRatioFromObject(fromObject));
             ratio = ratio.divide(BigDecimal.valueOf(scaleFrom));
         }
         return ratio;

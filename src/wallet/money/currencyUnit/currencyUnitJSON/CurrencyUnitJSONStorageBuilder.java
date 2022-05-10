@@ -5,6 +5,7 @@ import org.json.simple.JSONObject;
 import wallet.money.util.JSONConverter;
 import wallet.money.util.WebApiJSON;
 import wallet.money.currencyUnit.interfaces.CurrencyUnitStorageBuilder;
+import wallet.money.util.WebJSONConverter;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class CurrencyUnitJSONStorageBuilder implements CurrencyUnitStorageBuilde
     }
 
     public List<String> getBuildPlan() {
-        return JSONConverter.getCurStringList(currenciesWebJSONArray);
+        return WebJSONConverter.getCurStringList(currenciesWebJSONArray);
     }
 
     @Override
@@ -42,8 +43,8 @@ public class CurrencyUnitJSONStorageBuilder implements CurrencyUnitStorageBuilde
 
     @Override
     public void buildCurrencyUnit(String currencyString) {
-        JSONObject currencyObject = JSONConverter.getCurObjectByCurString(currenciesWebJSONArray,currencyString);
-        JSONObject localCurrencyObject = JSONConverter.convertWebCurObjectToLocal(currencyObject);
+        JSONObject currencyObject = WebJSONConverter.getCurObjectByCurString(currenciesWebJSONArray,currencyString);
+        JSONObject localCurrencyObject = WebJSONConverter.convertWebCurObjectToLocal(currencyObject);
 
         currenciesJSONArray.add(localCurrencyObject);
     }

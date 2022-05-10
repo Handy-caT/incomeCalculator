@@ -42,7 +42,6 @@ public class StrictCurrencyUnit {
     }
 
     public StrictCurrencyUnit clone() {
-        StrictCurrencyUnit strictCurrencyUnit = (StrictCurrencyUnit) super.clone();
         return new StrictCurrencyUnit(this);
     }
 

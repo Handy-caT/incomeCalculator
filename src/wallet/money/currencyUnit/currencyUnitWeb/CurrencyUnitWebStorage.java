@@ -8,6 +8,7 @@ import wallet.money.util.APIProvider;
 import wallet.money.util.JSONConverter;
 import wallet.money.currencyUnit.interfaces.CurrencyUnitStorage;
 import wallet.money.currencyUnit.StrictCurrencyUnit;
+import wallet.money.util.WebJSONConverter;
 
 public class CurrencyUnitWebStorage implements CurrencyUnitStorage {
 
@@ -22,8 +23,8 @@ public class CurrencyUnitWebStorage implements CurrencyUnitStorage {
 
         JSONObject currencyObject = api.getCurrencyUnitObject(currencyId);
 
-        String currencyString = JSONConverter.getNameFromObject(currencyObject);
-        long scale = JSONConverter.getScaleFromObject(currencyObject);
+        String currencyString = WebJSONConverter.getNameFromObject(currencyObject);
+        long scale = WebJSONConverter.getScaleFromObject(currencyObject);
 
         return new StrictCurrencyUnit(currencyString,currencyId,scale);
     }
@@ -33,8 +34,8 @@ public class CurrencyUnitWebStorage implements CurrencyUnitStorage {
 
         JSONObject currencyObject = api.getCurrencyUnitObject(currencyString);
 
-        long currencyId = JSONConverter.getIdFromObject(currencyObject);
-        long scale = JSONConverter.getScaleFromObject(currencyObject);
+        long currencyId = WebJSONConverter.getIdFromObject(currencyObject);
+        long scale = WebJSONConverter.getScaleFromObject(currencyObject);
 
         return new StrictCurrencyUnit(currencyString,currencyId,scale);
     }
