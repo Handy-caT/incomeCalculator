@@ -16,8 +16,6 @@ import java.util.Objects;
 public class CurrencyUnitSQLStorageConstructorTest {
 
     static PropertiesStorage propertiesStorage;
-    private static String jsonPath = "testFiles/json/testapi.json";
-    private static TestAPI testAPI;
 
     @BeforeClass
     public static void before() {
@@ -39,7 +37,8 @@ public class CurrencyUnitSQLStorageConstructorTest {
                 Paths.get("testFiles/properties/configConstructorTest.properties"), StandardCopyOption.REPLACE_EXISTING);
         propertiesStorage.setPropertiesPath("testFiles/properties/configConstructorTest.properties");
 
-        testAPI = new TestAPI(jsonPath);
+        String jsonPath = "testFiles/json/testapi.json";
+        TestAPI testAPI = new TestAPI(jsonPath);
         WebApiJSON.setApi(testAPI);
 
         CurrencyUnitSQLStorageFactory factory = new CurrencyUnitSQLStorageFactory();

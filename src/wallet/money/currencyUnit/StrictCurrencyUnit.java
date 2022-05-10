@@ -1,6 +1,5 @@
 package wallet.money.currencyUnit;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
 public class StrictCurrencyUnit {
@@ -43,6 +42,7 @@ public class StrictCurrencyUnit {
     }
 
     public StrictCurrencyUnit clone() {
+        StrictCurrencyUnit strictCurrencyUnit = (StrictCurrencyUnit) super.clone();
         return new StrictCurrencyUnit(this);
     }
 

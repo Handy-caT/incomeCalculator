@@ -1,6 +1,5 @@
 package wallet.money.currencyUnit;
 
-import java.math.BigDecimal;
 import java.util.regex.Pattern;
 
 public class CurrencyUnit extends StrictCurrencyUnit {

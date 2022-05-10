@@ -6,7 +6,6 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import org.json.simple.JSONObject;
 import wallet.money.util.APIProvider;
 import wallet.money.util.JSONConverter;
-import wallet.money.util.NBRBAPI;
 import wallet.money.currencyUnit.interfaces.CurrencyUnitStorage;
 import wallet.money.currencyUnit.StrictCurrencyUnit;
 

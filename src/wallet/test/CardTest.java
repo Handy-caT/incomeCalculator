@@ -3,7 +3,6 @@ package wallet.test;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,7 +19,6 @@ import wallet.money.currencyUnit.currencyUnitJSON.CurrencyUnitJSONStorageFactory
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.file.Files;
@@ -30,15 +28,13 @@ import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static org.junit.Assert.*;
-
 public class CardTest {
 
     static SecureRandom random;
-    static String configString = "testFiles/properties/config.properties";
-    static String testConfigString = "testFiles/properties/configTest.properties";
+    static final String configString = "testFiles/properties/config.properties";
+    static final String testConfigString = "testFiles/properties/configTest.properties";
     private static final SimpleDateFormat formatter = new SimpleDateFormat("dd_MM_yyyy");
-    static String dir = "testFiles/json/";
+    static final String dir = "testFiles/json/";
     static PropertiesStorage propertiesStorage;
 
     private BigDecimal randomValue() {
@@ -50,14 +46,14 @@ public class CardTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         random = new SecureRandom();
 
         propertiesStorage = PropertiesStorage.getInstance();
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         Date date = new Date();
         String dateString = formatter.format(date);
 

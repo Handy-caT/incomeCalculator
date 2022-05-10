@@ -8,7 +8,6 @@ import wallet.money.currencyUnit.currencyUnitSQL.CurrencyUnitSQLStorage;
 import wallet.money.currencyUnit.currencyUnitSQL.CurrencyUnitSQLStorageFactory;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 public class CurrencyUnitSQLStorageTest {
 
@@ -23,7 +22,7 @@ public class CurrencyUnitSQLStorageTest {
     }
 
     @Test
-    public void getCurrencyUnitByCurrencyString() throws SQLException, IOException {
+    public void getCurrencyUnitByCurrencyString() {
         CurrencyUnitSQLStorage storage = (CurrencyUnitSQLStorage) factory.createStorage();
 
         Assert.assertEquals("USD",
@@ -42,7 +41,7 @@ public class CurrencyUnitSQLStorageTest {
     }
 
     @Test
-    public void isCurrencyExists() throws SQLException, IOException {
+    public void isCurrencyExists() {
         CurrencyUnitSQLStorage storage = (CurrencyUnitSQLStorage) factory.createStorage();
 
         Assert.assertFalse(storage.isCurrencyExists("ABC"));
@@ -54,7 +53,7 @@ public class CurrencyUnitSQLStorageTest {
     }
 
     @Test
-    public void getCurrencyUnitByCurrencyID() throws SQLException, IOException {
+    public void getCurrencyUnitByCurrencyID() {
         CurrencyUnitSQLStorage storage = (CurrencyUnitSQLStorage) factory.createStorage();
 
         Assert.assertEquals(456,storage.getCurrencyUnitByCurrencyID(456).getCurrencyId());

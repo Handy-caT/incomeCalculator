@@ -1,6 +1,5 @@
 package wallet.test;
 
-import org.json.simple.parser.ParseException;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -8,7 +7,6 @@ import wallet.PropertiesStorage;
 import wallet.money.currencyUnit.currencyUnitJSON.CurrencyUpdaterJSON;
 import wallet.money.currencyUnit.currencyUnitJSON.CurrencyUpdaterJSONFactory;
 import wallet.money.currencyUnit.currencyUnitWeb.CurrencyUpdaterWeb;
-import wallet.money.util.APIProvider;
 import wallet.money.util.WebApiJSON;
 
 import java.io.File;
@@ -19,7 +17,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -28,8 +25,7 @@ public class CurrencyUpdaterJSONTest {
     static PropertiesStorage propertiesStorage;
     private static final String testPath = "testFiles/json/";
     private static final SimpleDateFormat formatter = new SimpleDateFormat("dd_MM_yyyy");
-    private static String jsonPath = "testFiles/json/testapi.json";
-    private static String onDateString = "testFiles/json/OnDate_testapi.json";
+    private static final String jsonPath = "testFiles/json/testapi.json";
     private static TestAPI testAPI;
 
 
@@ -174,6 +170,7 @@ public class CurrencyUpdaterJSONTest {
     @Test
     public void onDateTest() throws IOException {
         testAPI = new TestAPI(jsonPath);
+        String onDateString = "testFiles/json/OnDate_testapi.json";
         testAPI.setonDateString(onDateString);
         WebApiJSON.setApi(testAPI);
         CurrencyUpdaterWeb.setApi(testAPI);

@@ -5,7 +5,6 @@ import org.json.simple.JSONObject;
 import wallet.money.currencyUnit.interfaces.CurrencyUpdater;
 import wallet.money.util.APIProvider;
 import wallet.money.util.JSONConverter;
-import wallet.money.util.NBRBAPI;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

@@ -1,13 +1,5 @@
 package db;
 
-import org.json.simple.JSONArray;
-import wallet.money.util.WebApiJSON;
-
-import java.io.*;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 
 public class test {
 
@@ -16,7 +8,7 @@ public class test {
     public static final String DB_URL = "jdbc:h2:/Users/maksim/IdeaProjects/incomeCalculator/db/test";
     public static final String DB_Driver = "org.sqlite.JDBC";
 
-    public static void main(String[] args) throws IOException, SQLException {
+    public static void main(String[] args) {
         /*
         try {
             Class.forName(DB_Driver); //Проверяем наличие JDBC драйвера для работы с БД

@@ -18,8 +18,8 @@ import java.util.Objects;
 
 public class OptimizedUpdater implements CurrencyUpdater, CurrencyUpdaterFactory {
 
-    private CurrencyUpdaterJSON jsonUpdater;
-    private CurrencyUpdaterSQL sqlUpdater;
+    private final CurrencyUpdaterJSON jsonUpdater;
+    private final CurrencyUpdaterSQL sqlUpdater;
     private static final SimpleDateFormat formatter = new SimpleDateFormat("dd_MM_yyyy");
 
     public OptimizedUpdater() {

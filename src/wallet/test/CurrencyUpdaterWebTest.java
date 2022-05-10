@@ -10,12 +10,10 @@ import java.math.BigDecimal;
 
 public class CurrencyUpdaterWebTest {
 
-    private TestAPI testAPI;
-    private String jsonPath = "testFiles/json/testapi.json";
-
     @Before
-    public void setUp() throws Exception {
-        testAPI = new TestAPI(jsonPath);
+    public void setUp() {
+        String jsonPath = "testFiles/json/testapi.json";
+        TestAPI testAPI = new TestAPI(jsonPath);
         CurrencyUpdaterWeb.setApi(testAPI);
     }
 

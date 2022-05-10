@@ -6,12 +6,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import wallet.PropertiesStorage;
-import wallet.money.currencyUnit.currencyUnitJSON.CurrencyUpdaterJSON;
-import wallet.money.currencyUnit.currencyUnitJSON.CurrencyUpdaterJSONFactory;
-import wallet.money.currencyUnit.currencyUnitSQL.CurrencyUnitSQLStorage;
 import wallet.money.currencyUnit.currencyUnitSQL.CurrencyUpdaterSQL;
 import wallet.money.currencyUnit.currencyUnitSQL.CurrencyUpdaterSQLFactory;
-import wallet.money.currencyUnit.currencyUnitWeb.CurrencyUpdaterWeb;
 import wallet.money.util.WebApiJSON;
 
 import java.io.File;
@@ -31,9 +27,9 @@ import java.util.Date;
 public class CurrencyUpdaterSQLTest {
 
     static PropertiesStorage propertiesStorage;
-    private static String jsonPath = "testFiles/json/testapi.json";
+    private static final String jsonPath = "testFiles/json/testapi.json";
     private static final SimpleDateFormat formatter = new SimpleDateFormat("dd_MM_yyyy");
-    private static String onDateString = "testFiles/json/OnDate_testapi.json";
+    private static final String onDateString = "testFiles/json/OnDate_testapi.json";
     private static TestAPI testAPI;
 
     private void copyTable(String tableName) throws SQLException {

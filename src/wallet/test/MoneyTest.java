@@ -8,7 +8,6 @@ import org.junit.Test;
 import wallet.PropertiesStorage;
 import wallet.money.*;
 import wallet.money.currencyUnit.CurrencyUnit;
-import wallet.money.Money;
 import wallet.money.currencyUnit.currencyUnitWeb.CurrencyUpdaterWeb;
 import wallet.money.util.WebApiJSON;
 
@@ -21,7 +20,6 @@ public class MoneyTest {
 
     SecureRandom random;
     static PropertiesStorage propertiesStorage;
-    private static String jsonPath = "testFiles/json/testapi.json";
 
     private BigDecimal randomValue() {
         BigDecimal value = BigDecimal.valueOf(random.nextInt(9999));
@@ -111,7 +109,8 @@ public class MoneyTest {
     }
 
     @Test
-    public void convertTest() throws IOException, ParseException {
+    public void convertTest() throws IOException {
+        String jsonPath = "testFiles/json/testapi.json";
         TestAPI testAPI = new TestAPI(jsonPath);
         WebApiJSON.setApi(testAPI);
         CurrencyUpdaterWeb.setApi(testAPI);

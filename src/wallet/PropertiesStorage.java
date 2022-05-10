@@ -3,6 +3,8 @@ package wallet;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 public class PropertiesStorage {
@@ -37,7 +39,7 @@ public class PropertiesStorage {
 
     public void addProperty(String key, Object value) throws IOException {
         properties.put(key,value);
-        properties.store(new FileOutputStream(propertiesPath),null);
+        properties.store(Files.newOutputStream(Paths.get(propertiesPath)),null);
     }
 
 }

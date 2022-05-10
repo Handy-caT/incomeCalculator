@@ -4,8 +4,6 @@ import wallet.PropertiesStorage;
 import wallet.money.currencyUnit.interfaces.CurrencyUnitStorage;
 import wallet.money.currencyUnit.interfaces.CurrencyUnitStorageFactory;
 
-import java.io.IOException;
-
 public class CurrencyUnitJSONStorageFactory implements CurrencyUnitStorageFactory {
 
     private static final PropertiesStorage propertiesStorage = PropertiesStorage.getInstance();

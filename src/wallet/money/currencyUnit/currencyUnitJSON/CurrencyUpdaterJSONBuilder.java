@@ -31,8 +31,7 @@ public class CurrencyUpdaterJSONBuilder implements CurrencyUpdaterBuilder {
     }
 
     public List<String> getBuildPlan() {
-        List<String> buildPlanList = JSONConverter.getCurStringList(currenciesWebJSONArray);
-        return buildPlanList;
+        return JSONConverter.getCurStringList(currenciesWebJSONArray);
     }
 
     @Override

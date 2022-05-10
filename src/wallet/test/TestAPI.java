@@ -10,7 +10,7 @@ import java.util.Objects;
 
 public class TestAPI implements APIProvider {
 
-    String jsonPathString;
+    final String jsonPathString;
     String onDateString;
 
     public TestAPI(String jsonPath) {

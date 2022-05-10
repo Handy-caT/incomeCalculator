@@ -7,10 +7,8 @@ import org.json.simple.parser.ParseException;
 import wallet.PropertiesStorage;
 import wallet.card.Card;
 import wallet.card.transaction.Transaction;
-import wallet.money.CurrencyConverter;
 import wallet.money.Money;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,8 +18,7 @@ import java.util.Objects;
 
 public class JSONHistoryKeeper extends HistoryKeeper {
 
-    private final PropertiesStorage propertiesStorage = PropertiesStorage.getInstance();
-    private String jsonPathString;
+    private final String jsonPathString;
     private JSONArray snapshotsJSONArray;
     private static String dir = "json/";
 
@@ -46,6 +43,7 @@ public class JSONHistoryKeeper extends HistoryKeeper {
         dateString = formatter.format(date);
 
         jsonPathString = dir + defaultFileName + dateString + ".json";
+        PropertiesStorage propertiesStorage = PropertiesStorage.getInstance();
         propertiesStorage.addProperty(propertyName,jsonPathString);
 
         snapshotsJSONArray = new JSONArray();

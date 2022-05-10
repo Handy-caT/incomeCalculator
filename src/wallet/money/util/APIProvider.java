@@ -3,8 +3,6 @@ package wallet.money.util;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.Date;
-
 public interface APIProvider {
 
     JSONArray getCurrenciesArray();

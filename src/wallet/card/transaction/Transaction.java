@@ -5,7 +5,7 @@ import wallet.money.Money;
 
 public abstract class Transaction {
 
-    protected Money transactionAmount;
+    protected final Money transactionAmount;
     Transaction(Money money) {
         this.transactionAmount = money;
     }

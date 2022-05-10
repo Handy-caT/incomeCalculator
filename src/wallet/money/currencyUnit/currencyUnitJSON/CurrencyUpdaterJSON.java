@@ -74,7 +74,7 @@ public class CurrencyUpdaterJSON implements CurrencyUpdater {
         fileWriter.close();
     }
     protected CurrencyUpdaterJSON(String jsonPathString) throws IOException, ParseException {
-        this.jsonPathString = jsonPathString;
+        CurrencyUpdaterJSON.jsonPathString = jsonPathString;
         Date date = new Date();
         dateString = formatter.format(date);
         if(Objects.equals(dateString,getDateFromName(jsonPathString))) {

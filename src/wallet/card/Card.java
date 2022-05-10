@@ -13,8 +13,8 @@ import java.math.BigDecimal;
 public class Card {
 
     private Money balance;
-    protected StrictCurrencyUnit currencyUnit;
-    private HistoryKeeper historyKeeper;
+    protected final StrictCurrencyUnit currencyUnit;
+    private final HistoryKeeper historyKeeper;
 
     public Card(StrictCurrencyUnit currencyUnit, HistoryKeeper historyKeeper) {
         this.historyKeeper = historyKeeper;
@@ -22,8 +22,7 @@ public class Card {
         balance = Money.of(currencyUnit, BigDecimal.ZERO);
         this.currencyUnit = currencyUnit;
     }
-    public Card(StrictCurrencyUnit currencyUnit, Money balance, HistoryKeeper historyKeeper)
-            throws IOException, ParseException {
+    public Card(StrictCurrencyUnit currencyUnit, Money balance, HistoryKeeper historyKeeper) {
         this.historyKeeper = historyKeeper;
 
         this.currencyUnit = currencyUnit;

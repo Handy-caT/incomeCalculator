@@ -72,7 +72,7 @@ public class CurrencyUnitSQLStorageBuilder implements CurrencyUnitStorageBuilder
         }
     }
 
-    public static CurrencyUnitSQLStorageBuilder getInstance(String tableName, Connection dbConnection) throws SQLException {
+    public static CurrencyUnitSQLStorageBuilder getInstance(String tableName, Connection dbConnection) {
         CurrencyUnitSQLStorageBuilder.tableName = tableName;
         CurrencyUnitSQLStorageBuilder.dbConnection = dbConnection;
 

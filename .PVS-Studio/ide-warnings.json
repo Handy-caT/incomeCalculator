@@ -1,0 +1,10 @@
+{
+  "languages": {
+    "JAVA": {
+      "groups": {
+        "OWASP": "DISABLED"
+      }
+    }
+  },
+  "warnings": {}
+}
