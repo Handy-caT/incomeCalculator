@@ -2,7 +2,6 @@ package wallet.money.currencyUnit.currencyUnitJSON;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import wallet.money.util.JSONConverter;
 import wallet.money.util.WebApiJSON;
 import wallet.money.currencyUnit.interfaces.CurrencyUnitStorageBuilder;
 import wallet.money.util.WebJSONConverter;

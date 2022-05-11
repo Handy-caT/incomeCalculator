@@ -1,13 +1,11 @@
 package wallet.card;
 
-import org.json.simple.parser.ParseException;
 import wallet.card.historyKeeper.HistoryKeeper;
 import wallet.card.transaction.Transaction;
 import wallet.money.CurrencyConverter;
 import wallet.money.Money;
 import wallet.money.currencyUnit.StrictCurrencyUnit;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 
 public class Card {

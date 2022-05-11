@@ -7,9 +7,9 @@ import org.json.simple.parser.ParseException;
 import wallet.PropertiesStorage;
 import wallet.money.currencyUnit.interfaces.CurrencyUnitStorage;
 import wallet.money.currencyUnit.StrictCurrencyUnit;
+import wallet.money.util.LocalJSONConverter;
 
 import java.io.*;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
@@ -68,13 +68,17 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
         JSONObject currencyObject = null;
         for(Object object : currencyJSONArray) {
             currencyObject = (JSONObject) object;
-            String tempCurrencyString = (String) currencyObject.get("currencyName");
+            String tempCurrencyString = LocalJSONConverter.getNameFromObject(currencyObject);
             if(Objects.equals(tempCurrencyString, currencyString)) break;
         }
-        long currencyId = (long)currencyObject.get("currencyId");
-        long currencyScale = (long)currencyObject.get("currencyScale");
+        if(currencyObject != null) {
+            long currencyId = LocalJSONConverter.getIdFromObject(currencyObject);
+            long currencyScale = LocalJSONConverter.getScaleFromObject(currencyObject);
 
-        return new StrictCurrencyUnit(currencyString,currencyId,currencyScale);
+            return new StrictCurrencyUnit(currencyString, currencyId, currencyScale);
+        } else {
+            throw new IllegalArgumentException("Currency with " + currencyString + " nome not found");
+        }
     }
 
     @Override
@@ -82,13 +86,17 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
         JSONObject currencyObject = null;
         for(Object object : currencyJSONArray) {
             currencyObject = (JSONObject) object;
-            BigDecimal tempCurrencyId = BigDecimal.valueOf((long)currencyObject.get("currencyId"));
+            long tempCurrencyId = LocalJSONConverter.getIdFromObject(currencyObject);
             if(Objects.equals(currencyId, tempCurrencyId)) break;
         }
-        String currencyString = (String) currencyObject.get("currencyName");
-        long currencyScale = (long)currencyObject.get("currencyScale");
+        if(currencyObject != null) {
+            String currencyString = LocalJSONConverter.getNameFromObject(currencyObject);
+            long currencyScale = LocalJSONConverter.getScaleFromObject(currencyObject);
 
-        return new StrictCurrencyUnit(currencyString,currencyId,currencyScale);
+            return new StrictCurrencyUnit(currencyString, currencyId, currencyScale);
+        } else {
+            throw new IllegalArgumentException("Currency with " + currencyId + " id not found");
+        }
     }
 
     @Override
@@ -96,7 +104,7 @@ public class CurrencyUnitJSONStorage implements CurrencyUnitStorage {
         JSONObject currencyObject;
         for(Object object : currencyJSONArray) {
             currencyObject = (JSONObject) object;
-            String tempCurrencyString = (String) currencyObject.get("currencyName");
+            String tempCurrencyString = LocalJSONConverter.getNameFromObject(currencyObject);
             if(Objects.equals(tempCurrencyString, currencyString)) return true;
         }
         return false;

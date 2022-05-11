@@ -38,17 +38,18 @@ public class CurrencyUpdaterJSONTest {
         Assert.assertEquals(updater.getCurScale("RUB"),100);
     }
     private void checkNewRatios(CurrencyUpdaterJSON updater) {
-        MathContext m = new MathContext(5);
+        MathContext m5 = new MathContext(5);
 
         Assert.assertEquals(updater.getRatio("EUR","BYN"), BigDecimal.valueOf(2.7896));
         Assert.assertEquals(updater.getRatio("USD","BYN"), BigDecimal.valueOf(2.6534));
         Assert.assertEquals(updater.getRatio("CAD","BYN"), BigDecimal.valueOf(2.0662));
-        Assert.assertEquals(updater.getRatio("PLN","BYN"), BigDecimal.valueOf(5.9465/10));
+        Assert.assertEquals(updater.getRatio("PLN","BYN"),
+                BigDecimal.valueOf(5.9465/10));
         Assert.assertEquals(updater.getRatio("UAH","BYN"),
-                BigDecimal.valueOf(8.7716/100).round(m));
+                BigDecimal.valueOf(8.7716/100).round(m5));
         Assert.assertEquals(updater.getRatio("RUB","BYN"),
-                BigDecimal.valueOf(3.6694/100).round(m));
-        Assert.assertEquals(updater.getRatio("BYN","EUR"), BigDecimal.valueOf(0.3584));
+                BigDecimal.valueOf(3.6694/100).round(m5));
+        Assert.assertEquals(updater.getRatio("BYN","EUR"), BigDecimal.valueOf(0.3585));
         Assert.assertEquals(updater.getRatio("EUR","USD"), BigDecimal.valueOf(1.0513));
     }
     private void checkOldRatios(CurrencyUpdaterJSON updater) {
@@ -63,7 +64,7 @@ public class CurrencyUpdaterJSONTest {
         Assert.assertEquals(updater.getRatio("RUB","BYN"),
                 BigDecimal.valueOf(3.6227/100).round(m));
         Assert.assertEquals(updater.getRatio("BYN","EUR"), BigDecimal.valueOf(0.3474));
-        Assert.assertEquals(updater.getRatio("EUR","USD"), BigDecimal.valueOf(1.0786));
+        Assert.assertEquals(updater.getRatio("EUR","USD"), BigDecimal.valueOf(1.0787));
     }
 
     @BeforeClass

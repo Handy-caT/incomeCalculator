@@ -4,12 +4,12 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import wallet.money.util.WebApiJSON;
 import wallet.money.currencyUnit.interfaces.CurrencyUnitStorageBuilder;
+import wallet.money.util.WebJSONConverter;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,13 +28,7 @@ public class CurrencyUnitSQLStorageBuilder implements CurrencyUnitStorageBuilder
     }
 
     public List<String> getBuildPlan() {
-        List<String> buildPlanList = new LinkedList<>();
-        for(Object object : currenciesWebJSONArray) {
-            JSONObject currencyObject = (JSONObject) object;
-            String currencyString = (String) currencyObject.get("Cur_Abbreviation");
-            buildPlanList.add(currencyString);
-        }
-        return buildPlanList;
+        return WebJSONConverter.getCurStringList(currenciesWebJSONArray);
     }
 
     @Override
@@ -42,23 +36,26 @@ public class CurrencyUnitSQLStorageBuilder implements CurrencyUnitStorageBuilder
         JSONObject currencyObject = null;
         for(Object object : currenciesWebJSONArray) {
             currencyObject = (JSONObject) object;
-            String tempCurrencyString = (String) currencyObject.get("Cur_Abbreviation");
+            String tempCurrencyString = WebJSONConverter.getNameFromObject(currencyObject);
             if(Objects.equals(tempCurrencyString, currencyString)) break;
         }
+        if(currencyObject != null) {
+            long currencyId = WebJSONConverter.getIdFromObject(currencyObject);
+            long currencyScale = WebJSONConverter.getScaleFromObject(currencyObject);
+            try {
+                PreparedStatement preparedStatement = dbConnection.prepareStatement("INSERT INTO " + tableName +
+                        " (currencyId, currencyName, currencyScale) VALUES (?, ?, ?)");
+                preparedStatement.setLong(1, currencyId);
+                preparedStatement.setString(2, currencyString);
+                preparedStatement.setLong(3, currencyScale);
 
-        long currencyId = (long)currencyObject.get("Cur_ID");
-        long currencyScale = (long)currencyObject.get("Cur_Scale");
-        try {
-            PreparedStatement preparedStatement = dbConnection.prepareStatement("INSERT INTO " + tableName +
-                    " (currencyId, currencyName, currencyScale) VALUES (?, ?, ?)");
-            preparedStatement.setLong(1,currencyId);
-            preparedStatement.setString(2,currencyString);
-            preparedStatement.setLong(3,currencyScale);
+                preparedStatement.executeUpdate();
 
-            preparedStatement.executeUpdate();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else {
+            throw new IllegalArgumentException("Can't find " + currencyString + " currency");
         }
     }
 

@@ -4,11 +4,12 @@
 *.iml
 *.ipr
 *.iws
-.idea/
-out/
-lib/
-db/
-testFiles/
-generated_src/
+/.idea
+/out
+/lib
+/db
+/testFiles
+/generated_src
+/.PVS-Studio
 
-.DS_Store
+/.DS_Store

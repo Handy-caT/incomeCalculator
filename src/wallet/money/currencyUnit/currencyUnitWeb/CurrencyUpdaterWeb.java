@@ -4,7 +4,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import wallet.money.currencyUnit.interfaces.CurrencyUpdater;
 import wallet.money.util.APIProvider;
-import wallet.money.util.JSONConverter;
 import wallet.money.util.WebJSONConverter;
 
 import java.math.BigDecimal;

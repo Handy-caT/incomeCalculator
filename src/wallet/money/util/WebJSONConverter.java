@@ -3,7 +3,6 @@ package wallet.money.util;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public class WebJSONConverter  extends JSONConverter {

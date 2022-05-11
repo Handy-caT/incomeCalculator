@@ -8,7 +8,6 @@ import wallet.PropertiesStorage;
 import wallet.money.currencyUnit.currencyUnitWeb.CurrencyUpdaterWebFactory;
 import wallet.money.currencyUnit.interfaces.CurrencyUpdater;
 import wallet.money.currencyUnit.currencyUnitWeb.CurrencyUpdaterWeb;
-import wallet.money.util.JSONConverter;
 import wallet.money.util.LocalJSONConverter;
 
 import java.io.*;
@@ -23,8 +22,9 @@ public class CurrencyUpdaterJSON implements CurrencyUpdater {
     private static String jsonPathString;
     private static JSONArray currencyJSONArray;
     private static String dir = "json/";
+    private static final String jsonEnding = ".json";
 
-    private String BYNString = "BYN";
+    private static final String BYNString = "BYN";
 
     public static final String defaultFileName = "currencyUpdater";
     public static final String propertyName = "CurrencyUpdaterPath";
@@ -43,7 +43,7 @@ public class CurrencyUpdaterJSON implements CurrencyUpdater {
         Date date = new Date();
         dateString = formatter.format(date);
         if(jsonPathString == null) {
-            jsonPathString = dir+defaultFileName + dateString + ".json";
+            jsonPathString = dir+defaultFileName + dateString + jsonEnding;
         } else {
             File file = new File(jsonPathString);
             jsonPathString = changeDateInString(jsonPathString);
@@ -69,7 +69,7 @@ public class CurrencyUpdaterJSON implements CurrencyUpdater {
         }
         currencyJSONArray = builder.getResult();
 
-        jsonPathString = dir+defaultFileName +dateString + ".json";
+        jsonPathString = dir+defaultFileName +dateString + jsonEnding;
         propertiesStorage.addProperty(propertyName,jsonPathString);
 
         FileWriter fileWriter = new FileWriter(jsonPathString);
@@ -151,19 +151,23 @@ public class CurrencyUpdaterJSON implements CurrencyUpdater {
             long scaleTo = LocalJSONConverter.getScaleFromObject(toObject);
             BigDecimal secondRatio = BigDecimal.valueOf(LocalJSONConverter.getRatioFromObject(toObject));
 
-            ratio = ratio.divide(secondRatio, RoundingMode.DOWN);
-            ratio = ratio.divide(BigDecimal.valueOf(scaleFrom));
-            ratio = ratio.multiply(BigDecimal.valueOf(scaleTo));
+            ratio = ratio.divide(secondRatio, RoundingMode.HALF_DOWN);
+            ratio = ratio.setScale((int) (ratio.scale() + Math.log10(scaleFrom)),RoundingMode.HALF_DOWN)
+                    .divide(BigDecimal.valueOf(scaleFrom),RoundingMode.HALF_DOWN);
+            ratio = ratio.setScale((int) (ratio.scale() + Math.log10(scaleTo)),RoundingMode.HALF_DOWN)
+                    .multiply(BigDecimal.valueOf(scaleTo));
 
         } else if(Objects.equals(currencyFrom, BYNString)) {
             long scaleTo = LocalJSONConverter.getScaleFromObject(toObject);
             ratio = BigDecimal.valueOf(LocalJSONConverter.getRatioFromObject(toObject));
-            ratio = BigDecimal.ONE.setScale(4).divide(ratio,RoundingMode.DOWN);
-            ratio.multiply(BigDecimal.valueOf(scaleTo));
+            ratio = BigDecimal.ONE.setScale(4,RoundingMode.HALF_DOWN).divide(ratio,RoundingMode.HALF_DOWN);
+            ratio = ratio.setScale((int) (ratio.scale() + Math.log10(scaleTo)),RoundingMode.HALF_DOWN)
+                    .multiply(BigDecimal.valueOf(scaleTo));
         } else {
             long scaleFrom = LocalJSONConverter.getScaleFromObject(fromObject);
             ratio = BigDecimal.valueOf(LocalJSONConverter.getRatioFromObject(fromObject));
-            ratio = ratio.divide(BigDecimal.valueOf(scaleFrom));
+            ratio = ratio.setScale((int) (ratio.scale() + Math.log10(scaleFrom)),RoundingMode.HALF_DOWN)
+                    .divide(BigDecimal.valueOf(scaleFrom),RoundingMode.HALF_DOWN);
         }
         return ratio;
     }

@@ -4,6 +4,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import wallet.money.currencyUnit.interfaces.CurrencyUpdaterBuilder;
 import wallet.money.util.WebApiJSON;
+import wallet.money.util.WebJSONConverter;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -61,23 +62,26 @@ public class CurrencyUpdaterSQLBuilder implements CurrencyUpdaterBuilder {
         JSONObject currencyObject = null;
         for(Object object : currenciesWebJSONArray) {
             currencyObject = (JSONObject) object;
-            String tempCurrencyString = (String) currencyObject.get("Cur_Abbreviation");
+            String tempCurrencyString = WebJSONConverter.getNameFromObject(currencyObject);
             if(Objects.equals(tempCurrencyString, currencyString)) break;
         }
+        if(currencyObject != null) {
+            BigDecimal ratio = BigDecimal.valueOf(WebJSONConverter.getRatioFromObject(currencyObject));
+            long currencyScale = WebJSONConverter.getScaleFromObject(currencyObject);
+            try {
+                PreparedStatement preparedStatement = dbConnection.prepareStatement("INSERT INTO " + tableName +
+                        dateString + " (currencyFrom , currencyScale, ratio) VALUES (?, ?, ?)");
+                preparedStatement.setString(1, currencyString);
+                preparedStatement.setLong(2, currencyScale);
+                preparedStatement.setBigDecimal(3, ratio);
 
-        BigDecimal ratio = BigDecimal.valueOf((double)currencyObject.get("Cur_OfficialRate"));
-        long currencyScale = (long)currencyObject.get("Cur_Scale");
-        try {
-            PreparedStatement preparedStatement = dbConnection.prepareStatement("INSERT INTO " + tableName +
-                    dateString + " (currencyFrom , currencyScale, ratio) VALUES (?, ?, ?)");
-            preparedStatement.setString(1,currencyString);
-            preparedStatement.setLong(2,currencyScale);
-            preparedStatement.setBigDecimal(3,ratio);
+                preparedStatement.executeUpdate();
 
-            preparedStatement.executeUpdate();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else {
+            throw new IllegalArgumentException("Can't find " + currencyString + " currency");
         }
     }
 }

@@ -1,7 +1,6 @@
 package wallet.test;
 
 
-import org.json.simple.parser.ParseException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
