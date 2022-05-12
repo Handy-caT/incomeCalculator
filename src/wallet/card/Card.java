@@ -49,7 +49,7 @@ public class Card {
         if(!money.isSameCurrency(balance)) {
             throw new IllegalArgumentException("Can't add not same currency");
         } else {
-            balance = balance.plus(money);
+            balance = balance.minus(money);
         }
     }
 

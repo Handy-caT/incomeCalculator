@@ -76,9 +76,7 @@ public class JSONHistoryKeeper extends HistoryKeeper {
         if(!Objects.equals(moneyString, transaction.toString())) {
             throw new IllegalArgumentException("No transaction found");
         } else {
-            Money beforeBalance = Money.parse((String) snapshotObject.get(beforeBalanceJSONName));
-            Money afterBalance = Money.parse((String) snapshotObject.get(afterBalanceJSONName));
-            restoreTransaction(card, transaction, beforeBalance, afterBalance);
+            card.receiveTransaction(transaction.revert());
         }
     }
 
@@ -104,7 +102,9 @@ public class JSONHistoryKeeper extends HistoryKeeper {
         } catch (IOException | ParseException ignored) {
         }
 
-        tempArray.addAll(snapshotsJSONArray);
+        for(Object snapshotObject : snapshotsJSONArray) {
+            if(!tempArray.contains(snapshotObject)) tempArray.add(snapshotObject);
+        }
         FileWriter fileWriter = new FileWriter(jsonPathString);
         tempArray.writeJSONString(fileWriter);
         fileWriter.close();

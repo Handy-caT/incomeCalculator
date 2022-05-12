@@ -63,9 +63,7 @@ public class SQLHistoryKeeper extends HistoryKeeper {
             preparedStatement.setString(1, transaction.toString());
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            Money beforeBalance = Money.parse(resultSet.getString(1));
-            Money afterBalance = Money.parse(resultSet.getString(2));
-            restoreTransaction(card, transaction, beforeBalance, afterBalance);
+            card.receiveTransaction(transaction.revert());
         } catch (SQLException e) {
             throw new IllegalArgumentException("No transaction found");
         }

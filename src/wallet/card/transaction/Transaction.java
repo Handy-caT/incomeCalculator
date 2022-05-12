@@ -14,4 +14,19 @@ public abstract class Transaction {
         return transactionAmount;
     }
 
+    public Transaction revert() {
+        if(this.getClass() == AddTransaction.class) {
+            return new ReduceTransaction(transactionAmount);
+        } else if(this.getClass() == ReduceTransaction.class) {
+            return  new AddTransaction(transactionAmount);
+        } else {
+            throw new IllegalArgumentException("Unknown transaction type");
+        }
+    }
+
+    @Override
+    public String toString() {
+        return transactionAmount.toString();
+    }
 }
+

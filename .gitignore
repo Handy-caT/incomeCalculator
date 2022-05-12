@@ -13,3 +13,4 @@
 /.PVS-Studio
 
 /.DS_Store
+.PVS-Studio/settings.json

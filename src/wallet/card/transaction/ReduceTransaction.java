@@ -6,7 +6,7 @@ import wallet.money.Money;
 
 public class ReduceTransaction extends Transaction{
 
-    ReduceTransaction(Money money) {
+    public ReduceTransaction(Money money) {
         super(money);
     }
 
