@@ -4,11 +4,11 @@
 *.iml
 *.ipr
 *.iws
-.idea/
-out/
-lib/
-db/
-testFiles/
-generated_src/
+/.idea
+/out
+/lib
+/db
+/target
 
-.DS_Store
+/.DS_Store
+.PVS-Studio/settings.json
