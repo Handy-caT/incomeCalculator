@@ -1,4 +1,4 @@
-package wallet.test;
+package test;
 
 import db.ConnectionFactory;
 import org.junit.*;

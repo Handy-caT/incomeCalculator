@@ -1,4 +1,4 @@
-package wallet.test;
+package test;
 
 import org.junit.Assert;
 import org.junit.Before;

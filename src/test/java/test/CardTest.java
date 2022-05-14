@@ -1,4 +1,4 @@
-package wallet.test;
+package test;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -20,7 +20,6 @@ import wallet.money.currencyUnit.StrictCurrencyUnit;
 import wallet.money.currencyUnit.currencyUnitJSON.CurrencyUnitJSONStorage;
 import wallet.money.currencyUnit.currencyUnitJSON.CurrencyUnitJSONStorageFactory;
 import wallet.money.currencyUnit.currencyUnitWeb.CurrencyUpdaterWeb;
-import wallet.money.util.WebApiJSON;
 
 import java.io.File;
 import java.io.FileReader;
