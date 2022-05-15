@@ -8,11 +8,10 @@ import com.incomeCalculator.webService.models.CurrencyUnitModelAssembler;
 import com.incomeCalculator.webService.repositories.CurrencyUnitRepository;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -38,13 +37,25 @@ public class CurrencyUnitController {
                 .withSelfRel());
     }
 
-    @GetMapping("/currencyUnits/{id}")
-    public EntityModel<CurrencyUnitEntity> one(@PathVariable long id) {
-
-        CurrencyUnitEntity currencyUnit = repository.findById(id)
-                .orElseThrow(() ->new CurrencyUnitNotFoundException(id));
-
-        return assembler.toModel(currencyUnit);
+    @GetMapping("/currencyUnits/{param}")
+    public EntityModel<CurrencyUnitEntity> one(@PathVariable String param
+            , @RequestParam(defaultValue = "0",name = "parammode") String paramMode) {
+        if(Objects.equals(paramMode, "0")) {
+            CurrencyUnitEntity currencyUnit = repository.findById(Long.parseLong(param))
+                    .orElseThrow(() -> new CurrencyUnitNotFoundException(param));
+            return assembler.toModel(currencyUnit);
+        } else if(Objects.equals(paramMode, "1")) {
+            CurrencyUnitEntity currencyUnit = repository.findByCurrencyName(param)
+                    .orElseThrow(() -> new CurrencyUnitNotFoundException(param));
+            return assembler.toModel(currencyUnit);
+        } else {
+            CurrencyUnitEntity currencyUnit = repository.findByCurrencyId(Long.parseLong(param))
+                    .orElseThrow(() -> new CurrencyUnitNotFoundException(param));
+            return assembler.toModel(currencyUnit);
+        }
     }
+
+
+
 
 }

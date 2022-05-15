@@ -14,7 +14,7 @@ public class CurrencyUnitModelAssembler
     @Override
     public EntityModel<CurrencyUnitEntity> toModel(CurrencyUnitEntity entity) {
         return EntityModel.of(entity,
-                linkTo(methodOn(CurrencyUnitController.class).one(entity.getId())).withSelfRel(),
+                linkTo(methodOn(CurrencyUnitController.class).one(entity.getId().toString(),"0")).withSelfRel(),
                 linkTo(methodOn(CurrencyUnitController.class).all()).withRel("currencyUnits"));
     }
 }
