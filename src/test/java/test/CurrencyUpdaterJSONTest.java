@@ -3,11 +3,11 @@ package test;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import wallet.PropertiesStorage;
-import wallet.money.currencyUnit.currencyUnitJSON.CurrencyUpdaterJSON;
-import wallet.money.currencyUnit.currencyUnitJSON.CurrencyUpdaterJSONFactory;
-import wallet.money.currencyUnit.currencyUnitWeb.CurrencyUpdaterWeb;
-import wallet.money.util.WebApiJSON;
+import com.incomeCalculator.core.wallet.PropertiesStorage;
+import com.incomeCalculator.core.wallet.money.currencyUnit.currencyUnitJSON.CurrencyUpdaterJSON;
+import com.incomeCalculator.core.wallet.money.currencyUnit.currencyUnitJSON.CurrencyUpdaterJSONFactory;
+import com.incomeCalculator.core.wallet.money.currencyUnit.currencyUnitWeb.CurrencyUpdaterWeb;
+import com.incomeCalculator.core.wallet.money.util.WebApiJSON;
 
 import java.io.File;
 import java.io.IOException;

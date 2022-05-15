@@ -1,14 +1,15 @@
 package test;
 
 
+import com.incomeCalculator.core.wallet.money.CurrencyConverter;
+import com.incomeCalculator.core.wallet.money.Money;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import wallet.PropertiesStorage;
-import wallet.money.*;
-import wallet.money.currencyUnit.CurrencyUnit;
-import wallet.money.currencyUnit.currencyUnitWeb.CurrencyUpdaterWeb;
-import wallet.money.util.WebApiJSON;
+import com.incomeCalculator.core.wallet.PropertiesStorage;
+import com.incomeCalculator.core.wallet.money.currencyUnit.CurrencyUnit;
+import com.incomeCalculator.core.wallet.money.currencyUnit.currencyUnitWeb.CurrencyUpdaterWeb;
+import com.incomeCalculator.core.wallet.money.util.WebApiJSON;
 
 import java.io.IOException;
 import java.math.BigDecimal;

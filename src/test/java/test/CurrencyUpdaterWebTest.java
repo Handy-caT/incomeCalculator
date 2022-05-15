@@ -3,8 +3,8 @@ package test;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import wallet.money.currencyUnit.currencyUnitWeb.CurrencyUpdaterWeb;
-import wallet.money.currencyUnit.currencyUnitWeb.CurrencyUpdaterWebFactory;
+import com.incomeCalculator.core.wallet.money.currencyUnit.currencyUnitWeb.CurrencyUpdaterWeb;
+import com.incomeCalculator.core.wallet.money.currencyUnit.currencyUnitWeb.CurrencyUpdaterWebFactory;
 
 import java.math.BigDecimal;
 

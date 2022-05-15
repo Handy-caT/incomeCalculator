@@ -3,7 +3,7 @@ package test;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import wallet.money.util.APIProvider;
+import com.incomeCalculator.core.wallet.money.util.APIProvider;
 
 import java.io.FileReader;
 import java.util.Objects;
