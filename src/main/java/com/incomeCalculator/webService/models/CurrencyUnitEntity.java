@@ -37,13 +37,16 @@ public class CurrencyUnitEntity extends StrictCurrencyUnit {
         return currencyName;
     }
 
-
     public long getCurrencyId() {
         return currencyId;
     }
 
     public long getCurrencyScale() {
         return currencyScale;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     @Override
