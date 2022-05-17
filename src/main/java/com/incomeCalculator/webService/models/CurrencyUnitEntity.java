@@ -7,7 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-@Entity(name = "CURRENCY_UNIT")
+@Entity(name = "CURRENCY_UNITS")
 public class CurrencyUnitEntity extends StrictCurrencyUnit {
 
     private @Id @GeneratedValue Long id;

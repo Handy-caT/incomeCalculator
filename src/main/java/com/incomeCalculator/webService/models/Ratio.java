@@ -3,7 +3,7 @@ package com.incomeCalculator.webService.models;
 import javax.persistence.*;
 import java.math.BigDecimal;
 
-@Entity(name = "RATIO")
+@Entity(name = "RATIOS")
 public class Ratio {
 
     private @Id

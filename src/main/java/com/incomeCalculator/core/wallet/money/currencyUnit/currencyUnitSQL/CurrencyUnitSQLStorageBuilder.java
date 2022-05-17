@@ -33,12 +33,9 @@ public class CurrencyUnitSQLStorageBuilder implements CurrencyUnitStorageBuilder
 
     @Override
     public void buildCurrencyUnit(String currencyString) {
-        JSONObject currencyObject = null;
-        for(Object object : currenciesWebJSONArray) {
-            currencyObject = (JSONObject) object;
-            String tempCurrencyString = WebJSONConverter.getNameFromObject(currencyObject);
-            if(Objects.equals(tempCurrencyString, currencyString)) break;
-        }
+
+        JSONObject currencyObject = WebJSONConverter.getCurObjectByCurString(currenciesWebJSONArray,currencyString);
+
         if(currencyObject != null) {
             long currencyId = WebJSONConverter.getIdFromObject(currencyObject);
             long currencyScale = WebJSONConverter.getScaleFromObject(currencyObject);
