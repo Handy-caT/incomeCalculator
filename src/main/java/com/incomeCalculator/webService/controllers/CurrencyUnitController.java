@@ -42,7 +42,7 @@ public class CurrencyUnitController {
             , @RequestParam(defaultValue = "0",name = "parammode") String paramMode) {
         if(Objects.equals(paramMode, "0")) {
             CurrencyUnitEntity currencyUnit = repository.findById(Long.parseLong(param))
-                    .orElseThrow(() -> new CurrencyUnitNotFoundException(param));
+                    .orElseThrow(() -> new CurrencyUnitNotFoundException(Long.parseLong(param)));
             return assembler.toModel(currencyUnit);
         } else if(Objects.equals(paramMode, "1")) {
             CurrencyUnitEntity currencyUnit = repository.findByCurrencyName(param)
@@ -50,7 +50,7 @@ public class CurrencyUnitController {
             return assembler.toModel(currencyUnit);
         } else {
             CurrencyUnitEntity currencyUnit = repository.findByCurrencyId(Long.parseLong(param))
-                    .orElseThrow(() -> new CurrencyUnitNotFoundException(param));
+                    .orElseThrow(() -> new CurrencyUnitNotFoundException(Long.parseLong(param)));
             return assembler.toModel(currencyUnit);
         }
     }
