@@ -41,13 +41,7 @@ public class CurrencyUpdaterSQLBuilder implements CurrencyUpdaterBuilder {
     }
 
     public List<String> getBuildPlan() {
-        List<String> buildPlanList = new LinkedList<>();
-        for(Object object : currenciesWebJSONArray) {
-            JSONObject currencyObject = (JSONObject) object;
-            String currencyString = (String) currencyObject.get("Cur_Abbreviation");
-            buildPlanList.add(currencyString);
-        }
-        return buildPlanList;
+        return WebJSONConverter.getCurStringList(currenciesWebJSONArray);
     }
 
     @Override
@@ -59,12 +53,7 @@ public class CurrencyUpdaterSQLBuilder implements CurrencyUpdaterBuilder {
 
     @Override
     public void buildCurrency(String currencyString) {
-        JSONObject currencyObject = null;
-        for(Object object : currenciesWebJSONArray) {
-            currencyObject = (JSONObject) object;
-            String tempCurrencyString = WebJSONConverter.getNameFromObject(currencyObject);
-            if(Objects.equals(tempCurrencyString, currencyString)) break;
-        }
+        JSONObject currencyObject = WebJSONConverter.getCurObjectByCurString(currenciesWebJSONArray,currencyString);
         if(currencyObject != null) {
             BigDecimal ratio = BigDecimal.valueOf(WebJSONConverter.getRatioFromObject(currencyObject));
             long currencyScale = WebJSONConverter.getScaleFromObject(currencyObject);

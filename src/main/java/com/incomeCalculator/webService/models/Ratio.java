@@ -12,16 +12,20 @@ public class Ratio {
     @OneToOne
     private CurrencyUnitEntity currencyUnit;
 
-    @Column(scale = 4)
+    @Column(scale = 4, precision = 6)
     private BigDecimal ratio;
+
+    @Column(length = 10)
+    private String dateString;
 
     protected Ratio() {
 
     }
 
-    public Ratio(CurrencyUnitEntity currencyUnit,BigDecimal ratio) {
+    public Ratio(CurrencyUnitEntity currencyUnit,BigDecimal ratio, String dateString) {
         this.currencyUnit = currencyUnit;
         this.ratio = ratio;
+        this.dateString = dateString;
     }
 
     public BigDecimal getRatio() {
@@ -36,10 +40,14 @@ public class Ratio {
         return id;
     }
 
+    public String getDateString() {
+        return dateString;
+    }
+
     @Override
     public String toString() {
         return "Ratio{" + "id=" + this.id +", currencyUnit=" + this.currencyUnit
-                + ", ratio=" + this.ratio + '}';
+                + ", ratio=" + this.ratio +", dateString=" + this.dateString + '}';
     }
 
 }

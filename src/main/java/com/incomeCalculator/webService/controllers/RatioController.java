@@ -1,5 +1,6 @@
 package com.incomeCalculator.webService.controllers;
 
+import com.incomeCalculator.core.wallet.money.util.DateFormatter;
 import com.incomeCalculator.webService.exceptions.CurrencyUnitNotFoundException;
 import com.incomeCalculator.webService.exceptions.RatioNotFoundException;
 import com.incomeCalculator.webService.models.CurrencyUnitEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -46,8 +48,10 @@ public class RatioController {
     public EntityModel<Ratio> one(@PathVariable String param
             , @RequestParam(defaultValue = "0",name = "parammode") String paramMode) {
         Ratio ratio;
+        Date date = new Date();
         if(Objects.equals(paramMode, "1")) {
-            ratio = repository.findByCurrencyUnit_CurrencyName(param)
+            ratio = repository
+                    .findByCurrencyUnit_CurrencyNameAndDateString(param, DateFormatter.sqlFormat(date))
                     .orElseThrow(() -> new RatioNotFoundException(param));
         } else {
             ratio = repository.findById(Long.parseLong(param))

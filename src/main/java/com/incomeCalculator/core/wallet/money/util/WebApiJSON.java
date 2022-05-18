@@ -10,7 +10,7 @@ public class WebApiJSON {
 
     private static JSONArray currenciesWebJSONArray;
     private static WebApiJSON instance;
-    
+
     private static String dateString;
 
     private static APIProvider api;
