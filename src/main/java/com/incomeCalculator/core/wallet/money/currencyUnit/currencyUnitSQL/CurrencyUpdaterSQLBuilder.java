@@ -1,5 +1,6 @@
 package com.incomeCalculator.core.wallet.money.currencyUnit.currencyUnitSQL;
 
+import com.incomeCalculator.core.wallet.money.util.DateFormatter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import com.incomeCalculator.core.wallet.money.currencyUnit.interfaces.CurrencyUpdaterBuilder;
@@ -21,7 +22,6 @@ public class CurrencyUpdaterSQLBuilder implements CurrencyUpdaterBuilder {
     private final String tableName;
     private final Connection dbConnection;
     private final String dateString;
-    private static final SimpleDateFormat formatter = new SimpleDateFormat("dd_MM_yyyy");
 
     private  JSONArray currenciesWebJSONArray;
 
@@ -32,7 +32,7 @@ public class CurrencyUpdaterSQLBuilder implements CurrencyUpdaterBuilder {
         this.tableName = tableName;
 
         Date date = new Date();
-        String currentDateString = formatter.format(date);
+        String currentDateString = DateFormatter.sqlFormat(date);
 
         WebApiJSON webApiJSON = WebApiJSON.getInstance();
         if(currentDateString.equals(dateString)) {

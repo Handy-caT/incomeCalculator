@@ -1,6 +1,7 @@
 package com.incomeCalculator.core.wallet.money.currencyUnit.currencyUnitJSON;
 
 import com.incomeCalculator.core.wallet.PropertiesStorage;
+import com.incomeCalculator.core.wallet.money.util.DateFormatter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -29,7 +30,6 @@ public class CurrencyUpdaterJSON implements CurrencyUpdater {
     public static final String defaultFileName = "currencyUpdater";
     public static final String propertyName = "CurrencyUpdaterPath";
 
-    private static final SimpleDateFormat formatter = new SimpleDateFormat("dd_MM_yyyy");
     private static String dateString;
 
     protected CurrencyUpdaterJSON() throws IOException {
@@ -41,7 +41,7 @@ public class CurrencyUpdaterJSON implements CurrencyUpdater {
         currencyJSONArray = builder.getResult();
 
         Date date = new Date();
-        dateString = formatter.format(date);
+        dateString = DateFormatter.sqlFormat(date);
         if(jsonPathString == null) {
             jsonPathString = dir+defaultFileName + dateString + jsonEnding;
         } else {
@@ -60,7 +60,7 @@ public class CurrencyUpdaterJSON implements CurrencyUpdater {
     }
     protected CurrencyUpdaterJSON(List<String> buildingPlan) throws IOException {
         Date date = new Date();
-        dateString = formatter.format(date);
+        dateString = DateFormatter.sqlFormat(date);
 
         CurrencyUnitJSONStorageBuilder builder = CurrencyUnitJSONStorageBuilder.getInstance();
         builder.reset();
@@ -79,7 +79,7 @@ public class CurrencyUpdaterJSON implements CurrencyUpdater {
     protected CurrencyUpdaterJSON(String jsonPathString) throws IOException, ParseException {
         CurrencyUpdaterJSON.jsonPathString = jsonPathString;
         Date date = new Date();
-        dateString = formatter.format(date);
+        dateString = DateFormatter.sqlFormat(date);
         if(Objects.equals(dateString,getDateFromName(jsonPathString))) {
 
             JSONParser jsonParser = new JSONParser();
@@ -108,7 +108,7 @@ public class CurrencyUpdaterJSON implements CurrencyUpdater {
     private String changeDateInString(String name) {
         String start = name.substring(0,name.length()-15);
         Date date = new Date();
-        return start + formatter.format(date) + ".json";
+        return start + DateFormatter.sqlFormat(date) + ".json";
     }
 
     private JSONObject getJSONObjectByCurrencyString(String currencyName) {

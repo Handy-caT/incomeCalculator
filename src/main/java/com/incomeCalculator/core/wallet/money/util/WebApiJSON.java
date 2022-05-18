@@ -10,8 +10,7 @@ public class WebApiJSON {
 
     private static JSONArray currenciesWebJSONArray;
     private static WebApiJSON instance;
-
-    private static final SimpleDateFormat webFormatter = new SimpleDateFormat("dd-MM-yyyy");
+    
     private static String dateString;
 
     private static APIProvider api;
@@ -20,7 +19,7 @@ public class WebApiJSON {
         currenciesWebJSONArray = api.getRatiosArray();
 
         Date date = new Date();
-        dateString = webFormatter.format(date);
+        dateString = DateFormatter.webFormat(date);
     }
 
     public JSONArray getCurrenciesJSONArray() {
@@ -29,14 +28,14 @@ public class WebApiJSON {
 
     public void Update() {
         Date date = new Date();
-        dateString = webFormatter.format(date);
+        dateString = DateFormatter.webFormat(date);
 
         instance = new WebApiJSON();
     }
 
     public boolean needToUpdate() {
         Date date = new Date();
-        String nowDate = webFormatter.format(date);
+        String nowDate = DateFormatter.webFormat(date);
         return !Objects.equals(nowDate, dateString);
     }
 

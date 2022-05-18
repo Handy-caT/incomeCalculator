@@ -4,6 +4,7 @@ import com.incomeCalculator.core.wallet.PropertiesStorage;
 import com.incomeCalculator.core.wallet.card.Card;
 import com.incomeCalculator.core.wallet.card.transaction.Transaction;
 import com.incomeCalculator.core.wallet.money.Money;
+import com.incomeCalculator.core.wallet.money.util.DateFormatter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -29,7 +30,6 @@ public class JSONHistoryKeeper extends HistoryKeeper {
     public static final String afterBalanceJSONName = "afterBalance";
     public static final String transactionAmountJSONName = "transactionAmount";
 
-    private static final SimpleDateFormat formatter = new SimpleDateFormat("dd_MM_yyyy");
     private static String dateString;
 
     private String getDateFromName(String name) {
@@ -40,7 +40,7 @@ public class JSONHistoryKeeper extends HistoryKeeper {
 
     public JSONHistoryKeeper() throws IOException {
         Date date = new Date();
-        dateString = formatter.format(date);
+        dateString = DateFormatter.sqlFormat(date);
 
         jsonPathString = dir + defaultFileName + dateString + ".json";
         PropertiesStorage propertiesStorage = PropertiesStorage.getInstance();
@@ -51,7 +51,7 @@ public class JSONHistoryKeeper extends HistoryKeeper {
     public JSONHistoryKeeper(String jsonFilePath) throws IOException, ParseException {
         jsonPathString = jsonFilePath;
         Date date = new Date();
-        dateString = formatter.format(date);
+        dateString = DateFormatter.sqlFormat(date);
         if(Objects.equals(dateString,getDateFromName(jsonPathString))) {
 
             JSONParser jsonParser = new JSONParser();

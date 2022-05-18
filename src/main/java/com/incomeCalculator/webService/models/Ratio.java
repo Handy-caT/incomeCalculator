@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 public class Ratio {
 
     private @Id
-    @GeneratedValue Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
 
     @OneToOne
     private CurrencyUnitEntity currencyUnit;

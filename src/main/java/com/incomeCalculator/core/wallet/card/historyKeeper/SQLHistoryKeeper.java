@@ -5,6 +5,7 @@ import com.incomeCalculator.core.wallet.PropertiesStorage;
 import com.incomeCalculator.core.wallet.card.Card;
 import com.incomeCalculator.core.wallet.card.transaction.Transaction;
 import com.incomeCalculator.core.wallet.money.Money;
+import com.incomeCalculator.core.wallet.money.util.DateFormatter;
 
 import java.io.IOException;
 import java.sql.*;
@@ -16,7 +17,6 @@ public class SQLHistoryKeeper extends HistoryKeeper {
     private Connection dbConnection;
     private String tableName;
     private static String dateString;
-    private static final SimpleDateFormat sqlFormatter = new SimpleDateFormat("dd_MM_yyyy");
 
     public static final String defaultTableName = "HistoryKeeper";
     public static final String propertyName = "HistoryKeeperTableName";
@@ -37,7 +37,7 @@ public class SQLHistoryKeeper extends HistoryKeeper {
         dbConnection = factory.getConnection();
 
         Date date = new Date();
-        dateString = sqlFormatter.format(date);
+        dateString = DateFormatter.sqlFormat(date);
     }
 
     private void createTable() throws SQLException {

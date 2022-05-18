@@ -1,5 +1,6 @@
 package com.incomeCalculator.core.wallet.money.currencyUnit.currencyUnitWeb;
 
+import com.incomeCalculator.core.wallet.money.util.DateFormatter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import com.incomeCalculator.core.wallet.money.currencyUnit.interfaces.CurrencyUpdater;
@@ -13,7 +14,6 @@ import java.util.*;
 
 public class CurrencyUpdaterWeb implements CurrencyUpdater {
 
-    private static final SimpleDateFormat webFormatter = new SimpleDateFormat("dd-MM-yyyy");
     private static APIProvider api;
 
     private static String BYNString = "BYN";
@@ -78,7 +78,7 @@ public class CurrencyUpdaterWeb implements CurrencyUpdater {
         if(Objects.equals(currencyFrom,currencyTo)) {
             ratio = BigDecimal.ONE;
         } else {
-            String dateString = webFormatter.format(date);
+            String dateString = DateFormatter.webFormat(date);
             JSONArray currenciesArray = api.getRatiosArray(dateString);
 
             ratio = getRatioFromArray(currencyFrom, currencyTo, currenciesArray);

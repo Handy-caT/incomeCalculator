@@ -6,6 +6,7 @@ import com.incomeCalculator.core.wallet.money.currencyUnit.currencyUnitSQL.Curre
 import com.incomeCalculator.core.wallet.money.currencyUnit.interfaces.CurrencyUpdater;
 import com.incomeCalculator.core.wallet.money.currencyUnit.currencyUnitSQL.CurrencyUpdaterSQL;
 import com.incomeCalculator.core.wallet.money.currencyUnit.interfaces.CurrencyUpdaterFactory;
+import com.incomeCalculator.core.wallet.money.util.DateFormatter;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -20,7 +21,6 @@ public class OptimizedUpdater implements CurrencyUpdater, CurrencyUpdaterFactory
 
     private final CurrencyUpdaterJSON jsonUpdater;
     private final CurrencyUpdaterSQL sqlUpdater;
-    private static final SimpleDateFormat formatter = new SimpleDateFormat("dd_MM_yyyy");
 
     public OptimizedUpdater() {
         CurrencyUpdaterJSONFactory jsonFactory = new CurrencyUpdaterJSONFactory();
@@ -54,7 +54,7 @@ public class OptimizedUpdater implements CurrencyUpdater, CurrencyUpdaterFactory
 
     private void checkForUpdates() {
         Date date = new Date();
-        if(!Objects.equals(jsonUpdater.getDate(), formatter.format(date))){
+        if(!Objects.equals(jsonUpdater.getDate(), DateFormatter.sqlFormat(date))){
             try {
                 jsonUpdater.update();
             } catch (IOException e) {

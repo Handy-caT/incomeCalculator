@@ -3,6 +3,7 @@ package com.incomeCalculator.core.wallet.money.currencyUnit.currencyUnitSQL;
 import com.incomeCalculator.core.db.ConnectionFactory;
 import com.incomeCalculator.core.wallet.PropertiesStorage;
 import com.incomeCalculator.core.wallet.money.currencyUnit.interfaces.CurrencyUpdater;
+import com.incomeCalculator.core.wallet.money.util.DateFormatter;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -16,8 +17,6 @@ public class CurrencyUpdaterSQL implements CurrencyUpdater {
 
     private Connection dbConnection;
     private static String tableName;
-    private static final SimpleDateFormat webFormatter = new SimpleDateFormat("dd-MM-yyyy");
-    private static final SimpleDateFormat sqlFormatter = new SimpleDateFormat("dd_MM_yyyy");
     private static CurrencyUpdaterDateStorageSQL dateStorageSQL;
 
     private static String dateString;
@@ -32,7 +31,7 @@ public class CurrencyUpdaterSQL implements CurrencyUpdater {
         dbConnection = connectionFactory.getConnection();
 
         Date date = new Date();
-        dateString = sqlFormatter.format(date);
+        dateString = DateFormatter.sqlFormat(date);
 
         createTable(dateString);
         propertiesStorage.addProperty(propertyName,tableName+dateString);
@@ -53,7 +52,7 @@ public class CurrencyUpdaterSQL implements CurrencyUpdater {
         dbConnection = connectionFactory.getConnection();
 
         Date date = new Date();
-        dateString = sqlFormatter.format(date);
+        dateString = DateFormatter.sqlFormat(date);
 
         createTable(dateString);
         propertiesStorage.addProperty(propertyName,tableName+dateString);
@@ -71,7 +70,7 @@ public class CurrencyUpdaterSQL implements CurrencyUpdater {
         CurrencyUpdaterSQL.dateString = tableName.substring(tableName.length()-10);
 
         Date date = new Date();
-        String dateString = sqlFormatter.format(date);
+        String dateString = DateFormatter.sqlFormat(date);
         if(!dateString.equals(CurrencyUpdaterSQL.dateString)) {
             if (!dateStorageSQL.isUpdaterExist(CurrencyUpdaterSQL.tableName + dateString)) {
                 ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
@@ -106,13 +105,13 @@ public class CurrencyUpdaterSQL implements CurrencyUpdater {
     }
 
     public void createUpdaterOnDate(Date date) throws SQLException {
-        String dateString = sqlFormatter.format(date);
+        String dateString = DateFormatter.sqlFormat(date);
         ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
         dbConnection = connectionFactory.getConnection();
 
         createTable(dateString);
 
-        String webDateString = webFormatter.format(date);
+        String webDateString = DateFormatter.webFormat(date);
         CurrencyUpdaterSQLBuilder builder = new CurrencyUpdaterSQLBuilder(tableName, dbConnection, webDateString);
         List<String> buildingPlan = builder.getBuildPlan();
 
@@ -124,7 +123,7 @@ public class CurrencyUpdaterSQL implements CurrencyUpdater {
         dateStorageSQL.addUpdater(tableName+dateString);
     }
     public boolean isUpdaterOnDateExist(Date date) {
-        return dateStorageSQL.isUpdaterExist(tableName + sqlFormatter.format(date));
+        return dateStorageSQL.isUpdaterExist(tableName + DateFormatter.sqlFormat(date));
     }
 
     private List<Object> getCurrencyResultSet(String currencyName, String dateString) throws SQLException {
@@ -202,7 +201,7 @@ public class CurrencyUpdaterSQL implements CurrencyUpdater {
 
     @Override
     public BigDecimal getRatioOnDate(String currencyFrom, String currencyTo, Date date) {
-        String dateString = sqlFormatter.format(date);
+        String dateString = DateFormatter.sqlFormat(date);
 
         if(!dateStorageSQL.isUpdaterExist(tableName+dateString)) {
             try {
