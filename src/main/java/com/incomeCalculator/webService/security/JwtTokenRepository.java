@@ -13,7 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Objects;
 import java.util.UUID;
+
+import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS;
 
 @Repository
 public class JwtTokenRepository implements CsrfTokenRepository {
@@ -50,11 +53,24 @@ public class JwtTokenRepository implements CsrfTokenRepository {
 
     @Override
     public CsrfToken loadToken(HttpServletRequest request) {
-        return null;
+        return (CsrfToken) request.getAttribute(CsrfToken.class.getName());
     }
 
     @Override
     public void saveToken(CsrfToken token, HttpServletRequest request, HttpServletResponse response) {
+        if(Objects.nonNull(token)) {
+            if (!response.getHeaderNames().contains(ACCESS_CONTROL_EXPOSE_HEADERS))
+                response.addHeader(ACCESS_CONTROL_EXPOSE_HEADERS, token.getHeaderName());
 
+            if (response.getHeaderNames().contains(token.getHeaderName()))
+                response.setHeader(token.getHeaderName(), token.getToken());
+            else
+                response.addHeader(token.getHeaderName(), token.getToken());
+        }
+    }
+
+    public void clearToken(HttpServletResponse response) {
+        if (response.getHeaderNames().contains("x-csrf-token"))
+            response.setHeader("x-csrf-token", "");
     }
 }
