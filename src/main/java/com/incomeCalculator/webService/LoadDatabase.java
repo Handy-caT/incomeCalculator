@@ -40,7 +40,6 @@ class LoadDatabase {
 
     @Bean
     CommandLineRunner initRatio(RatioRepository repository,CurrencyUnitRepository currencies) {
-        repository.deleteAll();
 
         Date date = new Date();
         String dateString = DateFormatter.sqlFormat(date);
