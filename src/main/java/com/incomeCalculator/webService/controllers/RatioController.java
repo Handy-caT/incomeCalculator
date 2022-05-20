@@ -36,11 +36,11 @@ public class RatioController {
     @GetMapping("/ratios")
     public CollectionModel<EntityModel<Ratio>> all(){
 
-        List<EntityModel<Ratio>> currencyUnits = repository.findAll().stream()
+        List<EntityModel<Ratio>> ratios = repository.findAll().stream()
                 .map(assembler::toModel)
                 .collect(Collectors.toList());
 
-        return CollectionModel.of(currencyUnits,linkTo(methodOn(RatioController.class).all())
+        return CollectionModel.of(ratios,linkTo(methodOn(RatioController.class).all())
                 .withSelfRel());
     }
 
