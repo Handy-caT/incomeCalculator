@@ -13,12 +13,15 @@ public class User {
 
     private String password;
 
+    @ManyToOne
+    private Role role;
+
 
     public User() {
 
     }
 
-    public User(String login, String password, String email) {
+    public User(String login, String password, Role role) {
         this.password = password;
         this.login = login;
     }
@@ -43,4 +46,11 @@ public class User {
         this.password = passwordHash;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
 }

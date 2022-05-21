@@ -1,10 +1,13 @@
 package com.incomeCalculator.webService;
 
 import com.incomeCalculator.core.wallet.money.util.DateFormatter;
+import com.incomeCalculator.webService.exceptions.CurrencyUnitNotFoundException;
 import com.incomeCalculator.webService.models.CurrencyUnitEntity;
 import com.incomeCalculator.webService.models.Ratio;
+import com.incomeCalculator.webService.models.Role;
 import com.incomeCalculator.webService.repositories.CurrencyUnitRepository;
 import com.incomeCalculator.webService.repositories.RatioRepository;
+import com.incomeCalculator.webService.repositories.RoleRepository;
 import com.incomeCalculator.webService.util.CurrencyUnitEntitiesBuilder;
 import com.incomeCalculator.webService.util.RatioBuilder;
 import org.slf4j.Logger;
@@ -53,5 +56,13 @@ class LoadDatabase {
                 }
             };
         } else return null;
+    }
+
+    @Bean
+    CommandLineRunner initRoles(RoleRepository roleRepository) {
+        return args -> {
+            log.info("Preloading " + roleRepository.save(new Role("ROLE_USER")));
+            log.info("Preloading " + roleRepository.save(new Role("ROLE_ADMIN")));
+        };
     }
 }
