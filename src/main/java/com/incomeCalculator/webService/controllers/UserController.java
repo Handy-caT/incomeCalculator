@@ -23,7 +23,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-public class UserController implements UserDetailsService {
+public class UserController {
 
     private final UserRepository repository;
 
@@ -53,15 +53,5 @@ public class UserController implements UserDetailsService {
                 .orElseThrow(() -> new UserNotFoundException(id));
 
         return assembler.toModel(user);
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = repository.findByLogin(username)
-                .orElseThrow(() -> new UserNotFoundException(username));
-
-        return new org.springframework.security.core.userdetails
-                .User(user.getLogin(),user.getPasswordHash(), true, true,
-                true, true, new HashSet<>());
     }
 }

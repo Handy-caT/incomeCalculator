@@ -55,7 +55,7 @@ public class JwtCsrfFilter extends OncePerRequestFilter {
             try {
                 if (!StringUtils.isEmpty(actualToken)) {
                     Jwts.parser()
-                            .setSigningKey(((JwtTokenRepository) tokenRepository).getSecret())
+                            .setSigningKey(((JwtTokenService) tokenRepository).getSecret())
                             .parseClaimsJws(actualToken);
 
                     filterChain.doFilter(request, response);

@@ -11,17 +11,15 @@ public class User {
     @Column(unique = true)
     private String login;
 
-    private String passwordHash;
+    private String password;
 
-    private String email;
 
     public User() {
 
     }
 
-    public User(String login, String passwordHash, String email) {
-        this.email = email;
-        this.passwordHash = passwordHash;
+    public User(String login, String password, String email) {
+        this.password = password;
         this.login = login;
     }
 
@@ -33,11 +31,16 @@ public class User {
         return login;
     }
 
-    public String getPasswordHash() {
-        return passwordHash;
+    public String getPassword() {
+        return password;
     }
 
-    public String getEmail() {
-        return email;
+    public void setLogin(String login) {
+        this.login = login;
     }
+
+    public void setPassword(String passwordHash) {
+        this.password = passwordHash;
+    }
+
 }
