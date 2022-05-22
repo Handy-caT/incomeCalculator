@@ -19,4 +19,9 @@ public class UserAuthRequest {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    @Override
+    public String toString() {
+        return "AuthRequest{ login=" + login + ", password=" + password + "}";
+    }
 }

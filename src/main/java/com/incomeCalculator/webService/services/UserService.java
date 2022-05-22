@@ -3,8 +3,10 @@ package com.incomeCalculator.webService.services;
 import com.incomeCalculator.webService.exceptions.RoleNotFoundException;
 import com.incomeCalculator.webService.exceptions.UserNotFoundException;
 import com.incomeCalculator.webService.models.User;
+import com.incomeCalculator.webService.models.UserModelAssembler;
 import com.incomeCalculator.webService.repositories.RoleRepository;
 import com.incomeCalculator.webService.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,19 +19,16 @@ import java.util.Objects;
 @Component
 public class UserService {
 
+
     private UserRepository repository;
+
     private PasswordEncoder passwordEncoder;
+
     private RoleRepository roleRepository;
 
-    public void setRepository(UserRepository repository) {
+    public UserService(UserRepository repository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
         this.repository = repository;
-    }
-
-    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
-    }
-
-    public void setRoleRepository(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
     }
 

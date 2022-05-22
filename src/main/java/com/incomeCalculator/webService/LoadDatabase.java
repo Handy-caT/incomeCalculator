@@ -58,7 +58,7 @@ class LoadDatabase {
         } else return null;
     }
 
-    @Bean
+
     CommandLineRunner initRoles(RoleRepository roleRepository) {
         return args -> {
             log.info("Preloading " + roleRepository.save(new Role("ROLE_USER")));

@@ -1,6 +1,8 @@
 package com.incomeCalculator.webService.services;
 
+import com.incomeCalculator.webService.exceptions.UserNotFoundException;
 import com.incomeCalculator.webService.models.User;
+import com.incomeCalculator.webService.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,15 +13,16 @@ import org.springframework.stereotype.Component;
 public class CustomUserDetailsService implements UserDetailsService {
 
 
-    private UserService service;
+    private UserRepository repository;
 
-    public void setService(UserService service) {
-        this.service = service;
+    public CustomUserDetailsService(UserRepository repository) {
+        this.repository = repository;
     }
 
     @Override
     public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = service.findByLogin(username);
+        User user = repository.findByLogin(username)
+                .orElseThrow(() -> new UserNotFoundException(username));
 
         return CustomUserDetails.fromUserEntityToCustomUserDetails(user);
     }
