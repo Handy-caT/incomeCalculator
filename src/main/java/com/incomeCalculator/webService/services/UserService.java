@@ -17,18 +17,24 @@ import java.util.Objects;
 @Component
 public class UserService {
 
-    private final UserRepository repository;
-    private final PasswordEncoder passwordEncoder;
-    private final RoleRepository roleRepository;
+    private UserRepository repository;
+    private PasswordEncoder passwordEncoder;
+    private RoleRepository roleRepository;
+
+    public void setRepository(UserRepository repository) {
+        this.repository = repository;
+    }
+
+    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    public void setRoleRepository(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
+    }
 
     private final String userRole = "ROLE_USER";
 
-    public UserService(UserRepository repository,
-                       PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
-        this.repository = repository;
-        this.passwordEncoder = passwordEncoder;
-        this.roleRepository = roleRepository;
-    }
 
     public User saveUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));

@@ -1,5 +1,6 @@
 package com.incomeCalculator.webService.security;
 
+import com.incomeCalculator.webService.exceptions.TokenNotFoundException;
 import com.incomeCalculator.webService.models.Token;
 import com.incomeCalculator.webService.models.User;
 import com.incomeCalculator.webService.repositories.TokenRepository;
@@ -54,9 +55,17 @@ public class JwtTokenService {
         repository.save(tokenEntity);
     }
 
-    public boolean validateToken(String token, User user) {
+    public User getUserFromToken(String token) {
+        Token tokenEntity = repository.findByToken(token)
+                .orElseThrow(() -> new TokenNotFoundException(token));
+        return tokenEntity.getUser();
+    }
+
+    public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(user.getLogin()).parseClaimsJws(token);
+            Token tokenEntity = repository.findByToken(token)
+                    .orElseThrow(() -> new TokenNotFoundException(token));
+            Jwts.parser().setSigningKey(tokenEntity.getUser().getLogin()).parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException expEx) {
             log.info("Token expired");
