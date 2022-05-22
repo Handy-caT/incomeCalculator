@@ -1,11 +1,11 @@
 package test;
 
-import db.ConnectionFactory;
+import com.incomeCalculator.core.db.ConnectionFactory;
 import org.junit.*;
-import wallet.PropertiesStorage;
-import wallet.money.currencyUnit.currencyUnitSQL.CurrencyUnitSQLStorageFactory;
-import wallet.money.util.WebApiJSON;
-import wallet.money.currencyUnit.currencyUnitSQL.CurrencyUnitSQLStorage;
+import com.incomeCalculator.core.wallet.PropertiesStorage;
+import com.incomeCalculator.core.wallet.money.currencyUnit.currencyUnitSQL.CurrencyUnitSQLStorageFactory;
+import com.incomeCalculator.core.wallet.money.util.WebApiJSON;
+import com.incomeCalculator.core.wallet.money.currencyUnit.currencyUnitSQL.CurrencyUnitSQLStorage;
 
 import java.io.File;
 import java.io.IOException;

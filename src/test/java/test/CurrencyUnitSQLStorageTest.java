@@ -3,9 +3,9 @@ package test;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import wallet.PropertiesStorage;
-import wallet.money.currencyUnit.currencyUnitSQL.CurrencyUnitSQLStorage;
-import wallet.money.currencyUnit.currencyUnitSQL.CurrencyUnitSQLStorageFactory;
+import com.incomeCalculator.core.wallet.PropertiesStorage;
+import com.incomeCalculator.core.wallet.money.currencyUnit.currencyUnitSQL.CurrencyUnitSQLStorage;
+import com.incomeCalculator.core.wallet.money.currencyUnit.currencyUnitSQL.CurrencyUnitSQLStorageFactory;
 
 import java.io.IOException;
 
