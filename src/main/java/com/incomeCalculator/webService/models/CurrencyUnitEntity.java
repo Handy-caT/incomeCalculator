@@ -24,6 +24,12 @@ public class CurrencyUnitEntity extends StrictCurrencyUnit {
         this.currencyId = id;
         this.currencyScale = scale;
     }
+    public CurrencyUnitEntity(Long id,String currencyString, long currencyId, long scale) {
+        this.id = id;
+        this.currencyName = currencyString;
+        this.currencyId = currencyId;
+        this.currencyScale = scale;
+    }
     public CurrencyUnitEntity(StrictCurrencyUnit currencyUnit) {
         this.currencyName = currencyUnit.getCurrencyName();
         this.currencyId = currencyUnit.getCurrencyId();
