@@ -22,19 +22,21 @@ public class CurrencyUnitService {
 
     public CurrencyUnitEntity getCurrencyUnitWithParam(String param, Long parammode) {
         CurrencyUnitEntity currencyUnit;
-        if(Objects.equals(parammode, 0)) {
-            currencyUnit = repository.findById(Long.parseLong(param))
-                    .orElseThrow(() -> new CurrencyUnitNotFoundException(Long.parseLong(param)));
-        } else if(Objects.equals(parammode, 1)) {
+        if(Objects.equals(parammode, 0L)) {
+            currencyUnit = getCurrencyUnitWithParam(param);
+        } else if(Objects.equals(parammode, 1L)) {
             currencyUnit = repository.findByCurrencyName(param)
                     .orElseThrow(() -> new CurrencyUnitNotFoundException(param));
-        } else if(Objects.equals(parammode, 2)) {
+        } else if(Objects.equals(parammode, 2L)) {
             currencyUnit = repository.findByCurrencyId(Long.parseLong(param))
                     .orElseThrow(() -> new CurrencyUnitNotFoundException(param));
         } else {
-            currencyUnit = repository.findById(Long.parseLong(param))
-                    .orElseThrow(() -> new CurrencyUnitNotFoundException(Long.parseLong(param)));
+            currencyUnit = getCurrencyUnitWithParam(param);
         }
         return currencyUnit;
+    }
+    public CurrencyUnitEntity getCurrencyUnitWithParam(String param) {
+        return repository.findById(Long.parseLong(param))
+                .orElseThrow(() -> new CurrencyUnitNotFoundException(Long.parseLong(param)));
     }
 }
