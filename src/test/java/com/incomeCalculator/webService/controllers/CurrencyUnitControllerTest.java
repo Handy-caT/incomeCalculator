@@ -1,6 +1,7 @@
 package com.incomeCalculator.webService.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.incomeCalculator.webService.exceptions.CurrencyUnitNotFoundException;
 import com.incomeCalculator.webService.models.CurrencyUnitEntity;
 import com.incomeCalculator.webService.models.CurrencyUnitModelAssembler;
 import com.incomeCalculator.webService.repositories.CurrencyUnitRepository;
@@ -25,6 +26,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -57,17 +59,18 @@ public class CurrencyUnitControllerTest {
 
     @Test
     public void getTestWithParammode0() throws Exception {
-        assertNotNull(mockMvc);
+        Long parammode = 0L;
+
         Long id = 1L;
         CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(id,"USD",432,1);
         EntityModel<CurrencyUnitEntity> model = EntityModel.of(currencyUnit,
                 linkTo(methodOn(CurrencyUnitController.class).one(currencyUnit.getId().toString(),"0")).withSelfRel(),
                 linkTo(methodOn(CurrencyUnitController.class).all()).withRel("currencyUnits"));
         when(repository.findById(id)).thenReturn(Optional.of(currencyUnit));
-        when(service.getCurrencyUnitWithParam(id.toString(), 0L)).thenReturn(currencyUnit);
+        when(service.getCurrencyUnitWithParam(id.toString(), parammode)).thenReturn(currencyUnit);
         when(assembler.toModel(currencyUnit)).thenReturn(model);
 
-        mockMvc.perform(get("/currencyUnits/{param}",id))
+        mockMvc.perform(get("/currencyUnits/{param}?parammode={mode}",id,parammode))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.currencyName").value(currencyUnit.getCurrencyName()))
@@ -77,6 +80,72 @@ public class CurrencyUnitControllerTest {
                 .andExpect(jsonPath("$._links.self.href")
                         .value(linkTo(methodOn(CurrencyUnitController.class)
                                 .one(currencyUnit.getId().toString(),"0")).toString()))
+                .andDo(print());
+    }
+
+    @Test
+    public void getTestWithParammode1() throws Exception {
+        Long parammode = 1L;
+
+        Long id = 1L;
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(id,"USD",432,1);
+        EntityModel<CurrencyUnitEntity> model = EntityModel.of(currencyUnit,
+                linkTo(methodOn(CurrencyUnitController.class).one(currencyUnit.getId().toString(),"0")).withSelfRel(),
+                linkTo(methodOn(CurrencyUnitController.class).all()).withRel("currencyUnits"));
+        when(repository.findByCurrencyName(currencyUnit.getCurrencyName())).thenReturn(Optional.of(currencyUnit));
+        when(service.getCurrencyUnitWithParam(currencyUnit.getCurrencyName(), parammode)).thenReturn(currencyUnit);
+        when(assembler.toModel(currencyUnit)).thenReturn(model);
+
+        mockMvc.perform(get("/currencyUnits/{param}?parammode={mode}"
+                        ,currencyUnit.getCurrencyName(),parammode))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(id))
+                .andExpect(jsonPath("$.currencyName").value(currencyUnit.getCurrencyName()))
+                .andExpect(jsonPath("$.currencyId").value(currencyUnit.getCurrencyId()))
+                .andExpect(jsonPath("$._links.currencyUnits.href")
+                        .value(linkTo(methodOn(CurrencyUnitController.class).all()).toString()))
+                .andExpect(jsonPath("$._links.self.href")
+                        .value(linkTo(methodOn(CurrencyUnitController.class)
+                                .one(currencyUnit.getId().toString(),"0")).toString()))
+                .andDo(print());
+    }
+
+    @Test
+    public void getTestWithParammode2() throws Exception {
+        Long parammode = 2L;
+
+        Long id = 1L;
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(id,"USD",432,1);
+        EntityModel<CurrencyUnitEntity> model = EntityModel.of(currencyUnit,
+                linkTo(methodOn(CurrencyUnitController.class).one(currencyUnit.getId().toString(),"0")).withSelfRel(),
+                linkTo(methodOn(CurrencyUnitController.class).all()).withRel("currencyUnits"));
+        when(repository.findByCurrencyId(currencyUnit.getCurrencyId())).thenReturn(Optional.of(currencyUnit));
+        when(service.getCurrencyUnitWithParam(String.valueOf(currencyUnit.getCurrencyId()), parammode)).thenReturn(currencyUnit);
+        when(assembler.toModel(currencyUnit)).thenReturn(model);
+
+        mockMvc.perform(get("/currencyUnits/{param}?parammode={mode}"
+                        ,currencyUnit.getCurrencyId(),parammode))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(id))
+                .andExpect(jsonPath("$.currencyName").value(currencyUnit.getCurrencyName()))
+                .andExpect(jsonPath("$.currencyId").value(currencyUnit.getCurrencyId()))
+                .andExpect(jsonPath("$._links.currencyUnits.href")
+                        .value(linkTo(methodOn(CurrencyUnitController.class).all()).toString()))
+                .andExpect(jsonPath("$._links.self.href")
+                        .value(linkTo(methodOn(CurrencyUnitController.class)
+                                .one(currencyUnit.getId().toString(),"0")).toString()))
+                .andDo(print());
+    }
+
+    @Test
+    public void shouldReturn404WhenNotFound() throws Exception {
+        Long parammode = 0L;
+
+        String id = "333";
+        when(service.getCurrencyUnitWithParam(id,parammode)).thenThrow(new CurrencyUnitNotFoundException(id));
+
+        mockMvc.perform(get("/currencyUnits/{param}?parammode={mode}",id,parammode))
+                .andExpect(status().isNotFound())
                 .andDo(print());
     }
 
