@@ -27,7 +27,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.file.attribute.UserPrincipalNotFoundException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -56,6 +59,7 @@ public class CurrencyUnitControllerTest {
 
     @Autowired
     MockMvc mockMvc;
+
 
     @Test
     public void getTestWithParammode0() throws Exception {
@@ -146,6 +150,39 @@ public class CurrencyUnitControllerTest {
 
         mockMvc.perform(get("/currencyUnits/{param}?parammode={mode}",id,parammode))
                 .andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
+    @Test
+    public void shouldReturnAll() throws Exception {
+
+        CurrencyUnitEntity usdUnit = new CurrencyUnitEntity(1L,"USD",432,1);
+        CurrencyUnitEntity eurUnit = new CurrencyUnitEntity(2L,"EUR",433,1);
+        CurrencyUnitEntity bynUnit = new CurrencyUnitEntity(3L,"BYN",434,1);
+
+        List<CurrencyUnitEntity> currenciesList = new LinkedList<>();
+        currenciesList.add(usdUnit);
+        currenciesList.add(eurUnit);
+        currenciesList.add(bynUnit);
+
+        when(repository.findAll()).thenReturn(currenciesList);
+
+        when(assembler.toModel(usdUnit)).thenReturn(EntityModel.of(usdUnit,
+                linkTo(methodOn(CurrencyUnitController.class).one(usdUnit.getId().toString(),"0")).withSelfRel(),
+                linkTo(methodOn(CurrencyUnitController.class).all()).withRel("currencyUnits")));
+        when(assembler.toModel(eurUnit)).thenReturn(EntityModel.of(eurUnit,
+                linkTo(methodOn(CurrencyUnitController.class).one(eurUnit.getId().toString(),"0")).withSelfRel(),
+                linkTo(methodOn(CurrencyUnitController.class).all()).withRel("currencyUnits")));
+        when(assembler.toModel(bynUnit)).thenReturn(EntityModel.of(bynUnit,
+                linkTo(methodOn(CurrencyUnitController.class).one(bynUnit.getId().toString(),"0")).withSelfRel(),
+                linkTo(methodOn(CurrencyUnitController.class).all()).withRel("currencyUnits")));
+
+
+        mockMvc.perform(get("/currencyUnits"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.currencyUnitEntityList.size()").value(currenciesList.size()))
+                .andExpect(jsonPath("$._links.currencyUnits.href")
+                        .value(linkTo(methodOn(CurrencyUnitController.class).all()).toString()))
                 .andDo(print());
     }
 
