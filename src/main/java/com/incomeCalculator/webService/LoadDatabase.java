@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 @Configuration
@@ -47,10 +48,11 @@ class LoadDatabase {
         Date date = new Date();
         String dateString = DateFormatter.sqlFormat(date);
 
+        RatioBuilder builder = new RatioBuilder(repository,currencies,dateString);
+        List<String> namesList = builder.getBuildPlan();
+
         if(repository.findAllByDateString(dateString).get().isEmpty()) {
             return args -> {
-                RatioBuilder builder = new RatioBuilder(repository,currencies,dateString);
-                List<String> namesList = builder.getBuildPlan();
                 for(String currencyName : namesList) {
                     builder.buildCurrency(currencyName);
                 }
@@ -58,11 +60,19 @@ class LoadDatabase {
         } else return null;
     }
 
-
+    @Bean
     CommandLineRunner initRoles(RoleRepository roleRepository) {
+        List<Role> rolesList = new LinkedList<>();
+
+        rolesList.add(new Role("ROLE_USER"));
+        rolesList.add(new Role("ROLE_ADMIN"));
+
         return args -> {
-            log.info("Preloading " + roleRepository.save(new Role("ROLE_USER")));
-            log.info("Preloading " + roleRepository.save(new Role("ROLE_ADMIN")));
+            for(Role role : rolesList) {
+                if(!roleRepository.findByRoleName(role.getRoleName()).isPresent()) {
+                    log.info("Preloading " + roleRepository.save(role));
+                }
+            }
         };
     }
 }

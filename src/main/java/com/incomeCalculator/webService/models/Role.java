@@ -24,6 +24,11 @@ public class Role {
     public void setRoleName(String role) {
         this.roleName = role;
     }
+
+    @Override
+    public String toString() {
+        return "Ratio{" + "id=" + this.id +", roleName=" + this.roleName + '}';
+    }
 }
 
 

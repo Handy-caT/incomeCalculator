@@ -62,4 +62,10 @@ public class User {
     public void setRole(Role role) {
         this.role = role;
     }
+
+    @Override
+    public String toString() {
+        return "Ratio{" + "id=" + this.id +", login=" + this.login
+                + ", passwordHash=" + this.password +", role=" + this.role + '}';
+    }
 }

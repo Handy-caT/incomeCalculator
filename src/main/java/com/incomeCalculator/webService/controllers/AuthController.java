@@ -26,13 +26,17 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@RequestBody UserAuthRequest registrationRequest) {
+    public AuthResponse registerUser(@RequestBody UserAuthRequest registrationRequest) {
         User user = new User();
-        log.info("Registration request " + registrationRequest.toString());
         user.setPassword(registrationRequest.getPassword());
         user.setLogin(registrationRequest.getLogin());
-        service.saveUser(user);
-        return "OK";
+        user = service.saveUser(user);
+        log.info("User saved:" + user.toString());
+
+        String token = tokenService.generateToken(user.getLogin());
+        tokenService.saveToken(token,user);
+
+        return new AuthResponse(token);
     }
 
     @PostMapping("/auth")
