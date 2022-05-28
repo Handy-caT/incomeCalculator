@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
-public class CurrencyNotFoundAdvice {
+public class UserAdvices {
 
     @ResponseBody
-    @ExceptionHandler(CurrencyUnitNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    String currencyUnitNotFoundHandler(CurrencyUnitNotFoundException ex) {
+    @ExceptionHandler(PermissionException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    String permissionExceptionHandler(PermissionException ex) {
         return ex.getMessage();
     }
 

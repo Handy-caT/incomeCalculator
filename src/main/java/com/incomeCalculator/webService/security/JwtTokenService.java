@@ -19,7 +19,9 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 
+import static io.jsonwebtoken.lang.Strings.hasText;
 import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Component
 public class JwtTokenService {
@@ -58,6 +60,7 @@ public class JwtTokenService {
     public User getUserFromToken(String token) {
         Token tokenEntity = repository.findByToken(token)
                 .orElseThrow(() -> new TokenNotFoundException(token));
+
         return tokenEntity.getUser();
     }
 
@@ -75,10 +78,34 @@ public class JwtTokenService {
             log.info("Malformed jwt");
         } catch (SignatureException sEx) {
             log.info("Invalid signature");
+        } catch (TokenNotFoundException e) {
+            log.info(e.getMessage());
         } catch (Exception e) {
             log.info("invalid token");
         }
         return false;
+    }
+
+    public String getTokenFromRequest(HttpServletRequest request) {
+        String bearer = request.getHeader(AUTHORIZATION);
+        if (hasText(bearer) && bearer.startsWith("Bearer ")) {
+            return bearer.substring(7);
+        }
+        return null;
+    }
+
+    public String getTokenFromResponse(HttpServletResponse response) {
+        String bearer = response.getHeader(AUTHORIZATION);
+        if (hasText(bearer) && bearer.startsWith("Bearer ")) {
+            return bearer.substring(7);
+        }
+        return null;
+    }
+
+    public String getUsersToken(User user) {
+        Token tokenEntity = repository.findByUser(user)
+                .orElseThrow(() -> new TokenNotFoundException(user));
+        return tokenEntity.getToken();
     }
 
 }

@@ -1,6 +1,7 @@
 package com.incomeCalculator.webService.security;
 
 
+import com.incomeCalculator.webService.models.User;
 import com.incomeCalculator.webService.repositories.TokenRepository;
 import com.incomeCalculator.webService.services.CustomUserDetails;
 import com.incomeCalculator.webService.services.CustomUserDetailsService;
@@ -16,6 +17,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static io.jsonwebtoken.lang.Strings.hasText;
@@ -27,15 +29,12 @@ public class JwtFilter extends GenericFilterBean {
 
     public static final String AUTHORIZATION = "Authorization";
 
-    private final TokenRepository tokenRepository;
     private final JwtTokenService service;
     private final CustomUserDetailsService customUserDetailsService;
 
 
-    public JwtFilter(TokenRepository tokenRepository,
-                     JwtTokenService service,
+    public JwtFilter(JwtTokenService service,
                      CustomUserDetailsService customUserDetailsService) {
-        this.tokenRepository = tokenRepository;
         this.service = service;
         this.customUserDetailsService = customUserDetailsService;
     }
@@ -45,25 +44,28 @@ public class JwtFilter extends GenericFilterBean {
                          ServletResponse servletResponse,
                          FilterChain filterChain) throws IOException, ServletException {
 
-        String token = getTokenFromRequest((HttpServletRequest) servletRequest);
-        if (token != null && service.validateToken(token)) {
-            String username = service.getUserFromToken(token).getLogin();
-            CustomUserDetails customUserDetails= customUserDetailsService.loadUserByUsername(username);
-            UsernamePasswordAuthenticationToken auth =
-                    new UsernamePasswordAuthenticationToken(customUserDetails,
-                            null,customUserDetails.getAuthorities());
+        String token = service.getTokenFromRequest((HttpServletRequest) servletRequest);
+        if (token != null) {
+            log.info("Token: " + token);
+            if(service.validateToken(token)) {
+                User user = service.getUserFromToken(token);
+                String username = user.getLogin();
+                CustomUserDetails customUserDetails = customUserDetailsService.loadUserByUsername(username);
+                UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(customUserDetails,
+                                null, customUserDetails.getAuthorities());
 
-            SecurityContextHolder.getContext().setAuthentication(auth);
+                SecurityContextHolder.getContext().setAuthentication(auth);
+
+                String newToken = service.generateToken(username);
+                service.saveToken(newToken, user);
+                log.info("New token: " + user);
+                HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
+                httpServletResponse.addHeader(AUTHORIZATION,"Bearer " + newToken);
+            }
         }
+        else log.info("Token is null");
         filterChain.doFilter(servletRequest, servletResponse);
-    }
-
-    private String getTokenFromRequest(HttpServletRequest request) {
-        String bearer = request.getHeader(AUTHORIZATION);
-        if (hasText(bearer) && bearer.startsWith("Bearer ")) {
-            return bearer.substring(7);
-        }
-        return null;
     }
 
 }
