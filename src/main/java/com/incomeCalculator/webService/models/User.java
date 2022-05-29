@@ -1,6 +1,7 @@
 package com.incomeCalculator.webService.models;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity(name = "USERS")
 public class User {
@@ -15,6 +16,9 @@ public class User {
 
     @ManyToOne
     private Role role;
+
+    @OneToOne(orphanRemoval = true)
+    private Token token;
 
 
     public User() {
@@ -63,9 +67,30 @@ public class User {
         this.role = role;
     }
 
+    public Token getToken() {
+        return token;
+    }
+
+    public void setToken(Token token) {
+        this.token = token;
+    }
+
     @Override
     public String toString() {
         return "Ratio{" + "id=" + this.id +", login=" + this.login
                 + ", passwordHash=" + this.password +", role=" + this.role + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id) && Objects.equals(login, user.login) && Objects.equals(password, user.password) && Objects.equals(role, user.role);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, login, password, role);
     }
 }

@@ -4,23 +4,20 @@ import com.incomeCalculator.webService.exceptions.TokenNotFoundException;
 import com.incomeCalculator.webService.models.Token;
 import com.incomeCalculator.webService.models.User;
 import com.incomeCalculator.webService.repositories.TokenRepository;
+import com.incomeCalculator.webService.repositories.UserRepository;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.Objects;
 import java.util.UUID;
 
 import static io.jsonwebtoken.lang.Strings.hasText;
-import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Component
@@ -28,9 +25,11 @@ public class JwtTokenService {
 
     private static final Logger log = LoggerFactory.getLogger(JwtTokenService.class);
     private final TokenRepository repository;
+    private final UserRepository userRepository;
 
-    JwtTokenService(TokenRepository repository) {
+    JwtTokenService(TokenRepository repository, UserRepository userRepository) {
         this.repository = repository;
+        this.userRepository = userRepository;
     }
 
     public String generateToken(String login) {
@@ -55,6 +54,8 @@ public class JwtTokenService {
         Token tokenEntity = repository.findByUser(user).orElse(new Token(user, token));
         tokenEntity.setToken(token);
         repository.save(tokenEntity);
+        user.setToken(tokenEntity);
+        userRepository.save(user);
     }
 
     public User getUserFromToken(String token) {

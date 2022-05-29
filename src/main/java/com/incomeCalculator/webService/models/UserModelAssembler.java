@@ -16,7 +16,7 @@ public class UserModelAssembler
     @Override
     public EntityModel<User> toModel(User entity) {
         return EntityModel.of(entity,
-                linkTo(methodOn(UserController.class).one(entity.getId())).withSelfRel(),
+                linkTo(methodOn(UserController.class).getOne(entity.getId())).withSelfRel(),
                 linkTo(methodOn(UserController.class).all()).withRel("users"));
     }
 }

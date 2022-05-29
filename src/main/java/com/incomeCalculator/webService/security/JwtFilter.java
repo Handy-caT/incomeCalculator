@@ -44,6 +44,7 @@ public class JwtFilter extends GenericFilterBean {
                          ServletResponse servletResponse,
                          FilterChain filterChain) throws IOException, ServletException {
 
+        log.info("Request: " + servletRequest.toString());
         String token = service.getTokenFromRequest((HttpServletRequest) servletRequest);
         if (token != null) {
             log.info("Token: " + token);

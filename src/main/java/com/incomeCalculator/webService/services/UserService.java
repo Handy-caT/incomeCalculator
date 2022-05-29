@@ -6,6 +6,9 @@ import com.incomeCalculator.webService.models.User;
 import com.incomeCalculator.webService.models.UserModelAssembler;
 import com.incomeCalculator.webService.repositories.RoleRepository;
 import com.incomeCalculator.webService.repositories.UserRepository;
+import com.incomeCalculator.webService.security.JwtFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,6 +22,7 @@ import java.util.Objects;
 @Component
 public class UserService {
 
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private UserRepository repository;
 
@@ -40,6 +44,7 @@ public class UserService {
         user.setRole(roleRepository.findByRoleName(userRole)
                 .orElseThrow(() -> new RoleNotFoundException(userRole)));
 
+        log.info("User saved: " + user);
         return repository.save(user);
     }
 
@@ -51,9 +56,12 @@ public class UserService {
     public User findByLoginAndPassword(String login, String password) {
         User user = repository.findByLogin(login)
                 .orElseThrow(() -> new UserNotFoundException(login));
+        log.info("User by login " + login + ": " + user);
         if(Objects.nonNull(user)) {
-            if(passwordEncoder.matches(password, user.getPassword()))
+            log.info("Password: " + passwordEncoder.matches(password,user.getPassword()) + " "+ password + " " + user.getPassword() + " " + passwordEncoder.encode(password));
+            if(passwordEncoder.matches(password,user.getPassword()))
                 return user;
+            else throw new IllegalArgumentException("Wrong password");
         }
         return null;
     }

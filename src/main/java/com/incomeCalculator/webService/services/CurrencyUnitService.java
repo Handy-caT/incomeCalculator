@@ -13,7 +13,7 @@ import java.util.Optional;
 @Component
 public class CurrencyUnitService {
 
-    private CurrencyUnitRepository repository;
+    private final CurrencyUnitRepository repository;
 
 
     public CurrencyUnitService(CurrencyUnitRepository repository) {
