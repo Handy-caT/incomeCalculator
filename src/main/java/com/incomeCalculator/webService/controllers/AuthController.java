@@ -8,6 +8,7 @@ import com.incomeCalculator.webService.security.JwtTokenService;
 import com.incomeCalculator.webService.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,10 +20,12 @@ public class AuthController {
 
     private final UserService service;
     private final JwtTokenService tokenService;
+    private final PasswordEncoder passwordEncoder;
 
-    AuthController(UserService service, JwtTokenService tokenService) {
+    AuthController(UserService service, JwtTokenService tokenService, PasswordEncoder passwordEncoder) {
         this.service = service;
         this.tokenService = tokenService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/register")
@@ -34,6 +37,11 @@ public class AuthController {
 
         user = service.saveUser(user);
         log.info("User saved:" + user.toString());
+        if(passwordEncoder.matches(registrationRequest.getPassword(),user.getPassword())) {
+            log.info("password matches");
+        } else {
+            log.info("no password match");
+        }
 
         String token = tokenService.generateToken(user.getLogin());
         tokenService.saveToken(token,user);

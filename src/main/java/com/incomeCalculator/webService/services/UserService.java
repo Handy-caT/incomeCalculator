@@ -3,20 +3,13 @@ package com.incomeCalculator.webService.services;
 import com.incomeCalculator.webService.exceptions.RoleNotFoundException;
 import com.incomeCalculator.webService.exceptions.UserNotFoundException;
 import com.incomeCalculator.webService.models.User;
-import com.incomeCalculator.webService.models.UserModelAssembler;
 import com.incomeCalculator.webService.repositories.RoleRepository;
 import com.incomeCalculator.webService.repositories.UserRepository;
-import com.incomeCalculator.webService.security.JwtFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
 import java.util.Objects;
 
 @Component
@@ -26,7 +19,7 @@ public class UserService {
 
     private UserRepository repository;
 
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     private RoleRepository roleRepository;
 
@@ -58,7 +51,6 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException(login));
         log.info("User by login " + login + ": " + user);
         if(Objects.nonNull(user)) {
-            log.info("Password: " + passwordEncoder.matches(password,user.getPassword()) + " "+ password + " " + user.getPassword() + " " + passwordEncoder.encode(password));
             if(passwordEncoder.matches(password,user.getPassword()))
                 return user;
             else throw new IllegalArgumentException("Wrong password");

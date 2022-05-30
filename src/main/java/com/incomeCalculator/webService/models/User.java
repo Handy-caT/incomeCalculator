@@ -67,18 +67,19 @@ public class User {
         this.role = role;
     }
 
-    public Token getToken() {
-        return token;
-    }
-
     public void setToken(Token token) {
         this.token = token;
     }
 
     @Override
     public String toString() {
-        return "Ratio{" + "id=" + this.id +", login=" + this.login
-                + ", passwordHash=" + this.password +", role=" + this.role + '}';
+        return "User{" +
+                "id=" + id +
+                ", login='" + login + '\'' +
+                ", password='" + password + '\'' +
+                ", role=" + role +
+                ", token=" + token.getToken() +
+                '}';
     }
 
     @Override

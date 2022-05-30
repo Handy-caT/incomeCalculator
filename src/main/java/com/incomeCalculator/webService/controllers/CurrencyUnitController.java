@@ -2,18 +2,15 @@ package com.incomeCalculator.webService.controllers;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
-import com.incomeCalculator.webService.exceptions.CurrencyUnitNotFoundException;
 import com.incomeCalculator.webService.models.CurrencyUnitEntity;
-import com.incomeCalculator.webService.models.CurrencyUnitModelAssembler;
+import com.incomeCalculator.webService.models.modelAssembelrs.CurrencyUnitModelAssembler;
 import com.incomeCalculator.webService.repositories.CurrencyUnitRepository;
 import com.incomeCalculator.webService.services.CurrencyUnitService;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController

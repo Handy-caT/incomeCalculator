@@ -1,38 +1,24 @@
 package com.incomeCalculator.webService.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.incomeCalculator.webService.exceptions.CurrencyUnitNotFoundException;
 import com.incomeCalculator.webService.models.CurrencyUnitEntity;
-import com.incomeCalculator.webService.models.CurrencyUnitModelAssembler;
+import com.incomeCalculator.webService.models.modelAssembelrs.CurrencyUnitModelAssembler;
 import com.incomeCalculator.webService.repositories.CurrencyUnitRepository;
 import com.incomeCalculator.webService.repositories.TokenRepository;
 import com.incomeCalculator.webService.security.JwtFilter;
-import com.incomeCalculator.webService.security.JwtTokenService;
 import com.incomeCalculator.webService.services.CurrencyUnitService;
-import com.incomeCalculator.webService.services.UserService;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.security.access.SecurityConfig;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;

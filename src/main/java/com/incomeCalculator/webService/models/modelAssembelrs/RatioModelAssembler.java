@@ -1,7 +1,8 @@
-package com.incomeCalculator.webService.models;
+package com.incomeCalculator.webService.models.modelAssembelrs;
 
 import com.incomeCalculator.webService.controllers.CurrencyUnitController;
 import com.incomeCalculator.webService.controllers.RatioController;
+import com.incomeCalculator.webService.models.Ratio;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;

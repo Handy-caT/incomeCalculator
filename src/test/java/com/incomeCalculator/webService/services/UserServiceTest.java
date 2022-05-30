@@ -56,6 +56,10 @@ class UserServiceTest {
         String passwordEncoded = passwordEncoder.encode(password);
         User user = new User(id,userLogin,passwordEncoded,userRole);
 
+        System.out.println(passwordEncoded);
+        if(passwordEncoder.matches(password,"$2a$10$Tvvgl1yst4k5BXcwKGHlOe7HbzggJRAFSuREnsIg0UFcQsWVSPsvW")) System.out.println("1");
+        else System.out.println("0");
+
         when(repository.findByLogin(userLogin)).thenReturn(Optional.of(user));
         when(mockPasswordEncoder.matches(password,passwordEncoded)).thenReturn(true);
 

@@ -2,13 +2,10 @@ package com.incomeCalculator.webService.services;
 
 import com.incomeCalculator.webService.exceptions.CurrencyUnitNotFoundException;
 import com.incomeCalculator.webService.models.CurrencyUnitEntity;
-import com.incomeCalculator.webService.models.CurrencyUnitModelAssembler;
 import com.incomeCalculator.webService.repositories.CurrencyUnitRepository;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.util.Objects;
-import java.util.Optional;
 
 @Component
 public class CurrencyUnitService {

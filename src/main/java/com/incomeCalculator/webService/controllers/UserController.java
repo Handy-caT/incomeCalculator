@@ -3,7 +3,7 @@ package com.incomeCalculator.webService.controllers;
 import com.incomeCalculator.webService.exceptions.PermissionException;
 import com.incomeCalculator.webService.exceptions.UserNotFoundException;
 import com.incomeCalculator.webService.models.User;
-import com.incomeCalculator.webService.models.UserModelAssembler;
+import com.incomeCalculator.webService.models.modelAssembelrs.UserModelAssembler;
 import com.incomeCalculator.webService.repositories.UserRepository;
 import com.incomeCalculator.webService.requests.UserUpdateRequest;
 import com.incomeCalculator.webService.security.JwtTokenService;
@@ -76,7 +76,7 @@ public class UserController {
     }
 
     @PutMapping("/users/{id}")
-    public User replaceUser(@PathVariable Long id,
+    public EntityModel<User> replaceUser(@PathVariable Long id,
                             @RequestBody UserUpdateRequest request, HttpServletResponse response) {
         User user = repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
@@ -91,6 +91,6 @@ public class UserController {
         } else{
             throw new PermissionException();
         }
-        return user;
+        return assembler.toModel(user);
     }
 }
