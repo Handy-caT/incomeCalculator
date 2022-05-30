@@ -3,6 +3,8 @@ package com.incomeCalculator.webService.config;
 import com.incomeCalculator.core.wallet.money.Money;
 import com.incomeCalculator.core.wallet.money.util.DateFormatter;
 import com.incomeCalculator.webService.models.Card;
+import com.incomeCalculator.webService.models.CurrencyUnitEntity;
+import com.incomeCalculator.webService.models.Ratio;
 import com.incomeCalculator.webService.models.Role;
 import com.incomeCalculator.webService.repositories.CardRepository;
 import com.incomeCalculator.webService.repositories.CurrencyUnitRepository;
@@ -39,6 +41,10 @@ class LoadDatabase {
                     builder.buildCurrencyUnit(currencyName);
                 }
             }
+            if(!repository.findByCurrencyName("BYN").isPresent()) {
+                log.info("Preloading " + repository
+                        .save(new CurrencyUnitEntity("BYN", 1, 1)));
+            }
         };
     }
 
@@ -51,11 +57,13 @@ class LoadDatabase {
         RatioBuilder builder = new RatioBuilder(repository,currencies,dateString);
         List<String> namesList = builder.getBuildPlan();
 
-        if(repository.findAllByDateString(dateString).get().isEmpty()) {
+        if(repository.findAllByDateString(dateString).isEmpty()) {
             return args -> {
                 for(String currencyName : namesList) {
                     builder.buildCurrency(currencyName);
                 }
+                log.info("Preloading " + repository
+                        .save(new Ratio(currencies.findByCurrencyName("BYN").get(), BigDecimal.ONE, dateString)));
             };
         } else return null;
     }

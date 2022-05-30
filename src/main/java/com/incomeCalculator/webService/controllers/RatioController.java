@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -32,13 +33,16 @@ public class RatioController {
     }
 
     @GetMapping("/ratios")
-    public CollectionModel<EntityModel<Ratio>> all(){
-
-        List<EntityModel<Ratio>> ratios = repository.findAll().stream()
+    public CollectionModel<EntityModel<Ratio>> all(
+            @RequestParam(required = false,name = "ondate") Optional<String> dateString) {
+        List<EntityModel<Ratio>> ratios;
+        ratios = dateString.map(s -> repository.findAllByDateString(s).stream()
                 .map(assembler::toModel)
-                .collect(Collectors.toList());
-
-        return CollectionModel.of(ratios,linkTo(methodOn(RatioController.class).all())
+                .collect(Collectors.toList())).orElseGet(() -> repository.findAll().stream()
+                .map(assembler::toModel)
+                .collect(Collectors.toList()));
+        return CollectionModel.of(ratios, linkTo(methodOn(RatioController.class)
+                .all(Optional.empty()))
                 .withSelfRel());
     }
 

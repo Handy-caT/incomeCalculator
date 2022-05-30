@@ -59,4 +59,13 @@ public class Card implements CardProvider {
     public void subtractMoneyFromBalance(Money money) {
 
     }
+
+    @Override
+    public String toString() {
+        return "Card{" +
+                "id=" + id +
+                ", currencyUnit=" + currencyUnit +
+                ", balance=" + balance +
+                '}';
+    }
 }

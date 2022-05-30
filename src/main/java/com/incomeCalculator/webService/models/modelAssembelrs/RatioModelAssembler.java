@@ -7,6 +7,8 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -18,7 +20,8 @@ public class RatioModelAssembler
     public EntityModel<Ratio> toModel(Ratio entity) {
         return EntityModel.of(entity,
                 linkTo(methodOn(RatioController.class).one(entity.getId().toString(),"0")).withSelfRel(),
-                linkTo(methodOn(RatioController.class).all()).withRel("ratios"),
+                linkTo(methodOn(RatioController.class).all(Optional.empty()))
+                        .withRel("ratios"),
                 linkTo(methodOn(CurrencyUnitController.class)
                         .one(entity.getCurrencyUnit().getId().toString(),"0")).withRel("currencyUnit"));
     }
