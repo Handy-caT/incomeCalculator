@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -155,7 +156,6 @@ public class CurrencyUnitControllerTest {
         currenciesList.add(bynUnit);
 
         when(repository.findAll()).thenReturn(currenciesList);
-
         when(assembler.toModel(usdUnit)).thenReturn(EntityModel.of(usdUnit,
                 linkTo(methodOn(CurrencyUnitController.class).one(usdUnit.getId().toString(),"0")).withSelfRel(),
                 linkTo(methodOn(CurrencyUnitController.class).all()).withRel("currencyUnits")));

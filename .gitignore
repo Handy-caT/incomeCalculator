@@ -10,5 +10,7 @@
 /db
 /target
 
-/.DS_Store
+*.DS_Store
 .PVS-Studio/settings.json
+/testFiles/db/
+/src/main/resources/application.properties

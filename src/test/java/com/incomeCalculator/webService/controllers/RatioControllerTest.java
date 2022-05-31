@@ -99,4 +99,26 @@ class RatioControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    public void shouldReturn404WhenNotFoundById() throws Exception {
+        Long id = 1L;
+        when(repository.findById(id)).thenThrow(new CurrencyUnitNotFoundException(id));
+
+        mockMvc.perform(get("/ratios/{id}",id))
+                .andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
+    @Test
+    public void shouldReturn404WhenNotFoundByName() throws Exception {
+        Date date = new Date();
+        String dateString = DateFormatter.sqlFormat(date);
+        String name = "ABC";
+        when(repository.findByCurrencyUnit_CurrencyNameAndDateString(name,dateString))
+                .thenThrow(new CurrencyUnitNotFoundException(name));
+
+        mockMvc.perform(get("/ratios/{param}?parammode={mode}",name,1L))
+                .andExpect(status().isNotFound())
+                .andDo(print());
+    }
 }
