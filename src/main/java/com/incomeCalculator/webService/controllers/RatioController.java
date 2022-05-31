@@ -36,13 +36,17 @@ public class RatioController {
     public CollectionModel<EntityModel<Ratio>> all(
             @RequestParam(required = false,name = "ondate") Optional<String> dateString) {
         List<EntityModel<Ratio>> ratios;
+
+        Date date = new Date();
+        String dateStringNow = DateFormatter.sqlFormat(date);
+
         ratios = dateString.map(s -> repository.findAllByDateString(s).stream()
                 .map(assembler::toModel)
                 .collect(Collectors.toList())).orElseGet(() -> repository.findAll().stream()
                 .map(assembler::toModel)
                 .collect(Collectors.toList()));
         return CollectionModel.of(ratios, linkTo(methodOn(RatioController.class)
-                .all(Optional.empty()))
+                .all(Optional.of(dateStringNow)))
                 .withSelfRel());
     }
 

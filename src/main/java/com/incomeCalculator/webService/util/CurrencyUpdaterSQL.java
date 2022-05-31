@@ -1,6 +1,8 @@
 package com.incomeCalculator.webService.util;
 
+import com.incomeCalculator.core.wallet.money.CurrencyConverter;
 import com.incomeCalculator.core.wallet.money.currencyUnit.interfaces.CurrencyUpdater;
+import com.incomeCalculator.core.wallet.money.currencyUnit.interfaces.CurrencyUpdaterFactory;
 import com.incomeCalculator.core.wallet.money.util.DateFormatter;
 import com.incomeCalculator.webService.exceptions.CurrencyUnitNotFoundException;
 import com.incomeCalculator.webService.exceptions.RatioNotFoundException;
@@ -16,7 +18,7 @@ import java.math.RoundingMode;
 import java.util.*;
 
 @Component
-public class CurrencyUpdaterSQL implements CurrencyUpdater {
+public class CurrencyUpdaterSQL implements CurrencyUpdater, CurrencyUpdaterFactory {
 
     private final RatioRepository ratioRepository;
     private final CurrencyUnitRepository currencyUnitRepository;
@@ -48,6 +50,12 @@ public class CurrencyUpdaterSQL implements CurrencyUpdater {
 
         return ratio;
     }
+
+    @Override
+    public CurrencyUpdater createUpdater() {
+        return this;
+    }
+
     @Override
     public BigDecimal getRatio(String currencyFrom, String currencyTo) {
         Date date = new Date();

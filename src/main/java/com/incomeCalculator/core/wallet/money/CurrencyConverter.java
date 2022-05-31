@@ -19,7 +19,7 @@ public class CurrencyConverter {
 
     private final CurrencyUpdater currencyUpdater;
 
-    private CurrencyConverter(CurrencyUpdaterFactory currencyUpdaterFactory) {
+    protected CurrencyConverter(CurrencyUpdaterFactory currencyUpdaterFactory) {
         this.currencyUpdater = currencyUpdaterFactory.createUpdater();
     }
 

@@ -37,7 +37,6 @@ public class UserService {
         user.setRole(roleRepository.findByRoleName(userRole)
                 .orElseThrow(() -> new RoleNotFoundException(userRole)));
 
-        log.info("User saved: " + user);
         return repository.save(user);
     }
 
@@ -49,7 +48,6 @@ public class UserService {
     public User findByLoginAndPassword(String login, String password) {
         User user = repository.findByLogin(login)
                 .orElseThrow(() -> new UserNotFoundException(login));
-        log.info("User by login " + login + ": " + user);
         if(Objects.nonNull(user)) {
             if(passwordEncoder.matches(password,user.getPassword()))
                 return user;

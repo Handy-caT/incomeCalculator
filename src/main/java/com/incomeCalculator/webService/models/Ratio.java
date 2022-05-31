@@ -28,6 +28,13 @@ public class Ratio {
         this.dateString = dateString;
     }
 
+    public Ratio(Long id, CurrencyUnitEntity currencyUnit, BigDecimal ratio, String dateString) {
+        this.id = id;
+        this.currencyUnit = currencyUnit;
+        this.ratio = ratio;
+        this.dateString = dateString;
+    }
+
     public BigDecimal getRatio() {
         return ratio;
     }
