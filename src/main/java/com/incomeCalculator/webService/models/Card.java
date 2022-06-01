@@ -47,17 +47,17 @@ public class Card implements CardProvider {
 
     @Override
     public void addMoneyToBalance(Money money) {
-
+        this.balance = balance.add(money.getAmount());
     }
 
     @Override
     public void receiveTransaction(Transaction transaction) {
-
+        transaction.execute(this);
     }
 
     @Override
     public void subtractMoneyFromBalance(Money money) {
-
+        this.balance = balance.subtract(money.getAmount());
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.incomeCalculator.core.wallet.card.transaction;
 
 import com.incomeCalculator.core.wallet.card.Card;
+import com.incomeCalculator.core.wallet.card.CardProvider;
 import com.incomeCalculator.core.wallet.money.CurrencyConverter;
 import com.incomeCalculator.core.wallet.money.Money;
 
@@ -12,7 +13,7 @@ public class ReduceTransaction implements Transaction{
     }
 
     @Override
-    public void execute(Card card) {
+    public void execute(CardProvider card) {
         if(transactionAmount.getCurrency().equals(card.getCurrencyUnit())) {
             card.subtractMoneyFromBalance(transactionAmount);
         } else {

@@ -4,6 +4,7 @@ import com.incomeCalculator.core.wallet.money.currencyUnit.CurrencyUnit;
 import com.incomeCalculator.core.wallet.money.currencyUnit.StrictCurrencyUnit;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity(name = "CURRENCY_UNITS")
 public class CurrencyUnitEntity implements CurrencyUnit {
@@ -58,4 +59,18 @@ public class CurrencyUnitEntity implements CurrencyUnit {
         return "CurrencyUnit{" + "id=" + this.id +", currencyName='" + this.currencyName + '\''
                 + ", currencyId=" + this.currencyId + ", currencyScale=" + this.currencyScale + '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CurrencyUnitEntity)) return false;
+        CurrencyUnitEntity that = (CurrencyUnitEntity) o;
+        return currencyId == that.currencyId && currencyScale == that.currencyScale && Objects.equals(id, that.id) && Objects.equals(currencyName, that.currencyName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, currencyName, currencyId, currencyScale);
+    }
+
 }

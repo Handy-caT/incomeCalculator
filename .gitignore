@@ -14,3 +14,4 @@
 .PVS-Studio/settings.json
 /testFiles/db/
 /src/main/resources/application.properties
+*.db
