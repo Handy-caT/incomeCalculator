@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import com.incomeCalculator.core.wallet.PropertiesStorage;
-import com.incomeCalculator.core.wallet.money.currencyUnit.CurrencyUnit;
+import com.incomeCalculator.core.wallet.money.currencyUnit.NonStrictCurrencyUnit;
 import com.incomeCalculator.core.wallet.money.currencyUnit.currencyUnitWeb.CurrencyUpdaterWeb;
 import com.incomeCalculator.core.wallet.money.util.WebApiJSON;
 
@@ -42,7 +42,7 @@ public class MoneyTest {
         Money result = Money.parse(parseString);
 
         Assert.assertEquals(value,result.getAmount());
-        Assert.assertEquals(CurrencyUnit.of(currencyString),result.getCurrency());
+        Assert.assertEquals(NonStrictCurrencyUnit.of(currencyString),result.getCurrency());
     }
 
     @Test
@@ -53,7 +53,7 @@ public class MoneyTest {
         Money result = Money.parse(parseString);
 
         Assert.assertEquals(value.negate(),result.getAmount());
-        Assert.assertEquals(CurrencyUnit.of(currencyString),result.getCurrency());
+        Assert.assertEquals(NonStrictCurrencyUnit.of(currencyString),result.getCurrency());
     }
 
     @Test
@@ -68,7 +68,7 @@ public class MoneyTest {
         Money result = moneyFirst.plus(moneySecond);
 
         Assert.assertEquals(valueFirst.add(valueSecond),result.getAmount());
-        Assert.assertEquals(CurrencyUnit.of(currencyString),result.getCurrency());
+        Assert.assertEquals(NonStrictCurrencyUnit.of(currencyString),result.getCurrency());
     }
 
     @Test
@@ -82,7 +82,7 @@ public class MoneyTest {
         Money result = moneyFirst.multiply(valueSecond);
 
         Assert.assertEquals(valueFirst.multiply(valueSecond),result.getAmount());
-        Assert.assertEquals(CurrencyUnit.of(currencyString),result.getCurrency());
+        Assert.assertEquals(NonStrictCurrencyUnit.of(currencyString),result.getCurrency());
     }
 
     @Test
@@ -105,7 +105,7 @@ public class MoneyTest {
         Money result = moneyFirst.minus(moneySecond);
 
         Assert.assertEquals(valueFirst.subtract(valueSecond).abs(),result.getAmount());
-        Assert.assertEquals(CurrencyUnit.of(currencyString),result.getCurrency());
+        Assert.assertEquals(NonStrictCurrencyUnit.of(currencyString),result.getCurrency());
     }
 
     @Test
@@ -129,17 +129,17 @@ public class MoneyTest {
         Money moneySecond = Money.of(currencySecondString,valueSecond);
 
         BigDecimal ratio = currencyConverter
-                .getConvertSellRatio(CurrencyUnit.of(currencyFirstString),CurrencyUnit.of(currencySecondString));
+                .getConvertSellRatio(NonStrictCurrencyUnit.of(currencyFirstString), NonStrictCurrencyUnit.of(currencySecondString));
         try {
             moneyFirst.plus(moneySecond);
             Assert.fail("Mustn't plus different currencies");
         } catch (IllegalArgumentException e) {
-            Money recountedMoney = currencyConverter.convert(moneySecond,CurrencyUnit.of(currencyFirstString));
+            Money recountedMoney = currencyConverter.convert(moneySecond, NonStrictCurrencyUnit.of(currencyFirstString));
             Money result = moneyFirst.plus(recountedMoney);
 
             Assert.assertEquals(valueSecond.multiply(ratio),recountedMoney.getAmount());
             Assert.assertEquals(valueSecond.multiply(ratio).add(valueFirst),result.getAmount());
-            Assert.assertEquals(CurrencyUnit.of(currencyFirstString),result.getCurrency());
+            Assert.assertEquals(NonStrictCurrencyUnit.of(currencyFirstString),result.getCurrency());
         }
 
     }

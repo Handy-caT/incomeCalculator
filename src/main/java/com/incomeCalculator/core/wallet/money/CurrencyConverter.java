@@ -1,6 +1,7 @@
 package com.incomeCalculator.core.wallet.money;
 
 import com.incomeCalculator.core.wallet.PropertiesStorage;
+import com.incomeCalculator.core.wallet.money.currencyUnit.CurrencyUnit;
 import com.incomeCalculator.core.wallet.money.currencyUnit.StrictCurrencyUnit;
 import com.incomeCalculator.core.wallet.money.currencyUnit.currencyUnitJSON.CurrencyUpdaterJSONFactory;
 import com.incomeCalculator.core.wallet.money.currencyUnit.currencyUnitSQL.CurrencyUpdaterSQLFactory;
@@ -23,10 +24,10 @@ public class CurrencyConverter {
         this.currencyUpdater = currencyUpdaterFactory.createUpdater();
     }
 
-    public  BigDecimal getConvertSellRatio(StrictCurrencyUnit currencyFromUnit, StrictCurrencyUnit currencyToUnit) {
+    public  BigDecimal getConvertSellRatio(CurrencyUnit currencyFromUnit, CurrencyUnit currencyToUnit) {
         return currencyUpdater.getRatio(currencyFromUnit.toString(),currencyToUnit.toString());
     }
-    public Money convert(Money money, StrictCurrencyUnit currencyToConvertToUnit) {
+    public Money convert(Money money, CurrencyUnit currencyToConvertToUnit) {
         BigDecimal newAmount = money.getAmount().multiply(getConvertSellRatio(currencyToConvertToUnit,money.getCurrency()));
         return new Money(currencyToConvertToUnit,newAmount);
     }

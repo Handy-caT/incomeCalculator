@@ -4,10 +4,11 @@ import com.incomeCalculator.core.wallet.card.Card;
 import com.incomeCalculator.core.wallet.money.CurrencyConverter;
 import com.incomeCalculator.core.wallet.money.Money;
 
-public class AddTransaction extends Transaction{
+public class AddTransaction implements Transaction{
 
+    protected final Money transactionAmount;
     public AddTransaction(Money money) {
-        super(money);
+        transactionAmount = money;
     }
 
     @Override
@@ -21,4 +22,18 @@ public class AddTransaction extends Transaction{
         }
     }
 
+    @Override
+    public Money getTransactionAmount() {
+        return transactionAmount;
+    }
+
+    @Override
+    public Transaction revert() {
+        return new ReduceTransaction(transactionAmount);
+    }
+
+    @Override
+    public String toString() {
+        return transactionAmount.toString();
+    }
 }

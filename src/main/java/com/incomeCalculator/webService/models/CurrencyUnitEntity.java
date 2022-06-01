@@ -1,11 +1,12 @@
 package com.incomeCalculator.webService.models;
 
+import com.incomeCalculator.core.wallet.money.currencyUnit.CurrencyUnit;
 import com.incomeCalculator.core.wallet.money.currencyUnit.StrictCurrencyUnit;
 
 import javax.persistence.*;
 
 @Entity(name = "CURRENCY_UNITS")
-public class CurrencyUnitEntity extends StrictCurrencyUnit {
+public class CurrencyUnitEntity implements CurrencyUnit {
 
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY)  Long id;
 
