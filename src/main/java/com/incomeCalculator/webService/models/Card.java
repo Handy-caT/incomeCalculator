@@ -19,18 +19,21 @@ public class Card implements CardProvider {
     private BigDecimal balance;
     @ManyToOne
     private User user;
+    private String cardName;
 
-    public Card(CurrencyUnitEntity currencyUnit, BigDecimal balance, User user) {
+    public Card(CurrencyUnitEntity currencyUnit, BigDecimal balance, User user, String cardName) {
         this.currencyUnit = currencyUnit;
         this.balance = balance;
         this.user = user;
+        this.cardName = cardName;
     }
 
-    public Card(Long id, CurrencyUnitEntity currencyUnit, BigDecimal balance, User user) {
+    public Card(Long id, CurrencyUnitEntity currencyUnit, BigDecimal balance, User user, String cardName) {
         this.id = id;
         this.currencyUnit = currencyUnit;
         this.balance = balance;
         this.user = user;
+        this.cardName = cardName;
     }
 
     public Card() {
@@ -43,6 +46,14 @@ public class Card implements CardProvider {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getCardName() {
+        return cardName;
+    }
+
+    public void setCardName(String cardName) {
+        this.cardName = cardName;
     }
 
     @Override

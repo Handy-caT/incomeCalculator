@@ -2,14 +2,15 @@ package com.incomeCalculator.webService.controllers;
 
 import com.incomeCalculator.webService.modelAssembelrs.CardModelAssembler;
 import com.incomeCalculator.webService.models.Card;
+import com.incomeCalculator.webService.models.TransactionModel;
 import com.incomeCalculator.webService.repositories.CardRepository;
+import com.incomeCalculator.webService.requests.CardRequest;
+import com.incomeCalculator.webService.requests.TransactionRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class CardController {
@@ -31,6 +32,32 @@ public class CardController {
 
     @GetMapping("/cards/{id}")
     public EntityModel<Card> getById(@PathVariable Long id) {
+        return null;
+    }
+
+    @GetMapping("/cards/{id}/transactions")
+    public CollectionModel<EntityModel<TransactionModel>> getTransactions(@PathVariable Long id) {
+        return null;
+    }
+
+    @PostMapping("/cards")
+    public EntityModel<Card> createCard(@RequestBody CardRequest cardRequest) {
+        return null;
+    }
+
+    @PostMapping("/cards/{id}/transactions")
+    public EntityModel<TransactionModel> receiveTransaction(@PathVariable Long id,
+                                                            @RequestBody TransactionRequest transactionRequest) {
+        return null;
+    }
+
+    @PatchMapping("/cards/{id}")
+    public EntityModel<Card> renameCard(@PathVariable Long id) {
+        return null;
+    }
+
+    @DeleteMapping("/cards/{id}")
+    public String deleteCardById(@PathVariable Long id) {
         return null;
     }
 
