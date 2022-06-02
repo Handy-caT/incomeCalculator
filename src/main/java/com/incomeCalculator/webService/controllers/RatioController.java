@@ -3,7 +3,7 @@ package com.incomeCalculator.webService.controllers;
 import com.incomeCalculator.core.wallet.money.util.DateFormatter;
 import com.incomeCalculator.webService.exceptions.RatioNotFoundException;
 import com.incomeCalculator.webService.models.Ratio;
-import com.incomeCalculator.webService.models.modelAssembelrs.RatioModelAssembler;
+import com.incomeCalculator.webService.modelAssembelrs.RatioModelAssembler;
 import com.incomeCalculator.webService.repositories.RatioRepository;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;

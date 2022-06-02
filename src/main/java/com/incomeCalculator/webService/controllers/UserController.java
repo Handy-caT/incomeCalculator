@@ -3,7 +3,7 @@ package com.incomeCalculator.webService.controllers;
 import com.incomeCalculator.webService.exceptions.PermissionException;
 import com.incomeCalculator.webService.exceptions.UserNotFoundException;
 import com.incomeCalculator.webService.models.User;
-import com.incomeCalculator.webService.models.modelAssembelrs.UserModelAssembler;
+import com.incomeCalculator.webService.modelAssembelrs.UserModelAssembler;
 import com.incomeCalculator.webService.repositories.UserRepository;
 import com.incomeCalculator.webService.requests.UserUpdateRequest;
 import com.incomeCalculator.webService.security.JwtTokenService;

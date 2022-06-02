@@ -17,10 +17,20 @@ public class Card implements CardProvider {
     @ManyToOne
     private CurrencyUnitEntity currencyUnit;
     private BigDecimal balance;
+    @ManyToOne
+    private User user;
 
-    public Card(CurrencyUnitEntity currencyUnit, BigDecimal balance) {
+    public Card(CurrencyUnitEntity currencyUnit, BigDecimal balance, User user) {
         this.currencyUnit = currencyUnit;
         this.balance = balance;
+        this.user = user;
+    }
+
+    public Card(Long id, CurrencyUnitEntity currencyUnit, BigDecimal balance, User user) {
+        this.id = id;
+        this.currencyUnit = currencyUnit;
+        this.balance = balance;
+        this.user = user;
     }
 
     public Card() {
@@ -43,6 +53,10 @@ public class Card implements CardProvider {
     @Override
     public StrictCurrencyUnit getCurrencyUnit() {
         return null;
+    }
+
+    public User getUser() {
+        return user;
     }
 
     @Override

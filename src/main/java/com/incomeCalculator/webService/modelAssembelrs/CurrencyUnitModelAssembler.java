@@ -1,4 +1,4 @@
-package com.incomeCalculator.webService.models.modelAssembelrs;
+package com.incomeCalculator.webService.modelAssembelrs;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 

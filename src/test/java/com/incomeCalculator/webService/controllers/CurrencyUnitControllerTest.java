@@ -2,7 +2,7 @@ package com.incomeCalculator.webService.controllers;
 
 import com.incomeCalculator.webService.exceptions.CurrencyUnitNotFoundException;
 import com.incomeCalculator.webService.models.CurrencyUnitEntity;
-import com.incomeCalculator.webService.models.modelAssembelrs.CurrencyUnitModelAssembler;
+import com.incomeCalculator.webService.modelAssembelrs.CurrencyUnitModelAssembler;
 import com.incomeCalculator.webService.repositories.CurrencyUnitRepository;
 import com.incomeCalculator.webService.repositories.TokenRepository;
 import com.incomeCalculator.webService.security.JwtFilter;
@@ -18,7 +18,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;

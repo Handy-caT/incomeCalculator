@@ -1,4 +1,4 @@
-package com.incomeCalculator.webService.models.modelAssembelrs;
+package com.incomeCalculator.webService.modelAssembelrs;
 
 import com.incomeCalculator.webService.controllers.RatioController;
 import com.incomeCalculator.webService.controllers.UserController;

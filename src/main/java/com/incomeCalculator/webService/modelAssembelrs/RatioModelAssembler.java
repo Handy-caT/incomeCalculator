@@ -1,4 +1,4 @@
-package com.incomeCalculator.webService.models.modelAssembelrs;
+package com.incomeCalculator.webService.modelAssembelrs;
 
 import com.incomeCalculator.core.wallet.money.util.DateFormatter;
 import com.incomeCalculator.webService.controllers.CurrencyUnitController;

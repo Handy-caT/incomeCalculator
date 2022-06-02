@@ -1,6 +1,5 @@
 package com.incomeCalculator.webService.models;
 
-import com.incomeCalculator.core.wallet.card.Card;
 import com.incomeCalculator.core.wallet.card.CardProvider;
 import com.incomeCalculator.core.wallet.card.transaction.Transaction;
 import com.incomeCalculator.core.wallet.money.Money;
@@ -26,6 +25,8 @@ public class TransactionModel implements Transaction {
     private CurrencyUnitEntity currencyUnit;
     private BigDecimal transactionAmount;
     private boolean addition;
+    @ManyToOne
+    private Card card;
 
     public TransactionModel() {
 
@@ -59,6 +60,7 @@ public class TransactionModel implements Transaction {
         } else {
             card.subtractMoneyFromBalance(moneyAmount);
         }
+        this.card = (Card) card;
     }
 
     @Override
@@ -79,6 +81,14 @@ public class TransactionModel implements Transaction {
         this.id = id;
     }
 
+    public Card getCard() {
+        return card;
+    }
+
+    public void setCard(Card card) {
+        this.card = card;
+    }
+
     public CurrencyUnitEntity getCurrencyUnit() {
         return currencyUnit;
     }
@@ -90,6 +100,7 @@ public class TransactionModel implements Transaction {
                 ", currencyUnit=" + currencyUnit +
                 ", transactionAmount=" + transactionAmount +
                 ", addition=" + addition +
+                ", card=" + card +
                 '}';
     }
 
@@ -98,7 +109,9 @@ public class TransactionModel implements Transaction {
         if (this == o) return true;
         if (!(o instanceof TransactionModel)) return false;
         TransactionModel that = (TransactionModel) o;
-        return addition == that.addition && Objects.equals(id, that.id) && Objects.equals(currencyUnit, that.currencyUnit) && Objects.equals(transactionAmount, that.transactionAmount);
+        return addition == that.addition && Objects.equals(id, that.id) &&
+                Objects.equals(currencyUnit, that.currencyUnit) &&
+                Objects.equals(transactionAmount, that.transactionAmount);
     }
 
     @Override
