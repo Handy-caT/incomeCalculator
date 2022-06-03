@@ -109,18 +109,53 @@ public class CardController {
 
     @PostMapping("/cards/{id}/transactions")
     public EntityModel<TransactionEntity> receiveTransaction(@PathVariable Long id,
-                                                             @RequestBody TransactionRequest transactionRequest) {
-        return null;
+                                                             @RequestBody TransactionRequest transactionRequest,
+                                                             HttpServletResponse response) {
+
+        String token = tokenService.getTokenFromResponse(response);
+        User user = tokenService.getUserFromToken(token);
+
+        if(tokenService.validateUsersToken(user,token)) {
+            Card card = repository.findById(id)
+                    .orElseThrow(() -> new CardNotFoundException(id));
+            TransactionEntity transaction = service.executeTransaction(card,transactionRequest);
+            return transactionAssembler.toModel(transaction);
+        } else {
+            throw new PermissionException();
+        }
     }
 
     @PatchMapping("/cards/{id}")
-    public EntityModel<Card> renameCard(@PathVariable Long id) {
-        return null;
+    public EntityModel<Card> renameCard(@PathVariable Long id,
+                                        @RequestBody String cardName,
+                                        HttpServletResponse response) {
+        String token = tokenService.getTokenFromResponse(response);
+        User user = tokenService.getUserFromToken(token);
+
+        if(tokenService.validateUsersToken(user,token)) {
+            Card card = repository.findById(id)
+                    .orElseThrow(() -> new CardNotFoundException(id));
+            card.setCardName(cardName);
+            card = repository.save(card);
+            return assembler.toModel(card);
+        } else {
+            throw new PermissionException();
+        }
     }
 
     @DeleteMapping("/cards/{id}")
-    public String deleteCardById(@PathVariable Long id) {
-        return null;
+    public String deleteCardById(@PathVariable Long id, HttpServletResponse response) {
+        String token = tokenService.getTokenFromResponse(response);
+        User user = tokenService.getUserFromToken(token);
+
+        if(tokenService.validateUsersToken(user,token)) {
+            Card card = repository.findById(id)
+                    .orElseThrow(() -> new CardNotFoundException(id));
+            repository.delete(card);
+            return "Card " + card + " has been deleted!";
+        } else {
+            throw new PermissionException();
+        }
     }
 
 

@@ -28,6 +28,9 @@ public class TransactionEntity implements Transaction {
     @ManyToOne
     private Card card;
 
+    private BigDecimal beforeBalance;
+    private BigDecimal afterBalance;
+
     public TransactionEntity() {
 
     }
@@ -91,6 +94,22 @@ public class TransactionEntity implements Transaction {
 
     public CurrencyUnitEntity getCurrencyUnit() {
         return currencyUnit;
+    }
+
+    public BigDecimal getBeforeBalance() {
+        return beforeBalance;
+    }
+
+    public void setBeforeBalance(BigDecimal beforeBalance) {
+        this.beforeBalance = beforeBalance;
+    }
+
+    public BigDecimal getAfterBalance() {
+        return afterBalance;
+    }
+
+    public void setAfterBalance(BigDecimal afterBalance) {
+        this.afterBalance = afterBalance;
     }
 
     @Override
