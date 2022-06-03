@@ -10,6 +10,7 @@ import com.incomeCalculator.webService.security.JwtTokenService;
 import com.incomeCalculator.webService.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
@@ -31,19 +32,18 @@ public class UserController {
     private final UserService service;
 
     private final UserModelAssembler assembler;
-    private final JwtTokenService tokenService;
+    @Autowired
+    private JwtTokenService tokenService;
 
 
-    public UserController(UserRepository repository, UserService service, UserModelAssembler assembler, JwtTokenService tokenService) {
+    public UserController(UserRepository repository, UserService service, UserModelAssembler assembler) {
         this.repository = repository;
         this.service = service;
         this.assembler = assembler;
-        this.tokenService = tokenService;
     }
 
     @GetMapping("/users")
     public CollectionModel<EntityModel<User>> all(){
-
         List<EntityModel<User>> users= repository.findAll().stream()
                 .map(assembler::toModel)
                 .collect(Collectors.toList());
@@ -54,7 +54,6 @@ public class UserController {
 
     @GetMapping("/users/{id}")
     public EntityModel<User> getOne(@PathVariable Long id) {
-
         User user = repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
 
@@ -66,7 +65,7 @@ public class UserController {
         User user = repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
         String token = tokenService.getTokenFromResponse(response);
-        if(Objects.equals(token, tokenService.getUsersToken(user))) {
+        if(tokenService.validateUsersToken(user,token)) {
             repository.deleteById(id);
             log.info("User deleted: " + user);
         } else{
@@ -81,7 +80,7 @@ public class UserController {
         User user = repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
         String token = tokenService.getTokenFromResponse(response);
-        if(Objects.equals(token, tokenService.getUsersToken(user))) {
+        if(tokenService.validateUsersToken(user,token)) {
             log.info("Request: " + request.toString());
             User requestUser = service.findByLoginAndPassword(request.getLogin(),request.getOldPassword());
             if(requestUser.equals(user)) {

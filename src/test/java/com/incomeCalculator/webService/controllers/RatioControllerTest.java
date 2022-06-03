@@ -12,7 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -20,6 +22,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.security.SecureRandom;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.when;
@@ -39,11 +43,19 @@ class RatioControllerTest {
     @MockBean
     RatioRepository repository;
     @MockBean
-    RatioModelAssembler assembler;
-    @MockBean
     TokenRepository tokenRepository;
     @MockBean
     JwtFilter filter;
+
+    private final String hostName = "http://localhost";
+
+    @TestConfiguration
+    static class AdditionalConfig {
+        @Bean
+        public  RatioModelAssembler getRatioModelAssembler() {
+            return new RatioModelAssembler();
+        }
+    }
 
     @Autowired
     MockMvc mockMvc;
@@ -64,15 +76,8 @@ class RatioControllerTest {
         String dateString = DateFormatter.sqlFormat(date);
         CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
         Ratio ratio = new Ratio(id,currencyUnit,ratioAmount,dateString);
-        EntityModel<Ratio> ratioModel = EntityModel.of(ratio,
-                linkTo(methodOn(RatioController.class).one(ratio.getId().toString(),"0")).withSelfRel(),
-                linkTo(methodOn(RatioController.class).all(Optional.of(ratio.getDateString())))
-                        .withRel("ratios"),
-                linkTo(methodOn(CurrencyUnitController.class)
-                        .one(ratio.getCurrencyUnit().getId().toString(),"0")).withRel("currencyUnit"));
 
         when(repository.findById(id)).thenReturn(Optional.of(ratio));
-        when(assembler.toModel(ratio)).thenReturn(ratioModel);
 
         mockMvc.perform(get("/ratios/{id}",id))
                 .andExpect(status().isOk())
@@ -84,13 +89,13 @@ class RatioControllerTest {
                 .andExpect(jsonPath("$.currencyUnit.currencyId").value(currencyUnit.getCurrencyId()))
                 .andExpect(jsonPath("$.currencyUnit.currencyScale").value(currencyUnit.getCurrencyScale()))
                 .andExpect(jsonPath("$._links.self.href")
-                        .value(linkTo(methodOn(RatioController.class)
+                        .value(hostName + linkTo(methodOn(RatioController.class)
                                 .one(ratio.getId().toString(),"0")).toString()))
                 .andExpect(jsonPath("$._links.currencyUnit.href")
-                        .value(linkTo(methodOn(CurrencyUnitController.class)
+                        .value(hostName + linkTo(methodOn(CurrencyUnitController.class)
                                 .one(currencyUnit.getId().toString(),"0")).toString()))
                 .andExpect(jsonPath("$._links.ratios.href")
-                        .value(linkTo(methodOn(RatioController.class)
+                        .value(hostName + linkTo(methodOn(RatioController.class)
                                 .all(Optional.of(ratio.getDateString()))).toString()))
                 .andDo(print());
     }
@@ -117,4 +122,40 @@ class RatioControllerTest {
                 .andExpect(status().isNotFound())
                 .andDo(print());
     }
+
+    @Test
+    public void shouldReturnAll() throws Exception {
+        Date date = new Date();
+        String dateString = DateFormatter.sqlFormat(date);
+
+        CurrencyUnitEntity usdUnit = new CurrencyUnitEntity(1L,"USD",432,1);
+        CurrencyUnitEntity eurUnit = new CurrencyUnitEntity(2L,"EUR",433,1);
+        CurrencyUnitEntity bynUnit = new CurrencyUnitEntity(3L,"BYN",434,1);
+
+        Ratio usdRatio = new Ratio(1L,usdUnit,randomValue(),dateString);
+        Ratio eurRatio = new Ratio(1L,eurUnit,randomValue(),dateString);
+        Ratio bynRatio = new Ratio(1L,bynUnit,randomValue(),dateString);
+
+        List<Ratio> ratioList = new LinkedList<Ratio>();
+        ratioList.add(usdRatio);
+        ratioList.add(eurRatio);
+        ratioList.add(bynRatio);
+
+        when(repository.findAllByDateString(dateString)).thenReturn(ratioList);
+
+        mockMvc.perform(get("/ratios?ondate={date}",dateString))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$..ratioList.size()").value(ratioList.size()))
+                .andExpect(jsonPath("$..ratioList[0].ratio")
+                        .value(ratioList.get(0).getRatio().toString()))
+                .andExpect(jsonPath("$..ratioList[1].ratio")
+                        .value(ratioList.get(1).getRatio().toString()))
+                .andExpect(jsonPath("$..ratioList[2].ratio")
+                        .value(ratioList.get(2).getRatio().toString()))
+                .andExpect(jsonPath("$._links.self.href")
+                        .value(hostName + linkTo(methodOn(RatioController.class)
+                                .all(Optional.of(dateString))).toString()))
+                .andDo(print());
+    }
+
 }

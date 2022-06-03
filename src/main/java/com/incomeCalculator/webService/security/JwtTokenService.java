@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Objects;
 import java.util.UUID;
 
 import static io.jsonwebtoken.lang.Strings.hasText;
@@ -107,6 +108,10 @@ public class JwtTokenService {
         Token tokenEntity = repository.findByUser(user)
                 .orElseThrow(() -> new TokenNotFoundException(user));
         return tokenEntity.getToken();
+    }
+
+    public boolean validateUsersToken(User user, String token) {
+        return  Objects.equals(token, getUsersToken(user));
     }
 
 }

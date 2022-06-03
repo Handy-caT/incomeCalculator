@@ -2,15 +2,21 @@ package com.incomeCalculator.webService.controllers;
 
 import com.incomeCalculator.webService.modelAssembelrs.CardModelAssembler;
 import com.incomeCalculator.webService.models.Card;
-import com.incomeCalculator.webService.models.TransactionModel;
+import com.incomeCalculator.webService.models.TransactionEntity;
+import com.incomeCalculator.webService.models.User;
 import com.incomeCalculator.webService.repositories.CardRepository;
 import com.incomeCalculator.webService.requests.CardRequest;
 import com.incomeCalculator.webService.requests.TransactionRequest;
+import com.incomeCalculator.webService.security.JwtTokenService;
+import com.incomeCalculator.webService.services.CardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 public class CardController {
@@ -19,10 +25,15 @@ public class CardController {
 
     private final CardRepository repository;
     private final CardModelAssembler assembler;
+    private final CardService service;
 
-    public CardController(CardRepository repository, CardModelAssembler assembler) {
+    @Autowired
+    private JwtTokenService tokenService;
+
+    public CardController(CardRepository repository, CardModelAssembler assembler, CardService service) {
         this.repository = repository;
         this.assembler = assembler;
+        this.service = service;
     }
 
     @GetMapping("/cards")
@@ -31,23 +42,36 @@ public class CardController {
     }
 
     @GetMapping("/cards/{id}")
-    public EntityModel<Card> getById(@PathVariable Long id) {
+    public EntityModel<Card> getById(@PathVariable Long id, HttpServletResponse response) {
+        String token = tokenService.getTokenFromResponse(response);
+        User user = tokenService.getUserFromToken(token);
+
+        if(tokenService.validateUsersToken(user,token)) {
+
+
+            return null;
+        }
+
         return null;
     }
 
     @GetMapping("/cards/{id}/transactions")
-    public CollectionModel<EntityModel<TransactionModel>> getTransactions(@PathVariable Long id) {
+    public CollectionModel<EntityModel<TransactionEntity>> getTransactions(@PathVariable Long id) {
         return null;
     }
 
     @PostMapping("/cards")
-    public EntityModel<Card> createCard(@RequestBody CardRequest cardRequest) {
-        return null;
+    public EntityModel<Card> createCard(@RequestBody CardRequest cardRequest, HttpServletResponse response) {
+        String token = tokenService.getTokenFromResponse(response);
+        User user = tokenService.getUserFromToken(token);
+
+        Card card = service.createCardByRequest(user,cardRequest);
+        return assembler.toModel(card);
     }
 
     @PostMapping("/cards/{id}/transactions")
-    public EntityModel<TransactionModel> receiveTransaction(@PathVariable Long id,
-                                                            @RequestBody TransactionRequest transactionRequest) {
+    public EntityModel<TransactionEntity> receiveTransaction(@PathVariable Long id,
+                                                             @RequestBody TransactionRequest transactionRequest) {
         return null;
     }
 

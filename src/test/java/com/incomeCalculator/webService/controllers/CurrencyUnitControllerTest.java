@@ -1,6 +1,7 @@
 package com.incomeCalculator.webService.controllers;
 
 import com.incomeCalculator.webService.exceptions.CurrencyUnitNotFoundException;
+import com.incomeCalculator.webService.modelAssembelrs.RatioModelAssembler;
 import com.incomeCalculator.webService.models.CurrencyUnitEntity;
 import com.incomeCalculator.webService.modelAssembelrs.CurrencyUnitModelAssembler;
 import com.incomeCalculator.webService.repositories.CurrencyUnitRepository;
@@ -11,7 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -35,13 +38,21 @@ public class CurrencyUnitControllerTest {
     @MockBean
     CurrencyUnitRepository repository;
     @MockBean
-    CurrencyUnitModelAssembler assembler;
-    @MockBean
     CurrencyUnitService service;
     @MockBean
     TokenRepository tokenRepository;
     @MockBean
     JwtFilter filter;
+
+    private final String hostName = "http://localhost";
+
+    @TestConfiguration
+    static class AdditionalConfig {
+        @Bean
+        public CurrencyUnitModelAssembler getCurrencyUnitModelAssembler() {
+            return new CurrencyUnitModelAssembler();
+        }
+    }
 
     @Autowired
     MockMvc mockMvc;
@@ -53,12 +64,8 @@ public class CurrencyUnitControllerTest {
 
         Long id = 1L;
         CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(id,"USD",432,1);
-        EntityModel<CurrencyUnitEntity> model = EntityModel.of(currencyUnit,
-                linkTo(methodOn(CurrencyUnitController.class).one(currencyUnit.getId().toString(),"0")).withSelfRel(),
-                linkTo(methodOn(CurrencyUnitController.class).all()).withRel("currencyUnits"));
         when(repository.findById(id)).thenReturn(Optional.of(currencyUnit));
         when(service.getCurrencyUnitWithParam(id.toString(), parammode)).thenReturn(currencyUnit);
-        when(assembler.toModel(currencyUnit)).thenReturn(model);
 
         mockMvc.perform(get("/currencyUnits/{param}?parammode={mode}",id,parammode))
                 .andExpect(status().isOk())
@@ -67,9 +74,9 @@ public class CurrencyUnitControllerTest {
                 .andExpect(jsonPath("$.currencyId").value(currencyUnit.getCurrencyId()))
                 .andExpect(jsonPath("$.currencyScale").value(currencyUnit.getCurrencyScale()))
                 .andExpect(jsonPath("$._links.currencyUnits.href")
-                        .value(linkTo(methodOn(CurrencyUnitController.class).all()).toString()))
+                        .value(hostName + linkTo(methodOn(CurrencyUnitController.class).all()).toString()))
                 .andExpect(jsonPath("$._links.self.href")
-                        .value(linkTo(methodOn(CurrencyUnitController.class)
+                        .value(hostName + linkTo(methodOn(CurrencyUnitController.class)
                                 .one(currencyUnit.getId().toString(),"0")).toString()))
                 .andDo(print());
     }
@@ -80,12 +87,8 @@ public class CurrencyUnitControllerTest {
 
         Long id = 1L;
         CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(id,"USD",432,1);
-        EntityModel<CurrencyUnitEntity> model = EntityModel.of(currencyUnit,
-                linkTo(methodOn(CurrencyUnitController.class).one(currencyUnit.getId().toString(),"0")).withSelfRel(),
-                linkTo(methodOn(CurrencyUnitController.class).all()).withRel("currencyUnits"));
         when(repository.findByCurrencyName(currencyUnit.getCurrencyName())).thenReturn(Optional.of(currencyUnit));
         when(service.getCurrencyUnitWithParam(currencyUnit.getCurrencyName(), parammode)).thenReturn(currencyUnit);
-        when(assembler.toModel(currencyUnit)).thenReturn(model);
 
         mockMvc.perform(get("/currencyUnits/{param}?parammode={mode}"
                         ,currencyUnit.getCurrencyName(),parammode))
@@ -95,9 +98,9 @@ public class CurrencyUnitControllerTest {
                 .andExpect(jsonPath("$.currencyId").value(currencyUnit.getCurrencyId()))
                 .andExpect(jsonPath("$.currencyScale").value(currencyUnit.getCurrencyScale()))
                 .andExpect(jsonPath("$._links.currencyUnits.href")
-                        .value(linkTo(methodOn(CurrencyUnitController.class).all()).toString()))
+                        .value(hostName + linkTo(methodOn(CurrencyUnitController.class).all()).toString()))
                 .andExpect(jsonPath("$._links.self.href")
-                        .value(linkTo(methodOn(CurrencyUnitController.class)
+                        .value(hostName + linkTo(methodOn(CurrencyUnitController.class)
                                 .one(currencyUnit.getId().toString(),"0")).toString()))
                 .andDo(print());
     }
@@ -108,12 +111,8 @@ public class CurrencyUnitControllerTest {
 
         Long id = 1L;
         CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(id,"USD",432,1);
-        EntityModel<CurrencyUnitEntity> model = EntityModel.of(currencyUnit,
-                linkTo(methodOn(CurrencyUnitController.class).one(currencyUnit.getId().toString(),"0")).withSelfRel(),
-                linkTo(methodOn(CurrencyUnitController.class).all()).withRel("currencyUnits"));
         when(repository.findByCurrencyId(currencyUnit.getCurrencyId())).thenReturn(Optional.of(currencyUnit));
         when(service.getCurrencyUnitWithParam(String.valueOf(currencyUnit.getCurrencyId()), parammode)).thenReturn(currencyUnit);
-        when(assembler.toModel(currencyUnit)).thenReturn(model);
 
         mockMvc.perform(get("/currencyUnits/{param}?parammode={mode}"
                         ,currencyUnit.getCurrencyId(),parammode))
@@ -123,9 +122,9 @@ public class CurrencyUnitControllerTest {
                 .andExpect(jsonPath("$.currencyId").value(currencyUnit.getCurrencyId()))
                 .andExpect(jsonPath("$.currencyScale").value(currencyUnit.getCurrencyScale()))
                 .andExpect(jsonPath("$._links.currencyUnits.href")
-                        .value(linkTo(methodOn(CurrencyUnitController.class).all()).toString()))
+                        .value(hostName + linkTo(methodOn(CurrencyUnitController.class).all()).toString()))
                 .andExpect(jsonPath("$._links.self.href")
-                        .value(linkTo(methodOn(CurrencyUnitController.class)
+                        .value(hostName + linkTo(methodOn(CurrencyUnitController.class)
                                 .one(currencyUnit.getId().toString(),"0")).toString()))
                 .andDo(print());
     }
@@ -155,22 +154,18 @@ public class CurrencyUnitControllerTest {
         currenciesList.add(bynUnit);
 
         when(repository.findAll()).thenReturn(currenciesList);
-        when(assembler.toModel(usdUnit)).thenReturn(EntityModel.of(usdUnit,
-                linkTo(methodOn(CurrencyUnitController.class).one(usdUnit.getId().toString(),"0")).withSelfRel(),
-                linkTo(methodOn(CurrencyUnitController.class).all()).withRel("currencyUnits")));
-        when(assembler.toModel(eurUnit)).thenReturn(EntityModel.of(eurUnit,
-                linkTo(methodOn(CurrencyUnitController.class).one(eurUnit.getId().toString(),"0")).withSelfRel(),
-                linkTo(methodOn(CurrencyUnitController.class).all()).withRel("currencyUnits")));
-        when(assembler.toModel(bynUnit)).thenReturn(EntityModel.of(bynUnit,
-                linkTo(methodOn(CurrencyUnitController.class).one(bynUnit.getId().toString(),"0")).withSelfRel(),
-                linkTo(methodOn(CurrencyUnitController.class).all()).withRel("currencyUnits")));
-
 
         mockMvc.perform(get("/currencyUnits"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.currencyUnitEntityList.size()").value(currenciesList.size()))
-                .andExpect(jsonPath("$._links.currencyUnits.href")
-                        .value(linkTo(methodOn(CurrencyUnitController.class).all()).toString()))
+                .andExpect(jsonPath("$..currencyUnitEntityList.size()").value(currenciesList.size()))
+                .andExpect(jsonPath("$..currencyUnitEntityList[0].currencyName")
+                        .value(currenciesList.get(0).getCurrencyName()))
+                .andExpect(jsonPath("$..currencyUnitEntityList[1].currencyName")
+                        .value(currenciesList.get(1).getCurrencyName()))
+                .andExpect(jsonPath("$..currencyUnitEntityList[2].currencyName")
+                        .value(currenciesList.get(2).getCurrencyName()))
+                .andExpect(jsonPath("$._links.self.href")
+                        .value(hostName + linkTo(methodOn(CurrencyUnitController.class).all()).toString()))
                 .andDo(print());
     }
 

@@ -8,6 +8,8 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletResponse;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -18,7 +20,7 @@ public class CardModelAssembler
     @Override
     public EntityModel<Card> toModel(Card entity) {
         return EntityModel.of(entity,
-                linkTo(methodOn(CardController.class).getById(entity.getId())).withSelfRel(),
+                linkTo(CardController.class).slash(entity.getId()).withSelfRel(),
                 linkTo(methodOn(CardController.class).all()).withRel("cards"));
     }
 

@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 @Entity
-public class TransactionModel implements Transaction {
+public class TransactionEntity implements Transaction {
 
     @Autowired
     @Transient
@@ -28,20 +28,20 @@ public class TransactionModel implements Transaction {
     @ManyToOne
     private Card card;
 
-    public TransactionModel() {
+    public TransactionEntity() {
 
     }
 
-    public TransactionModel(Long id, CurrencyUnitEntity currencyUnit,
-                            BigDecimal transactionAmount, boolean addition) {
+    public TransactionEntity(Long id, CurrencyUnitEntity currencyUnit,
+                             BigDecimal transactionAmount, boolean addition) {
         this.id = id;
         this.currencyUnit = currencyUnit;
         this.transactionAmount = transactionAmount;
         this.addition = addition;
     }
 
-    public TransactionModel(CurrencyUnitEntity currencyUnit,
-                            BigDecimal transactionAmount, boolean addition) {
+    public TransactionEntity(CurrencyUnitEntity currencyUnit,
+                             BigDecimal transactionAmount, boolean addition) {
         this.currencyUnit = currencyUnit;
         this.transactionAmount = transactionAmount;
         this.addition = addition;
@@ -70,7 +70,7 @@ public class TransactionModel implements Transaction {
 
     @Override
     public Transaction revert() {
-        return new TransactionModel(currencyUnit,transactionAmount,!addition);
+        return new TransactionEntity(currencyUnit,transactionAmount,!addition);
     }
 
     public Long getId() {
@@ -107,8 +107,8 @@ public class TransactionModel implements Transaction {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof TransactionModel)) return false;
-        TransactionModel that = (TransactionModel) o;
+        if (!(o instanceof TransactionEntity)) return false;
+        TransactionEntity that = (TransactionEntity) o;
         return addition == that.addition && Objects.equals(id, that.id) &&
                 Objects.equals(currencyUnit, that.currencyUnit) &&
                 Objects.equals(transactionAmount, that.transactionAmount);
