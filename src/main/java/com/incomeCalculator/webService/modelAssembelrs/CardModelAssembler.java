@@ -21,6 +21,8 @@ public class CardModelAssembler
     public EntityModel<Card> toModel(Card entity) {
         return EntityModel.of(entity,
                 linkTo(CardController.class).slash(entity.getId()).withSelfRel(),
+                linkTo(CardController.class).slash(entity.getId())
+                        .slash("transactions").withRel("transactions"),
                 linkTo(methodOn(CardController.class).all()).withRel("cards"));
     }
 
