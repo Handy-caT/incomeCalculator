@@ -63,5 +63,9 @@ public class CardService {
         repository.save(card);
         return transactionRepository.save(transaction);
     }
-
+    public Card revertTransaction(Card card,TransactionEntity transaction) {
+        transaction.setUpdater(updater);
+        card.receiveTransaction(transaction);
+        return repository.save(card);
+    }
 }

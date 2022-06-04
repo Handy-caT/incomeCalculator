@@ -5,9 +5,11 @@ import com.incomeCalculator.webService.models.Token;
 import com.incomeCalculator.webService.models.User;
 import com.incomeCalculator.webService.repositories.TokenRepository;
 import com.incomeCalculator.webService.repositories.UserRepository;
+import com.incomeCalculator.webService.services.UserService;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +29,7 @@ public class JwtTokenService {
     private static final Logger log = LoggerFactory.getLogger(JwtTokenService.class);
     private final TokenRepository repository;
     private final UserRepository userRepository;
+
 
     JwtTokenService(TokenRepository repository, UserRepository userRepository) {
         this.repository = repository;
@@ -111,7 +114,8 @@ public class JwtTokenService {
     }
 
     public boolean validateUsersToken(User user, String token) {
-        return  Objects.equals(token, getUsersToken(user));
+        return  Objects.equals(token, getUsersToken(user)) ||
+                getUserFromToken(token).getRole().getRoleName().equals(UserService.adminRole);
     }
 
 }

@@ -31,21 +31,14 @@ public class AuthController {
     @PostMapping("/register")
     public AuthResponse registerUser(@RequestBody UserAuthRequest registrationRequest) {
         User user = new User();
-        log.info("Registration: " + registrationRequest);
         user.setPassword(registrationRequest.getPassword());
         user.setLogin(registrationRequest.getLogin());
 
         user = service.saveUser(user);
-        log.info("User saved:" + user.toString());
-        if(passwordEncoder.matches(registrationRequest.getPassword(),user.getPassword())) {
-            log.info("password matches");
-        } else {
-            log.info("no password match");
-        }
 
         String token = tokenService.generateToken(user.getLogin());
         tokenService.saveToken(token,user);
-
+        log.info("User saved, id=" + user.getId() + ", login=" + user.getLogin());
 
         return new AuthResponse(token);
     }

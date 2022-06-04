@@ -29,8 +29,8 @@ public class UserService {
         this.roleRepository = roleRepository;
     }
 
-    private final String userRole = "ROLE_USER";
-    private final String adminRole = "ROLE_ADMIN";
+    public static final String userRole = "ROLE_USER";
+    public static final String adminRole = "ROLE_ADMIN";
 
 
     public User saveUser(User user) {

@@ -74,14 +74,13 @@ public class UserController {
         return "Your account has been deleted. Goodbye!"; 
     }
 
-    @PutMapping("/users/{id}")
-    public EntityModel<User> replaceUser(@PathVariable Long id,
+    @PatchMapping("/users/{id}")
+    public EntityModel<User> updateUsersPassword(@PathVariable Long id,
                             @RequestBody UserUpdateRequest request, HttpServletResponse response) {
         User user = repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
         String token = tokenService.getTokenFromResponse(response);
         if(tokenService.validateUsersToken(user,token)) {
-            log.info("Request: " + request.toString());
             User requestUser = service.findByLoginAndPassword(request.getLogin(),request.getOldPassword());
             if(requestUser.equals(user)) {
                 user.setPassword(request.getNewPassword());

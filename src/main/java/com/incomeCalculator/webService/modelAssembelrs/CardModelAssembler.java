@@ -23,7 +23,7 @@ public class CardModelAssembler
                 linkTo(CardController.class).slash(entity.getId()).withSelfRel(),
                 linkTo(CardController.class).slash(entity.getId())
                         .slash("transactions").withRel("transactions"),
-                linkTo(methodOn(CardController.class).all()).withRel("cards"));
+                linkTo((CardController.class)).withRel("cards"));
     }
 
 }

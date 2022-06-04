@@ -23,4 +23,11 @@ public class UserAdvices {
         return ex.getMessage();
     }
 
+    @ResponseBody
+    @ExceptionHandler(TokenNotFoundException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    String tokenNotFound(TokenNotFoundException ex) {
+        return ex.getMessage();
+    }
+
 }
