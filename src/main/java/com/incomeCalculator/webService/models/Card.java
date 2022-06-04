@@ -3,10 +3,13 @@ package com.incomeCalculator.webService.models;
 import com.incomeCalculator.core.wallet.card.CardProvider;
 import com.incomeCalculator.core.wallet.card.transaction.Transaction;
 import com.incomeCalculator.core.wallet.money.Money;
+import com.incomeCalculator.core.wallet.money.currencyUnit.CurrencyUnit;
 import com.incomeCalculator.core.wallet.money.currencyUnit.StrictCurrencyUnit;
+
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Entity(name = "CARDS")
 public class Card implements CardProvider {
@@ -58,16 +61,17 @@ public class Card implements CardProvider {
 
     @Override
     public Money getBalance() {
-        return null;
+        return Money.of(currencyUnit,balance);
     }
 
     @Override
-    public StrictCurrencyUnit getCurrencyUnit() {
-        return null;
+    public CurrencyUnit getCurrencyUnit() {
+        return currencyUnit;
     }
 
-    public User getUser() {
-        return user;
+
+    public String getUserName() {
+        return user.getLogin();
     }
 
     @Override
@@ -92,5 +96,20 @@ public class Card implements CardProvider {
                 ", currencyUnit=" + currencyUnit +
                 ", balance=" + balance +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Card)) return false;
+        Card card = (Card) o;
+        return Objects.equals(id, card.id) && Objects.equals(currencyUnit, card.currencyUnit)
+                && Objects.equals(balance, card.balance) && Objects.equals(user, card.user)
+                && Objects.equals(cardName, card.cardName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, currencyUnit, balance, user, cardName);
     }
 }

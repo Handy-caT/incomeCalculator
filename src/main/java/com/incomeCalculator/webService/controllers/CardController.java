@@ -125,6 +125,31 @@ public class CardController {
         }
     }
 
+    @GetMapping("/cards/{id}/transactions/{transactionId}")
+    public EntityModel<TransactionEntity> receiveTransaction(@PathVariable Long id,
+                                                             @PathVariable Long transactionId,
+                                                             HttpServletResponse response) {
+
+        String token = tokenService.getTokenFromResponse(response);
+        User user = tokenService.getUserFromToken(token);
+
+        if(tokenService.validateUsersToken(user,token)) {
+            Card card = repository.findById(id)
+                    .orElseThrow(() -> new CardNotFoundException(id));
+            TransactionEntity transaction = transactionRepository.findById(transactionId)
+                    .orElseThrow(() -> new TransactionNotFoundException(id));
+            Card transactionCard = repository.findByCardName(transaction.getCardName())
+                    .orElseThrow(() -> new CardNotFoundException(transaction.getCardName()));
+            if(transactionCard.equals(card)) {
+                return transactionAssembler.toModel(transaction);
+            } else {
+                throw new PermissionException();
+            }
+        } else {
+            throw new PermissionException();
+        }
+    }
+
     @PatchMapping("/cards/{id}")
     public EntityModel<Card> renameCard(@PathVariable Long id,
                                         @RequestBody String cardName,

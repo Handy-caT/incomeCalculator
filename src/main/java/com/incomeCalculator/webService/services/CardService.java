@@ -11,6 +11,7 @@ import com.incomeCalculator.webService.repositories.CurrencyUnitRepository;
 import com.incomeCalculator.webService.repositories.TransactionRepository;
 import com.incomeCalculator.webService.requests.CardRequest;
 import com.incomeCalculator.webService.requests.TransactionRequest;
+import com.incomeCalculator.webService.util.CurrencyUpdaterSQL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +24,8 @@ public class CardService {
     private final CurrencyUnitRepository currencyUnitRepository;
     @Autowired
     private TransactionRepository transactionRepository;
+    @Autowired
+    private CurrencyUpdaterSQL updater;
 
 
     public CardService(CardRepository repository, CurrencyUnitRepository currencyUnitRepository) {
@@ -50,6 +53,7 @@ public class CardService {
         }
         BigDecimal beforeBalance = card.getBalance().getAmount();
         transaction.setBeforeBalance(beforeBalance);
+        transaction.setUpdater(updater);
 
         card.receiveTransaction(transaction);
 

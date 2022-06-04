@@ -16,4 +16,11 @@ public class UserAdvices {
         return ex.getMessage();
     }
 
+    @ResponseBody
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    String illegalArgumentHandler(IllegalArgumentException ex) {
+        return ex.getMessage();
+    }
+
 }

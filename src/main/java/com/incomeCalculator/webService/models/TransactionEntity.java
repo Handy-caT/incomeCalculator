@@ -14,9 +14,9 @@ import java.util.Objects;
 @Entity
 public class TransactionEntity implements Transaction {
 
-    @Autowired
+
     @Transient
-    CurrencyUpdaterSQL updater;
+    private CurrencyUpdaterSQL updater;
 
     private @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)  Long id;
@@ -53,7 +53,7 @@ public class TransactionEntity implements Transaction {
     @Override
     public void execute(CardProvider card) {
         CurrencyConverterSQL converter = new CurrencyConverterSQL(updater);
-        Money moneyAmount = Money.of(currencyUnit,transactionAmount);
+        Money moneyAmount = Money.of(currencyUnit,transactionAmount.abs());
         if(!card.getCurrencyUnit().equals(currencyUnit)) {
             moneyAmount = converter.convert(moneyAmount,currencyUnit);
         }
@@ -84,8 +84,8 @@ public class TransactionEntity implements Transaction {
         this.id = id;
     }
 
-    public Card getCard() {
-        return card;
+    public String getCardName() {
+        return card.getCardName();
     }
 
     public void setCard(Card card) {
@@ -119,7 +119,7 @@ public class TransactionEntity implements Transaction {
                 ", currencyUnit=" + currencyUnit +
                 ", transactionAmount=" + transactionAmount +
                 ", addition=" + addition +
-                ", card=" + card +
+                ", card=" + card.getCardName() +
                 '}';
     }
 
@@ -131,6 +131,10 @@ public class TransactionEntity implements Transaction {
         return addition == that.addition && Objects.equals(id, that.id) &&
                 Objects.equals(currencyUnit, that.currencyUnit) &&
                 Objects.equals(transactionAmount, that.transactionAmount);
+    }
+
+    public void setUpdater(CurrencyUpdaterSQL updater) {
+        this.updater = updater;
     }
 
     @Override
