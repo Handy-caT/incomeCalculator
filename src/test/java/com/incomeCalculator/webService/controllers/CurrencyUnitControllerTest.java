@@ -49,7 +49,7 @@ public class CurrencyUnitControllerTest {
     @TestConfiguration
     static class AdditionalConfig {
         @Bean
-        public CurrencyUnitModelAssembler getCurrencyUnitModelAssembler() {
+        protected CurrencyUnitModelAssembler getCurrencyUnitModelAssembler() {
             return new CurrencyUnitModelAssembler();
         }
     }

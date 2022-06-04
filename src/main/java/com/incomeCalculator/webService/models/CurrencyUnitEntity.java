@@ -54,6 +54,10 @@ public class CurrencyUnitEntity implements CurrencyUnit {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return "CurrencyUnit{" + "id=" + this.id +", currencyName='" + this.currencyName + '\''

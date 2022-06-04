@@ -52,7 +52,7 @@ class RatioControllerTest {
     @TestConfiguration
     static class AdditionalConfig {
         @Bean
-        public  RatioModelAssembler getRatioModelAssembler() {
+        protected  RatioModelAssembler getRatioModelAssembler() {
             return new RatioModelAssembler();
         }
     }
