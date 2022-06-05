@@ -3,36 +3,31 @@ package com.incomeCalculator.webService.services;
 import com.incomeCalculator.webService.exceptions.RoleNotFoundException;
 import com.incomeCalculator.webService.exceptions.UserNotFoundException;
 import com.incomeCalculator.webService.models.User;
-import com.incomeCalculator.webService.models.UserModelAssembler;
 import com.incomeCalculator.webService.repositories.RoleRepository;
 import com.incomeCalculator.webService.repositories.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
 import java.util.Objects;
 
 @Component
 public class UserService {
 
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
+    @Autowired
     private UserRepository repository;
-
+    @Autowired
     private PasswordEncoder passwordEncoder;
-
+    @Autowired
     private RoleRepository roleRepository;
 
-    public UserService(UserRepository repository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
-        this.repository = repository;
-        this.passwordEncoder = passwordEncoder;
-        this.roleRepository = roleRepository;
-    }
 
-    private final String userRole = "ROLE_USER";
+    public static final String userRole = "ROLE_USER";
+    public static final String adminRole = "ROLE_ADMIN";
 
 
     public User saveUser(User user) {
@@ -52,10 +47,15 @@ public class UserService {
         User user = repository.findByLogin(login)
                 .orElseThrow(() -> new UserNotFoundException(login));
         if(Objects.nonNull(user)) {
-            if(passwordEncoder.matches(password, user.getPassword()))
+            if(passwordEncoder.matches(password,user.getPassword()))
                 return user;
+            else throw new IllegalArgumentException("Wrong password");
         }
         return null;
+    }
+
+    public boolean isAdmin(User user) {
+        return user.getRole().getRoleName().equals(adminRole);
     }
 
 }

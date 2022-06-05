@@ -1,11 +1,9 @@
 package com.incomeCalculator.webService.controllers;
 
 import com.incomeCalculator.core.wallet.money.util.DateFormatter;
-import com.incomeCalculator.webService.exceptions.CurrencyUnitNotFoundException;
 import com.incomeCalculator.webService.exceptions.RatioNotFoundException;
-import com.incomeCalculator.webService.models.CurrencyUnitEntity;
 import com.incomeCalculator.webService.models.Ratio;
-import com.incomeCalculator.webService.models.RatioModelAssembler;
+import com.incomeCalculator.webService.modelAssembelrs.RatioModelAssembler;
 import com.incomeCalculator.webService.repositories.RatioRepository;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -17,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -34,13 +33,20 @@ public class RatioController {
     }
 
     @GetMapping("/ratios")
-    public CollectionModel<EntityModel<Ratio>> all(){
+    public CollectionModel<EntityModel<Ratio>> all(
+            @RequestParam(required = false,name = "ondate") Optional<String> dateString) {
+        List<EntityModel<Ratio>> ratios;
 
-        List<EntityModel<Ratio>> ratios = repository.findAll().stream()
+        Date date = new Date();
+        String dateStringNow = DateFormatter.sqlFormat(date);
+
+        ratios = dateString.map(s -> repository.findAllByDateString(s).stream()
                 .map(assembler::toModel)
-                .collect(Collectors.toList());
-
-        return CollectionModel.of(ratios,linkTo(methodOn(RatioController.class).all())
+                .collect(Collectors.toList())).orElseGet(() -> repository.findAll().stream()
+                .map(assembler::toModel)
+                .collect(Collectors.toList()));
+        return CollectionModel.of(ratios, linkTo(methodOn(RatioController.class)
+                .all(Optional.of(dateStringNow)))
                 .withSelfRel());
     }
 

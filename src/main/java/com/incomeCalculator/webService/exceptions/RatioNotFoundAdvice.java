@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
-public class CurrencyNotFoundAdvice {
+public class RatioNotFoundAdvice {
 
     @ResponseBody
-    @ExceptionHandler(CurrencyUnitNotFoundException.class)
+    @ExceptionHandler(RatioNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    String currencyUnitNotFoundHandler(CurrencyUnitNotFoundException ex) {
+    String ratioNotFoundHandler(RatioNotFoundException ex) {
         return ex.getMessage();
     }
 

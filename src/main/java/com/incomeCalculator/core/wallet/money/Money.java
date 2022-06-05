@@ -1,6 +1,7 @@
 package com.incomeCalculator.core.wallet.money;
 
 import com.incomeCalculator.core.wallet.money.currencyUnit.CurrencyUnit;
+import com.incomeCalculator.core.wallet.money.currencyUnit.NonStrictCurrencyUnit;
 import com.incomeCalculator.core.wallet.money.currencyUnit.StrictCurrencyUnit;
 
 import java.math.BigDecimal;
@@ -8,27 +9,27 @@ import java.math.RoundingMode;
 
 public class Money {
 
-    private final StrictCurrencyUnit currency;
+    private final CurrencyUnit currency;
     private final BigDecimal amount;
 
     public BigDecimal getAmount() {
         return amount;
     }
 
-    public Money(StrictCurrencyUnit currency, BigDecimal amount) {
+    public Money(CurrencyUnit currency, BigDecimal amount) {
         this.currency = currency;
         this.amount = amount;
     }
     public Money(String currencyString, BigDecimal amount) {
-        this.currency = CurrencyUnit.of(currencyString);
+        this.currency = NonStrictCurrencyUnit.of(currencyString);
         this.amount = amount;
     }
 
-    public static Money of(StrictCurrencyUnit currency, BigDecimal amount) {
+    public static Money of(CurrencyUnit currency, BigDecimal amount) {
         return new Money(currency,amount);
     }
     public static Money of(String currencyString, BigDecimal amount) {
-        return new Money(CurrencyUnit.of(currencyString),amount);
+        return new Money(NonStrictCurrencyUnit.of(currencyString),amount);
     }
 
     public static Money parse(String moneyString) {
@@ -38,10 +39,10 @@ public class Money {
         }
         String currencyString = formattedMoneyString.substring(0,3);
         String amountString = formattedMoneyString.substring(3);
-        return of(CurrencyUnit.of(currencyString),new BigDecimal(amountString));
+        return of(NonStrictCurrencyUnit.of(currencyString),new BigDecimal(amountString));
     }
 
-    public StrictCurrencyUnit getCurrency() {
+    public CurrencyUnit getCurrency() {
         return currency;
     }
 

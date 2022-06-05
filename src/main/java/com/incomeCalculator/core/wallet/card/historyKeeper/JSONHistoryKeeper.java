@@ -66,7 +66,7 @@ public class JSONHistoryKeeper extends HistoryKeeper {
 
     @Override
     public void restoreTransaction(Card card, Transaction transaction) {
-        JSONObject snapshotObject = new JSONObject();
+        JSONObject snapshotObject;
         String moneyString = null;
         for(Object tempObject : snapshotsJSONArray ) {
             snapshotObject = (JSONObject) tempObject;

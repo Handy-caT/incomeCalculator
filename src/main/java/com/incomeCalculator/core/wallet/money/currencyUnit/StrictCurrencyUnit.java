@@ -2,7 +2,7 @@ package com.incomeCalculator.core.wallet.money.currencyUnit;
 
 import java.util.Objects;
 
-public class StrictCurrencyUnit {
+public class StrictCurrencyUnit implements CurrencyUnit {
 
     protected String currencyName;
     protected long currencyId;
@@ -13,6 +13,11 @@ public class StrictCurrencyUnit {
         currencyName = currencyString;
         this.currencyId = id;
         this.currencyScale = scale;
+    }
+    public StrictCurrencyUnit(CurrencyUnit currencyUnit) {
+        this.currencyId = currencyUnit.getCurrencyId();
+        this.currencyScale = currencyUnit.getCurrencyScale();
+        this.currencyName = currencyUnit.getCurrencyName();
     }
     public StrictCurrencyUnit(StrictCurrencyUnit currencyUnit) {
         this.currencyId = currencyUnit.currencyId;

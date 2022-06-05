@@ -1,11 +1,13 @@
 package com.incomeCalculator.webService.models;
 
+import com.incomeCalculator.core.wallet.money.currencyUnit.CurrencyUnit;
 import com.incomeCalculator.core.wallet.money.currencyUnit.StrictCurrencyUnit;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity(name = "CURRENCY_UNITS")
-public class CurrencyUnitEntity extends StrictCurrencyUnit {
+public class CurrencyUnitEntity implements CurrencyUnit {
 
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY)  Long id;
 
@@ -22,6 +24,12 @@ public class CurrencyUnitEntity extends StrictCurrencyUnit {
     public CurrencyUnitEntity(String currencyString, long id, long scale) {
         this.currencyName = currencyString;
         this.currencyId = id;
+        this.currencyScale = scale;
+    }
+    public CurrencyUnitEntity(Long id,String currencyString, long currencyId, long scale) {
+        this.id = id;
+        this.currencyName = currencyString;
+        this.currencyId = currencyId;
         this.currencyScale = scale;
     }
     public CurrencyUnitEntity(StrictCurrencyUnit currencyUnit) {
@@ -46,9 +54,27 @@ public class CurrencyUnitEntity extends StrictCurrencyUnit {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return "CurrencyUnit{" + "id=" + this.id +", currencyName='" + this.currencyName + '\''
                 + ", currencyId=" + this.currencyId + ", currencyScale=" + this.currencyScale + '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CurrencyUnitEntity)) return false;
+        CurrencyUnitEntity that = (CurrencyUnitEntity) o;
+        return currencyId == that.currencyId && currencyScale == that.currencyScale && Objects.equals(id, that.id) && Objects.equals(currencyName, that.currencyName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, currencyName, currencyId, currencyScale);
+    }
+
 }

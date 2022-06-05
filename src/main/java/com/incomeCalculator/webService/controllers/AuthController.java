@@ -8,6 +8,7 @@ import com.incomeCalculator.webService.security.JwtTokenService;
 import com.incomeCalculator.webService.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,13 +27,18 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@RequestBody UserAuthRequest registrationRequest) {
+    public AuthResponse registerUser(@RequestBody UserAuthRequest registrationRequest) {
         User user = new User();
-        log.info("Registration request " + registrationRequest.toString());
         user.setPassword(registrationRequest.getPassword());
         user.setLogin(registrationRequest.getLogin());
-        service.saveUser(user);
-        return "OK";
+
+        user = service.saveUser(user);
+
+        String token = tokenService.generateToken(user.getLogin());
+        tokenService.saveToken(token,user);
+        log.info("User saved, id=" + user.getId() + ", login=" + user.getLogin());
+
+        return new AuthResponse(token);
     }
 
     @PostMapping("/auth")

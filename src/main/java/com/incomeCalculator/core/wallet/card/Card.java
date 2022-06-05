@@ -8,7 +8,7 @@ import com.incomeCalculator.core.wallet.money.currencyUnit.StrictCurrencyUnit;
 
 import java.math.BigDecimal;
 
-public class Card {
+public class Card implements CardProvider{
 
     private Money balance;
     protected final StrictCurrencyUnit currencyUnit;
@@ -60,4 +60,5 @@ public class Card {
     public Money getBalance() {
         return balance;
     }
+
 }

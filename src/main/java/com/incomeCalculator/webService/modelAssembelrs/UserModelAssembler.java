@@ -1,7 +1,8 @@
-package com.incomeCalculator.webService.models;
+package com.incomeCalculator.webService.modelAssembelrs;
 
 import com.incomeCalculator.webService.controllers.RatioController;
 import com.incomeCalculator.webService.controllers.UserController;
+import com.incomeCalculator.webService.models.User;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
@@ -16,7 +17,7 @@ public class UserModelAssembler
     @Override
     public EntityModel<User> toModel(User entity) {
         return EntityModel.of(entity,
-                linkTo(methodOn(UserController.class).one(entity.getId())).withSelfRel(),
+                linkTo(methodOn(UserController.class).getOne(entity.getId())).withSelfRel(),
                 linkTo(methodOn(UserController.class).all()).withRel("users"));
     }
 }
