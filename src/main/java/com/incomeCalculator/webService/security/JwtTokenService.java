@@ -27,14 +27,10 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 public class JwtTokenService {
 
     private static final Logger log = LoggerFactory.getLogger(JwtTokenService.class);
-    private final TokenRepository repository;
-    private final UserRepository userRepository;
-
-
-    JwtTokenService(TokenRepository repository, UserRepository userRepository) {
-        this.repository = repository;
-        this.userRepository = userRepository;
-    }
+    @Autowired
+    private TokenRepository repository;
+    @Autowired
+    private UserRepository userRepository;
 
     public String generateToken(String login) {
 

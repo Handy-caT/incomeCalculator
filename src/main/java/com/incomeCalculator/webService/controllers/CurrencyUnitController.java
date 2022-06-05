@@ -34,7 +34,7 @@ public class CurrencyUnitController {
     private UserService userService;
 
     CurrencyUnitController(CurrencyUnitRepository repository,
-                           @Qualifier("currencyUnitModelAssembler") CurrencyUnitModelAssembler assembler,
+                           CurrencyUnitModelAssembler assembler,
                            CurrencyUnitService service) {
         this.repository = repository;
         this.assembler = assembler;

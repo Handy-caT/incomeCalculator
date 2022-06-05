@@ -4,10 +4,15 @@ import com.incomeCalculator.webService.exceptions.CurrencyUnitNotFoundException;
 import com.incomeCalculator.webService.modelAssembelrs.RatioModelAssembler;
 import com.incomeCalculator.webService.models.CurrencyUnitEntity;
 import com.incomeCalculator.webService.modelAssembelrs.CurrencyUnitModelAssembler;
+import com.incomeCalculator.webService.models.Role;
+import com.incomeCalculator.webService.models.User;
 import com.incomeCalculator.webService.repositories.CurrencyUnitRepository;
 import com.incomeCalculator.webService.repositories.TokenRepository;
+import com.incomeCalculator.webService.repositories.UserRepository;
 import com.incomeCalculator.webService.security.JwtFilter;
+import com.incomeCalculator.webService.security.JwtTokenService;
 import com.incomeCalculator.webService.services.CurrencyUnitService;
+import com.incomeCalculator.webService.services.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -43,20 +48,37 @@ public class CurrencyUnitControllerTest {
     TokenRepository tokenRepository;
     @MockBean
     JwtFilter filter;
+    @MockBean
+    UserService userService;
+    @MockBean
+    UserRepository userRepository;
 
     private final String hostName = "http://localhost";
+    private String bearer = "Bearer ";
 
     @TestConfiguration
     static class AdditionalConfig {
         @Bean
-        protected CurrencyUnitModelAssembler getCurrencyUnitModelAssembler() {
+        public CurrencyUnitModelAssembler getCurrencyUnitModelAssembler() {
             return new CurrencyUnitModelAssembler();
         }
+
+        @Bean
+        public JwtTokenService getJwtTokenService() {
+            return new JwtTokenService();
+        }
+
     }
 
     @Autowired
     MockMvc mockMvc;
 
+    private static User getRawUser() {
+        return new User(1L,"user","password",new Role("ROLE_USER"));
+    }
+    private static User getRawAdmin() {
+        return new User(1L,"admin","password",new Role("ROLE_ADMIN"));
+    }
 
     @Test
     public void getTestWithParammode0() throws Exception {
@@ -167,6 +189,16 @@ public class CurrencyUnitControllerTest {
                 .andExpect(jsonPath("$._links.self.href")
                         .value(hostName + linkTo(methodOn(CurrencyUnitController.class).all()).toString()))
                 .andDo(print());
+    }
+
+    @Test
+    public void shouldNotAllowDeleteForRegularUser() throws Exception {
+
+        String token = "tokenString";
+
+        mockMvc.perform(get("/currencyUnits")
+                .header("Authorization",bearer + token));
+
     }
 
 }

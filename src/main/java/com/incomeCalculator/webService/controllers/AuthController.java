@@ -20,12 +20,10 @@ public class AuthController {
 
     private final UserService service;
     private final JwtTokenService tokenService;
-    private final PasswordEncoder passwordEncoder;
 
-    AuthController(UserService service, JwtTokenService tokenService, PasswordEncoder passwordEncoder) {
+    AuthController(UserService service, JwtTokenService tokenService) {
         this.service = service;
         this.tokenService = tokenService;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/register")

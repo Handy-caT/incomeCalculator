@@ -44,10 +44,8 @@ public class JwtFilter extends GenericFilterBean {
                          ServletResponse servletResponse,
                          FilterChain filterChain) throws IOException, ServletException {
 
-        log.info("Request: " + servletRequest.toString());
         String token = service.getTokenFromRequest((HttpServletRequest) servletRequest);
         if (token != null) {
-            log.info("Token: " + token);
             if(service.validateToken(token)) {
                 User user = service.getUserFromToken(token);
                 String username = user.getLogin();
@@ -60,7 +58,6 @@ public class JwtFilter extends GenericFilterBean {
 
                 String newToken = service.generateToken(username);
                 service.saveToken(newToken, user);
-                log.info("New token: " + user);
                 HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
                 httpServletResponse.addHeader(AUTHORIZATION,"Bearer " + newToken);
             }
