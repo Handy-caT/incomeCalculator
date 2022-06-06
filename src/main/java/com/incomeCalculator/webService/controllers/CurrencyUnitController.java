@@ -17,6 +17,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -62,9 +63,9 @@ public class CurrencyUnitController {
 
     @PostMapping("/currencyUnits")
     public EntityModel<CurrencyUnitEntity> createCurrencyUnit(@RequestBody CurrencyUnitEntity currencyUnit,
-                                                              HttpServletResponse response) {
+                                                              HttpServletRequest request) {
 
-        String token = tokenService.getTokenFromResponse(response);
+        String token = tokenService.getTokenFromRequest(request);
         User user = tokenService.getUserFromToken(token);
         if(userService.isAdmin(user)) {
             if (currencyUnit.getCurrencyName().length() > 3) {
@@ -84,8 +85,9 @@ public class CurrencyUnitController {
 
     @DeleteMapping("/currencyUnits/{id}")
     public String deleteCurrencyUnit(@PathVariable Long id,
-                                     HttpServletResponse response) {
-        String token = tokenService.getTokenFromResponse(response);
+                                     HttpServletRequest request) {
+
+        String token = tokenService.getTokenFromRequest(request);
         User user = tokenService.getUserFromToken(token);
         if(userService.isAdmin(user)) {
             CurrencyUnitEntity currencyUnit = repository.findById(id)
@@ -100,9 +102,9 @@ public class CurrencyUnitController {
     @PutMapping("/currencyUnits/{id}")
     public EntityModel<CurrencyUnitEntity> updateCurrencyUnit(@PathVariable Long id,
                                                               CurrencyUnitEntity currencyUnit,
-                                                              HttpServletResponse response) {
+                                                              HttpServletRequest request) {
 
-        String token = tokenService.getTokenFromResponse(response);
+        String token = tokenService.getTokenFromRequest(request);
         User user = tokenService.getUserFromToken(token);
         if(userService.isAdmin(user)) {
             CurrencyUnitEntity foundCurrencyUnit = repository.findById(id)

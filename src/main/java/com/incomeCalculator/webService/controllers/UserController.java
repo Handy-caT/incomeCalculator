@@ -15,6 +15,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Objects;
@@ -61,10 +62,10 @@ public class UserController {
     }
 
     @DeleteMapping("/users/{id}")
-    public String deleteUser(@PathVariable Long id, HttpServletResponse response) {
+    public String deleteUser(@PathVariable Long id, HttpServletRequest request) {
         User user = repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
-        String token = tokenService.getTokenFromResponse(response);
+        String token = tokenService.getTokenFromRequest(request);
         if(tokenService.validateUsersToken(user,token)) {
             repository.deleteById(id);
             log.info("User deleted: " + user);
@@ -76,14 +77,14 @@ public class UserController {
 
     @PatchMapping("/users/{id}")
     public EntityModel<User> updateUsersPassword(@PathVariable Long id,
-                            @RequestBody UserUpdateRequest request, HttpServletResponse response) {
+                            @RequestBody UserUpdateRequest updateRequest, HttpServletRequest request) {
         User user = repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
-        String token = tokenService.getTokenFromResponse(response);
+        String token = tokenService.getTokenFromRequest(request);
         if(tokenService.validateUsersToken(user,token)) {
-            User requestUser = service.findByLoginAndPassword(request.getLogin(),request.getOldPassword());
+            User requestUser = service.findByLoginAndPassword(updateRequest.getLogin(),updateRequest.getOldPassword());
             if(requestUser.equals(user)) {
-                user.setPassword(request.getNewPassword());
+                user.setPassword(updateRequest.getNewPassword());
                 user = service.saveUser(user);
             }
         } else{

@@ -26,15 +26,18 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -51,8 +54,6 @@ public class CurrencyUnitControllerTest {
     CurrencyUnitService service;
     @MockBean
     TokenRepository tokenRepository;
-    @MockBean
-    JwtFilter filter;
     @MockBean
     UserRepository userRepository;
     @MockBean
@@ -198,13 +199,17 @@ public class CurrencyUnitControllerTest {
     @Test
     public void shouldNotAllowDeleteForRegularUser() throws Exception {
 
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
         User regularUser = AuthControllerTest.getRawUser();
         Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
 
+        when(response.getHeader(AUTHORIZATION)).thenReturn(tokenEntity.getToken());
         when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+        when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
 
         mockMvc.perform(delete("/currencyUnits/{id}",1)
-                .header("Authorization",bearer + tokenEntity.getToken()))
+                        .header("Authorization",bearer + tokenEntity.getToken()))
                 .andExpect(status().isForbidden())
                 .andDo(print());
 
@@ -249,5 +254,25 @@ public class CurrencyUnitControllerTest {
                 .andDo(print());
 
     }
+
+    @Test
+    public void shouldAllowDeleteForAdmin() throws Exception {
+
+        User admin = AuthControllerTest.getRawAdmin();
+        Token tokenEntity = AuthControllerTest.createTokenForUser(admin);
+
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
+
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+        when(repository.findById(currencyUnit.getId())).thenReturn(Optional.of(currencyUnit));
+
+        mockMvc.perform(delete("/currencyUnits/{id}",1)
+                        .header("Authorization",bearer + tokenEntity.getToken()))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+        verify(repository,times(1)).delete(currencyUnit);
+    }
+
 
 }
