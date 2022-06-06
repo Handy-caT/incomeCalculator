@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.incomeCalculator.webService.modelAssembelrs.RatioModelAssembler;
 import com.incomeCalculator.webService.models.Role;
+import com.incomeCalculator.webService.models.Token;
 import com.incomeCalculator.webService.models.User;
 import com.incomeCalculator.webService.repositories.RoleRepository;
 import com.incomeCalculator.webService.repositories.TokenRepository;
@@ -16,6 +17,7 @@ import com.incomeCalculator.webService.services.CustomUserDetails;
 import com.incomeCalculator.webService.services.CustomUserDetailsService;
 import com.incomeCalculator.webService.services.UserService;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +32,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -75,11 +81,28 @@ class AuthControllerTest {
     }
 
 
-    private static User getRawUser() {
+    public static User getRawUser() {
         return new User(1L,"user","password",new Role("ROLE_USER"));
     }
-    private static User getRawAdmin() {
+    public static User getRawAdmin() {
         return new User(1L,"admin","password",new Role("ROLE_ADMIN"));
+    }
+    public static Token createTokenForUser(User user) {
+
+        String id = UUID.randomUUID().toString().replace("-", "");
+        Date date = new Date();
+        Date exp = Date.from(LocalDateTime.now().plusDays(1).atZone(ZoneId.systemDefault()).toInstant());
+
+        String token;
+        token = Jwts.builder()
+                .setId(id)
+                .setIssuedAt(date)
+                .setNotBefore(date)
+                .setExpiration(exp)
+                .signWith(SignatureAlgorithm.HS512, user.getLogin())
+                .compact();
+
+        return new Token(1L,user,token);
     }
 
     @Test
@@ -89,10 +112,6 @@ class AuthControllerTest {
         UserAuthRequest request = new UserAuthRequest();
         request.setLogin(rawUser.getLogin());
         request.setPassword(rawUser.getPassword());
-
-        User requestedUser = new User();
-        requestedUser.setPassword(rawUser.getPassword());
-        requestedUser.setLogin(rawUser.getLogin());
 
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -134,10 +153,6 @@ class AuthControllerTest {
         request.setLogin(rawUser.getLogin());
         request.setPassword(rawUser.getPassword());
 
-        User requestedUser = new User();
-        requestedUser.setPassword(rawUser.getPassword());
-        requestedUser.setLogin(rawUser.getLogin());
-
         ObjectMapper objectMapper = new ObjectMapper();
 
         String jsonRequest = objectMapper.writeValueAsString(request);
@@ -175,9 +190,6 @@ class AuthControllerTest {
         request.setLogin(rawUser.getLogin());
         request.setPassword(rawUser.getPassword());
 
-        User requestedUser = new User();
-        requestedUser.setPassword(rawUser.getPassword()+"1");
-        requestedUser.setLogin(rawUser.getLogin());
 
         ObjectMapper objectMapper = new ObjectMapper();
 

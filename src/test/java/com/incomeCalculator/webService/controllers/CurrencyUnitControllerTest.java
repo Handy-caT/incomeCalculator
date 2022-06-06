@@ -1,17 +1,21 @@
 package com.incomeCalculator.webService.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.incomeCalculator.webService.exceptions.CurrencyUnitNotFoundException;
 import com.incomeCalculator.webService.modelAssembelrs.RatioModelAssembler;
 import com.incomeCalculator.webService.models.CurrencyUnitEntity;
 import com.incomeCalculator.webService.modelAssembelrs.CurrencyUnitModelAssembler;
 import com.incomeCalculator.webService.models.Role;
+import com.incomeCalculator.webService.models.Token;
 import com.incomeCalculator.webService.models.User;
 import com.incomeCalculator.webService.repositories.CurrencyUnitRepository;
+import com.incomeCalculator.webService.repositories.RoleRepository;
 import com.incomeCalculator.webService.repositories.TokenRepository;
 import com.incomeCalculator.webService.repositories.UserRepository;
 import com.incomeCalculator.webService.security.JwtFilter;
 import com.incomeCalculator.webService.security.JwtTokenService;
 import com.incomeCalculator.webService.services.CurrencyUnitService;
+import com.incomeCalculator.webService.services.CustomUserDetailsService;
 import com.incomeCalculator.webService.services.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +25,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.LinkedList;
@@ -30,7 +35,7 @@ import java.util.Optional;
 import static org.mockito.Mockito.when;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -49,9 +54,11 @@ public class CurrencyUnitControllerTest {
     @MockBean
     JwtFilter filter;
     @MockBean
-    UserService userService;
-    @MockBean
     UserRepository userRepository;
+    @MockBean
+    CustomUserDetailsService customUserDetailsService;
+    @MockBean
+    RoleRepository roleRepository;
 
     private final String hostName = "http://localhost";
     private String bearer = "Bearer ";
@@ -68,17 +75,14 @@ public class CurrencyUnitControllerTest {
             return new JwtTokenService();
         }
 
+        @Bean
+        public UserService getUserService() {
+            return new UserService();
+        }
     }
 
     @Autowired
     MockMvc mockMvc;
-
-    private static User getRawUser() {
-        return new User(1L,"user","password",new Role("ROLE_USER"));
-    }
-    private static User getRawAdmin() {
-        return new User(1L,"admin","password",new Role("ROLE_ADMIN"));
-    }
 
     @Test
     public void getTestWithParammode0() throws Exception {
@@ -194,10 +198,55 @@ public class CurrencyUnitControllerTest {
     @Test
     public void shouldNotAllowDeleteForRegularUser() throws Exception {
 
-        String token = "tokenString";
+        User regularUser = AuthControllerTest.getRawUser();
+        Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
 
-        mockMvc.perform(get("/currencyUnits")
-                .header("Authorization",bearer + token));
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+
+        mockMvc.perform(delete("/currencyUnits/{id}",1)
+                .header("Authorization",bearer + tokenEntity.getToken()))
+                .andExpect(status().isForbidden())
+                .andDo(print());
+
+    }
+
+    @Test
+    public void shouldNotAllowPostForRegularUser() throws Exception {
+
+        User regularUser = AuthControllerTest.getRawUser();
+        Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"ABC",444,1);
+        String json = objectMapper.writeValueAsString(currencyUnit);
+
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+
+        mockMvc.perform(post("/currencyUnits")
+                        .contentType(MediaType.APPLICATION_JSON).content(json)
+                        .header("Authorization",bearer + tokenEntity.getToken()))
+                .andExpect(status().isForbidden())
+                .andDo(print());
+
+    }
+
+    @Test
+    public void shouldNotAllowPutForRegularUser() throws Exception {
+
+        User regularUser = AuthControllerTest.getRawUser();
+        Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"ABC",444,1);
+        String json = objectMapper.writeValueAsString(currencyUnit);
+
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+
+        mockMvc.perform(put("/currencyUnits/{id}",1)
+                        .contentType(MediaType.APPLICATION_JSON).content(json)
+                        .header("Authorization",bearer + tokenEntity.getToken()))
+                .andExpect(status().isForbidden())
+                .andDo(print());
 
     }
 
