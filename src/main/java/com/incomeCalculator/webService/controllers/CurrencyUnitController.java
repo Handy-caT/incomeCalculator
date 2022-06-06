@@ -101,15 +101,13 @@ public class CurrencyUnitController {
 
     @PutMapping("/currencyUnits/{id}")
     public EntityModel<CurrencyUnitEntity> updateCurrencyUnit(@PathVariable Long id,
-                                                              CurrencyUnitEntity currencyUnit,
+                                                              @RequestBody CurrencyUnitEntity currencyUnit,
                                                               HttpServletRequest request) {
 
         String token = tokenService.getTokenFromRequest(request);
         User user = tokenService.getUserFromToken(token);
         if(userService.isAdmin(user)) {
-            CurrencyUnitEntity foundCurrencyUnit = repository.findById(id)
-                    .orElseThrow(() -> new CurrencyUnitNotFoundException(id));
-            currencyUnit.setId(foundCurrencyUnit.getId());
+            currencyUnit.setId(id);
             currencyUnit = repository.save(currencyUnit);
 
             return assembler.toModel(currencyUnit);

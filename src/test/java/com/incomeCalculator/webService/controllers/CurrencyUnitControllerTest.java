@@ -199,12 +199,9 @@ public class CurrencyUnitControllerTest {
     @Test
     public void shouldNotAllowDeleteForRegularUser() throws Exception {
 
-        MockHttpServletResponse response = new MockHttpServletResponse();
-
         User regularUser = AuthControllerTest.getRawUser();
         Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
 
-        when(response.getHeader(AUTHORIZATION)).thenReturn(tokenEntity.getToken());
         when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
         when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
 
@@ -274,5 +271,100 @@ public class CurrencyUnitControllerTest {
         verify(repository,times(1)).delete(currencyUnit);
     }
 
+    @Test
+    public void shouldAllowPutForAdmin() throws Exception {
 
+        User admin = AuthControllerTest.getRawAdmin();
+        Token tokenEntity = AuthControllerTest.createTokenForUser(admin);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
+        String json = objectMapper.writeValueAsString(currencyUnit);
+
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+        when(repository.findById(currencyUnit.getId())).thenReturn(Optional.of(currencyUnit));
+        when(repository.save(currencyUnit)).thenReturn(currencyUnit);
+
+        mockMvc.perform(put("/currencyUnits/{id}",1)
+                        .contentType(MediaType.APPLICATION_JSON).content(json)
+                        .header("Authorization",bearer + tokenEntity.getToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(currencyUnit.getId()))
+                .andExpect(jsonPath("$.currencyName").value(currencyUnit.getCurrencyName()))
+                .andExpect(jsonPath("$.currencyId").value(currencyUnit.getCurrencyId()))
+                .andExpect(jsonPath("$.currencyScale").value(currencyUnit.getCurrencyScale()))
+                .andDo(print());
+
+    }
+
+    @Test
+    public void shouldAllowPostForAdmin() throws Exception {
+
+        User admin = AuthControllerTest.getRawAdmin();
+        Token tokenEntity = AuthControllerTest.createTokenForUser(admin);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
+        String json = objectMapper.writeValueAsString(currencyUnit);
+
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+        when(repository.findById(currencyUnit.getId())).thenReturn(Optional.of(currencyUnit));
+        when(repository.findByCurrencyId(currencyUnit.getCurrencyId())).thenReturn(Optional.empty());
+        when(repository.save(currencyUnit)).thenReturn(currencyUnit);
+
+        mockMvc.perform(post("/currencyUnits")
+                        .contentType(MediaType.APPLICATION_JSON).content(json)
+                        .header("Authorization",bearer + tokenEntity.getToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(currencyUnit.getId()))
+                .andExpect(jsonPath("$.currencyName").value(currencyUnit.getCurrencyName()))
+                .andExpect(jsonPath("$.currencyId").value(currencyUnit.getCurrencyId()))
+                .andExpect(jsonPath("$.currencyScale").value(currencyUnit.getCurrencyScale()))
+                .andDo(print());
+
+    }
+
+    @Test
+    public void shouldntPostNotValidByName() throws Exception {
+        User admin = AuthControllerTest.getRawAdmin();
+        Token tokenEntity = AuthControllerTest.createTokenForUser(admin);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USDD",432,1);
+        String json = objectMapper.writeValueAsString(currencyUnit);
+
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+        when(repository.findById(currencyUnit.getId())).thenReturn(Optional.of(currencyUnit));
+        when(repository.findByCurrencyId(currencyUnit.getCurrencyId())).thenReturn(Optional.empty());
+        when(repository.save(currencyUnit)).thenReturn(currencyUnit);
+
+        mockMvc.perform(post("/currencyUnits")
+                        .contentType(MediaType.APPLICATION_JSON).content(json)
+                        .header("Authorization",bearer + tokenEntity.getToken()))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+
+    }
+
+    @Test
+    public void shouldntPostNotValidByCurrencyId() throws Exception {
+        User admin = AuthControllerTest.getRawAdmin();
+        Token tokenEntity = AuthControllerTest.createTokenForUser(admin);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
+        String json = objectMapper.writeValueAsString(currencyUnit);
+
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+        when(repository.findById(currencyUnit.getId())).thenReturn(Optional.of(currencyUnit));
+        when(repository.findByCurrencyId(currencyUnit.getCurrencyId())).thenReturn(Optional.of(currencyUnit));
+        when(repository.save(currencyUnit)).thenReturn(currencyUnit);
+
+        mockMvc.perform(post("/currencyUnits")
+                        .contentType(MediaType.APPLICATION_JSON).content(json)
+                        .header("Authorization",bearer + tokenEntity.getToken()))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+
+    }
 }

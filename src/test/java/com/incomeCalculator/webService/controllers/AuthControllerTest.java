@@ -207,7 +207,7 @@ class AuthControllerTest {
 
         mockMvc.perform(post("/auth").contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
-                .andExpect(status().isForbidden())
+                .andExpect(status().isBadRequest())
                 .andDo(print());
 
     }
