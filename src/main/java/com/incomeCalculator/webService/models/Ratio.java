@@ -18,7 +18,7 @@ public class Ratio {
     @Column(length = 10)
     private String dateString;
 
-    protected Ratio() {
+    public Ratio() {
 
     }
 
@@ -49,6 +49,22 @@ public class Ratio {
 
     public String getDateString() {
         return dateString;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setCurrencyUnit(CurrencyUnitEntity currencyUnit) {
+        this.currencyUnit = currencyUnit;
+    }
+
+    public void setRatio(BigDecimal ratio) {
+        this.ratio = ratio;
+    }
+
+    public void setDateString(String dateString) {
+        this.dateString = dateString;
     }
 
     @Override
