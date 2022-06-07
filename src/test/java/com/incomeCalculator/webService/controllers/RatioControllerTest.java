@@ -1,13 +1,19 @@
 package com.incomeCalculator.webService.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.incomeCalculator.core.wallet.money.util.DateFormatter;
 import com.incomeCalculator.webService.exceptions.CurrencyUnitNotFoundException;
 import com.incomeCalculator.webService.models.CurrencyUnitEntity;
 import com.incomeCalculator.webService.models.Ratio;
 import com.incomeCalculator.webService.modelAssembelrs.RatioModelAssembler;
-import com.incomeCalculator.webService.repositories.RatioRepository;
-import com.incomeCalculator.webService.repositories.TokenRepository;
+import com.incomeCalculator.webService.models.Token;
+import com.incomeCalculator.webService.models.User;
+import com.incomeCalculator.webService.repositories.*;
+import com.incomeCalculator.webService.requests.RatioRequest;
 import com.incomeCalculator.webService.security.JwtFilter;
+import com.incomeCalculator.webService.security.JwtTokenService;
+import com.incomeCalculator.webService.services.RatioService;
+import com.incomeCalculator.webService.services.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -16,11 +22,13 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.security.SecureRandom;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,7 +37,7 @@ import java.util.Optional;
 import static org.mockito.Mockito.when;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,12 +48,20 @@ class RatioControllerTest {
 
     static SecureRandom random = new SecureRandom();
 
+    private String bearer = "Bearer ";
+
     @MockBean
     RatioRepository repository;
     @MockBean
     TokenRepository tokenRepository;
     @MockBean
     JwtFilter filter;
+    @MockBean
+    CurrencyUnitRepository currencyUnitRepository;
+    @MockBean
+    UserRepository userRepository;
+    @MockBean
+    RoleRepository roleRepository;
 
     private final String hostName = "http://localhost";
 
@@ -55,6 +71,22 @@ class RatioControllerTest {
         public  RatioModelAssembler getRatioModelAssembler() {
             return new RatioModelAssembler();
         }
+
+        @Bean
+        public RatioService getRatioService() {
+            return new RatioService();
+        }
+
+        @Bean
+        public JwtTokenService getJwtTokenService() {
+            return new JwtTokenService();
+        }
+
+        @Bean
+        public UserService getUserService() {
+            return new UserService();
+        }
+
     }
 
     @Autowired
@@ -82,7 +114,8 @@ class RatioControllerTest {
         mockMvc.perform(get("/ratios/{id}",id))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
-                .andExpect(jsonPath("$.ratio").value(ratioAmount))
+                .andExpect(jsonPath("$.ratio")
+                        .value(ratioAmount.setScale(2, RoundingMode.HALF_DOWN)))
                 .andExpect(jsonPath("$.dateString").value(dateString))
                 .andExpect(jsonPath("$.currencyUnit.id").value(currencyUnit.getId()))
                 .andExpect(jsonPath("$.currencyUnit.currencyName").value(currencyUnit.getCurrencyName()))
@@ -147,14 +180,73 @@ class RatioControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..ratioList.size()").value(ratioList.size()))
                 .andExpect(jsonPath("$..ratioList[0].ratio")
-                        .value(ratioList.get(0).getRatio().toString()))
+                        .value(ratioList.get(0).getRatio().setScale(2, RoundingMode.HALF_DOWN)))
                 .andExpect(jsonPath("$..ratioList[1].ratio")
-                        .value(ratioList.get(1).getRatio().toString()))
+                        .value(ratioList.get(1).getRatio().setScale(2, RoundingMode.HALF_DOWN)))
                 .andExpect(jsonPath("$..ratioList[2].ratio")
-                        .value(ratioList.get(2).getRatio().toString()))
+                        .value(ratioList.get(2).getRatio().setScale(2, RoundingMode.HALF_DOWN)))
                 .andExpect(jsonPath("$._links.self.href")
                         .value(hostName + linkTo(methodOn(RatioController.class)
-                                .all(Optional.of(dateString))).toString()))
+                                .all(Optional.of(dateString)))))
+                .andDo(print());
+    }
+
+    @Test
+    public void shouldNotAllowPostForRegularUser() throws Exception {
+
+        Date date = new Date();
+
+        User regularUser = AuthControllerTest.getRawUser();
+        Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        BigDecimal ratio = randomValue();
+        RatioRequest ratioRequest = new RatioRequest(1L,"USD",ratio,DateFormatter.sqlFormat(date));
+        String json = objectMapper.writeValueAsString(ratioRequest);
+
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+
+        mockMvc.perform(post("/ratios")
+                        .contentType(MediaType.APPLICATION_JSON).content(json)
+                        .header("Authorization",bearer + tokenEntity.getToken()))
+                .andExpect(status().isForbidden())
+                .andDo(print());
+
+    }
+
+    @Test
+    public void shouldNotAllowPutForRegularUser() throws Exception {
+        Date date = new Date();
+
+        User regularUser = AuthControllerTest.getRawUser();
+        Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        BigDecimal ratio = randomValue();
+        RatioRequest ratioRequest = new RatioRequest(1L,"USD",ratio,DateFormatter.sqlFormat(date));
+        String json = objectMapper.writeValueAsString(ratioRequest);
+
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+
+        mockMvc.perform(put("/ratios/{id}",1L)
+                        .contentType(MediaType.APPLICATION_JSON).content(json)
+                        .header("Authorization",bearer + tokenEntity.getToken()))
+                .andExpect(status().isForbidden())
+                .andDo(print());
+
+    }
+
+    @Test
+    public void shouldNotAllowDeleteForRegularUser() throws Exception {
+
+        User regularUser = AuthControllerTest.getRawUser();
+        Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
+
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+
+        mockMvc.perform(delete("/ratios/{id}",1L)
+                        .header("Authorization",bearer + tokenEntity.getToken()))
+                .andExpect(status().isForbidden())
                 .andDo(print());
     }
 

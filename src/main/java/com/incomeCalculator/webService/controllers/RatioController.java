@@ -40,8 +40,7 @@ public class RatioController {
     private JwtTokenService tokenService;
     @Autowired
     private UserService userService;
-    @Autowired
-    private CurrencyUnitRepository currencyUnitRepository;
+
 
     public RatioController(RatioRepository repository, RatioModelAssembler assembler, RatioService service) {
         this.repository = repository;
@@ -85,8 +84,17 @@ public class RatioController {
 
     @DeleteMapping("/ratios/{id}")
     public String deleteById(@PathVariable Long id, HttpServletRequest request) {
+        String token = tokenService.getTokenFromRequest(request);
+        User user = tokenService.getUserFromToken(token);
+        if(userService.isAdmin(user)) {
+            Ratio ratio = repository.findById(id)
+                    .orElseThrow(() -> new RatioNotFoundException(id));
+            repository.delete(ratio);
 
-        return null;
+            return "Ratio " + ratio + " deleted";
+        } else {
+            throw new PermissionException();
+        }
     }
 
     @PutMapping("/ratios/{id}")

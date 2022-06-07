@@ -9,6 +9,13 @@ public class RatioRequest {
     private Long id;
     private String dateString;
 
+    public RatioRequest(Long id,String currencyName, BigDecimal ratio, String dateString) {
+        this.currencyName = currencyName;
+        this.ratio = ratio;
+        this.id = id;
+        this.dateString = dateString;
+    }
+
     public String getCurrencyName() {
         return currencyName;
     }
