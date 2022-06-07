@@ -19,10 +19,10 @@ public class RatioService {
     CurrencyUnitRepository currencyUnitRepository;
 
     public Ratio createRatioFromRequest(RatioRequest ratioRequest) {
-        Date date = new Date();
         Ratio ratio = new Ratio();
 
-        ratio.setDateString(DateFormatter.sqlFormat(date));
+        ratio.setDateString(ratioRequest.getDateString());
+        ratio.setId(ratioRequest.getId());
         ratio.setRatio(ratioRequest.getRatio());
         CurrencyUnitEntity currencyUnit = currencyUnitRepository
                 .findByCurrencyName(ratioRequest.getCurrencyName())
@@ -33,9 +33,8 @@ public class RatioService {
     }
 
     public Ratio updateRatioByRequest(RatioRequest ratioRequest,Ratio ratio) {
-        Date date = new Date();
 
-        ratio.setDateString(DateFormatter.sqlFormat(date));
+        ratio.setDateString(ratioRequest.getDateString());
         ratio.setRatio(ratioRequest.getRatio());
         CurrencyUnitEntity currencyUnit = currencyUnitRepository
                 .findByCurrencyName(ratioRequest.getCurrencyName())

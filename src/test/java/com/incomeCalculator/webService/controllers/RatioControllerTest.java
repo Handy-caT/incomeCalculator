@@ -34,7 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -248,6 +248,101 @@ class RatioControllerTest {
                         .header("Authorization",bearer + tokenEntity.getToken()))
                 .andExpect(status().isForbidden())
                 .andDo(print());
+    }
+
+    @Test
+    public void shouldAllowPostForAdmin() throws Exception {
+
+        Date date = new Date();
+
+        User admin = AuthControllerTest.getRawAdmin();
+        Token tokenEntity = AuthControllerTest.createTokenForUser(admin);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        BigDecimal ratio = randomValue().setScale(4, RoundingMode.HALF_DOWN);
+        RatioRequest ratioRequest = new RatioRequest(1L,"USD",ratio,DateFormatter.sqlFormat(date));
+        String json = objectMapper.writeValueAsString(ratioRequest);
+
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
+        Ratio ratioEntity = new Ratio(1L,currencyUnit,ratio,DateFormatter.sqlFormat(date));
+
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+        when(repository.findByCurrencyUnit_CurrencyNameAndDateString(ratioRequest.getCurrencyName(),
+                ratioRequest.getDateString())).thenReturn(Optional.empty());
+        when(currencyUnitRepository.findByCurrencyName(currencyUnit.getCurrencyName()))
+                .thenReturn(Optional.of(currencyUnit));
+        when(repository.save(ratioEntity)).thenReturn(ratioEntity);
+
+        mockMvc.perform(post("/ratios")
+                        .contentType(MediaType.APPLICATION_JSON).content(json)
+                        .header("Authorization",bearer + tokenEntity.getToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(ratioEntity.getId()))
+                .andExpect(jsonPath("$.ratio",Matchers.)
+                        .value(ratio))
+                .andExpect(jsonPath("$.dateString").value(ratioEntity.getDateString()))
+                .andExpect(jsonPath("$.currencyUnit.currencyName").value(currencyUnit.getCurrencyName()))
+                .andDo(print());
+
+    }
+
+    @Test
+    public void shouldAllowPutForAdmin() throws Exception {
+        Date date = new Date();
+
+        User admin = AuthControllerTest.getRawAdmin();
+        Token tokenEntity = AuthControllerTest.createTokenForUser(admin);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        BigDecimal ratio = randomValue();
+        RatioRequest ratioRequest = new RatioRequest(1L,"USD",ratio,DateFormatter.sqlFormat(date));
+        String json = objectMapper.writeValueAsString(ratioRequest);
+
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
+        Ratio ratioEntity = new Ratio(1L,currencyUnit,ratio,DateFormatter.sqlFormat(date));
+
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+        when(repository.save(ratioEntity)).thenReturn(ratioEntity);
+        when(currencyUnitRepository.findByCurrencyName(currencyUnit.getCurrencyName()))
+                .thenReturn(Optional.of(currencyUnit));
+        when(repository.findById(ratioEntity.getId())).thenReturn(Optional.of(ratioEntity));
+
+
+        mockMvc.perform(put("/ratios/{id}",1L)
+                        .contentType(MediaType.APPLICATION_JSON).content(json)
+                        .header("Authorization",bearer + tokenEntity.getToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(ratioEntity.getId()))
+                .andExpect(jsonPath("$.ratio")
+                        .value(ratio))
+                .andExpect(jsonPath("$.dateString").value(ratioEntity.getDateString()))
+                .andExpect(jsonPath("$.currencyUnit.currencyName").value(currencyUnit.getCurrencyName()))
+                .andDo(print());
+
+    }
+
+    @Test
+    public void shouldAllowDeleteForAdmin() throws Exception {
+
+        Date date = new Date();
+
+        User admin = AuthControllerTest.getRawAdmin();
+        Token tokenEntity = AuthControllerTest.createTokenForUser(admin);
+
+        BigDecimal ratio = randomValue();
+
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
+        Ratio ratioEntity = new Ratio(1L,currencyUnit,ratio,DateFormatter.sqlFormat(date));
+
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+        when(repository.findById(ratioEntity.getId())).thenReturn(Optional.of(ratioEntity));
+
+        mockMvc.perform(delete("/ratios/{id}",1L)
+                        .header("Authorization",bearer + tokenEntity.getToken()))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+        verify(repository,times(1)).delete(ratioEntity);
     }
 
 }

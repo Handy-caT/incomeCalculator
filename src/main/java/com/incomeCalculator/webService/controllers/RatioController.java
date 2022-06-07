@@ -129,7 +129,7 @@ public class RatioController {
             } else {
                 Ratio ratio = service.createRatioFromRequest(ratioRequest);
 
-                ratio = repository.save(ratio);
+                repository.save(ratio);
                 return assembler.toModel(ratio);
             }
         } else {

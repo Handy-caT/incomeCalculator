@@ -2,6 +2,7 @@ package com.incomeCalculator.webService.models;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Entity(name = "RATIOS")
 public class Ratio {
@@ -60,7 +61,7 @@ public class Ratio {
     }
 
     public void setRatio(BigDecimal ratio) {
-        this.ratio = ratio;
+        this.ratio = ratio.setScale(4, RoundingMode.HALF_DOWN);
     }
 
     public void setDateString(String dateString) {
