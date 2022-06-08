@@ -278,7 +278,7 @@ class RatioControllerTest {
                         .header("Authorization",bearer + tokenEntity.getToken()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(ratioEntity.getId()))
-                .andExpect(jsonPath("$.ratio",Matchers.)
+                .andExpect(jsonPath("$.ratio")
                         .value(ratio))
                 .andExpect(jsonPath("$.dateString").value(ratioEntity.getDateString()))
                 .andExpect(jsonPath("$.currencyUnit.currencyName").value(currencyUnit.getCurrencyName()))

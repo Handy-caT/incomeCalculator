@@ -20,18 +20,16 @@ import java.math.BigDecimal;
 @Component
 public class CardService {
 
-    private final CardRepository repository;
-    private final CurrencyUnitRepository currencyUnitRepository;
+    @Autowired
+    private CardRepository repository;
+    @Autowired
+    private CurrencyUnitRepository currencyUnitRepository;
     @Autowired
     private TransactionRepository transactionRepository;
     @Autowired
     private CurrencyUpdaterSQL updater;
 
 
-    public CardService(CardRepository repository, CurrencyUnitRepository currencyUnitRepository) {
-        this.repository = repository;
-        this.currencyUnitRepository = currencyUnitRepository;
-    }
 
     public Card createCardByRequest(User user, CardRequest request) {
         CurrencyUnitEntity currencyUnit = currencyUnitRepository.findByCurrencyName(request.getCurrencyName())

@@ -10,6 +10,7 @@ import com.incomeCalculator.webService.models.CurrencyUnitEntity;
 import com.incomeCalculator.webService.models.Ratio;
 import com.incomeCalculator.webService.repositories.CurrencyUnitRepository;
 import com.incomeCalculator.webService.repositories.RatioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
@@ -20,13 +21,11 @@ import java.util.*;
 @Component
 public class CurrencyUpdaterSQL implements CurrencyUpdater, CurrencyUpdaterFactory {
 
-    private final RatioRepository ratioRepository;
-    private final CurrencyUnitRepository currencyUnitRepository;
+    @Autowired
+    private RatioRepository ratioRepository;
+    @Autowired
+    private CurrencyUnitRepository currencyUnitRepository;
 
-    public CurrencyUpdaterSQL(RatioRepository ratioRepository, CurrencyUnitRepository currencyUnitRepository) {
-        this.ratioRepository = ratioRepository;
-        this.currencyUnitRepository = currencyUnitRepository;
-    }
 
 
     private BigDecimal getRatioOnDate(String currencyFrom, String currencyTo,String dateString) {
