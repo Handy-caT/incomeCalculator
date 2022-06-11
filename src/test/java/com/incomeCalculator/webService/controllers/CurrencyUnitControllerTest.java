@@ -192,7 +192,7 @@ public class CurrencyUnitControllerTest {
                 .andExpect(jsonPath("$..currencyUnitEntityList[2].currencyName")
                         .value(currenciesList.get(2).getCurrencyName()))
                 .andExpect(jsonPath("$._links.self.href")
-                        .value(hostName + linkTo(methodOn(CurrencyUnitController.class).all()).toString()))
+                        .value(hostName + linkTo(methodOn(CurrencyUnitController.class).all())))
                 .andDo(print());
     }
 

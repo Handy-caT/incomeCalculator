@@ -7,6 +7,11 @@ public class TransactionRequest {
     private String currencyName;
     private BigDecimal amount;
 
+    public TransactionRequest(String currencyName, BigDecimal amount) {
+        this.currencyName = currencyName;
+        this.amount = amount;
+    }
+
     public String getCurrencyName() {
         return currencyName;
     }
