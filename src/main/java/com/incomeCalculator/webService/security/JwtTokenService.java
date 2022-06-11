@@ -95,14 +95,6 @@ public class JwtTokenService {
         return null;
     }
 
-    public String getTokenFromResponse(HttpServletResponse response) {
-        String bearer = response.getHeader(AUTHORIZATION);
-        if (hasText(bearer) && bearer.startsWith("Bearer ")) {
-            return bearer.substring(7);
-        }
-        return null;
-    }
-
     public String getUsersToken(User user) {
         Token tokenEntity = repository.findByUser(user)
                 .orElseThrow(() -> new TokenNotFoundException(user));

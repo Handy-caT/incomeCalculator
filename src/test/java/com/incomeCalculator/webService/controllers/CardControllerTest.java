@@ -1,6 +1,7 @@
 package com.incomeCalculator.webService.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.incomeCalculator.webService.exceptions.CardNotFoundException;
 import com.incomeCalculator.webService.exceptions.CurrencyUnitNotFoundException;
 import com.incomeCalculator.webService.modelAssembelrs.CardModelAssembler;
 import com.incomeCalculator.webService.modelAssembelrs.CurrencyUnitModelAssembler;
@@ -31,6 +32,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -120,7 +122,8 @@ class CardControllerTest {
                         .header("Authorization",bearer + tokenEntity.getToken()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(savedCard.getId()))
-                .andExpect(jsonPath("$.currencyUnit.currencyName").value(savedCard.getCurrencyUnit().getCurrencyName()))
+                .andExpect(jsonPath("$.currencyUnit.currencyName")
+                        .value(savedCard.getCurrencyUnit().getCurrencyName()))
                 .andExpect(jsonPath("$.balance.amount").value(savedCard.getBalance().getAmount()))
                 .andExpect(jsonPath("$.cardName").value(savedCard.getCardName()))
                 .andDo(print());
@@ -151,5 +154,74 @@ class CardControllerTest {
 
     }
 
-   
+   @Test
+    public void validUserCanGetHisCard() throws Exception {
+
+       User regularUser = AuthControllerTest.getRawUser();
+       Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
+
+       CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
+       Card card = new Card(1L,currencyUnit, BigDecimal.valueOf(10), regularUser,"cardName");
+
+       when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+       when(tokenRepository.findByUser(regularUser)).thenReturn(Optional.of(tokenEntity));
+       when(repository.findById(card.getId())).thenReturn(Optional.of(card));
+       when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
+
+       mockMvc.perform(get("/cards/{id}",card.getId())
+               .header("Authorization",bearer + tokenEntity.getToken()))
+                .andExpect(status().isOk())
+               .andExpect(jsonPath("$.id").value(card.getId()))
+               .andExpect(jsonPath("$.currencyUnit.currencyName")
+                       .value(card.getCurrencyUnit().getCurrencyName()))
+               .andExpect(jsonPath("$.balance.amount").value(card.getBalance().getAmount()))
+               .andExpect(jsonPath("$.cardName").value(card.getCardName()))
+               .andDo(print());
+
+   }
+
+    @Test
+    public void shouldReturn404WhenCardNotFound() throws Exception {
+
+        User regularUser = AuthControllerTest.getRawUser();
+        Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
+
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
+        Card card = new Card(1L,currencyUnit, BigDecimal.valueOf(10), regularUser,"cardName");
+
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+        when(repository.findById(card.getId())).thenThrow(new CardNotFoundException(card.getId()));
+
+        mockMvc.perform(get("/cards/{id}",card.getId())
+                        .header("Authorization",bearer + tokenEntity.getToken()))
+                .andExpect(status().isNotFound())
+                .andDo(print());
+
+    }
+
+    @Test
+    public void shouldNotAllowInvalidUserGetCard() throws Exception {
+
+        User regularUser = AuthControllerTest.getRawUser();
+        User cardUser = AuthControllerTest.getRawUser();
+        cardUser.setLogin("cardUser");
+        cardUser.setId(2L);
+        Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
+        Token cardToken = AuthControllerTest.createTokenForUser(cardUser);
+
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
+        Card card = new Card(1L,currencyUnit, BigDecimal.valueOf(10), cardUser,"cardName");
+
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+        when(tokenRepository.findByUser(cardUser)).thenReturn(Optional.of(cardToken));
+        when(repository.findById(card.getId())).thenReturn(Optional.of(card));
+        when(userRepository.findByLogin(cardUser.getLogin())).thenReturn(Optional.of(cardUser));
+
+        mockMvc.perform(get("/cards/{id}",card.getId())
+                        .header("Authorization",bearer + tokenEntity.getToken()))
+                .andExpect(status().isForbidden())
+                .andDo(print());
+
+    }
+
 }
