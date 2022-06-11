@@ -34,8 +34,9 @@ public class CardService {
     public Card createCardByRequest(User user, CardRequest request) {
         CurrencyUnitEntity currencyUnit = currencyUnitRepository.findByCurrencyName(request.getCurrencyName())
                 .orElseThrow(() -> new CurrencyUnitNotFoundException(request.getCurrencyName()));
-
-        return repository.save(new Card(currencyUnit, BigDecimal.ZERO,user,request.getCardName()));
+        Card card = new Card(currencyUnit, BigDecimal.ZERO,user,request.getCardName());
+        card = repository.save(card);
+        return card;
     }
 
     public TransactionEntity executeTransaction(Card card, TransactionRequest request) {
