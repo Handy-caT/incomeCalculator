@@ -129,7 +129,7 @@ public class MoneyTest {
         Money moneySecond = Money.of(currencySecondString,valueSecond);
 
         BigDecimal ratio = currencyConverter
-                .getConvertSellRatio(NonStrictCurrencyUnit.of(currencyFirstString), NonStrictCurrencyUnit.of(currencySecondString));
+                .getConvertSellRatio(NonStrictCurrencyUnit.of(currencySecondString),NonStrictCurrencyUnit.of(currencyFirstString));
         try {
             moneyFirst.plus(moneySecond);
             Assert.fail("Mustn't plus different currencies");

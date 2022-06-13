@@ -28,7 +28,7 @@ class LoadDatabase {
 
     private static final Logger log = LoggerFactory.getLogger(LoadDatabase.class);
 
-    //@Bean
+    @Bean
     CommandLineRunner initCurrencies(CurrencyUnitRepository repository) {
 
         CurrencyUnitEntitiesBuilder builder = new CurrencyUnitEntitiesBuilder(repository);
@@ -48,7 +48,7 @@ class LoadDatabase {
         };
     }
 
-    //@Bean
+    @Bean
     CommandLineRunner initRatio(RatioRepository repository,CurrencyUnitRepository currencies) {
 
         Date date = new Date();
@@ -68,7 +68,7 @@ class LoadDatabase {
         } else return null;
     }
 
-    //@Bean
+    @Bean
     CommandLineRunner initRoles(RoleRepository roleRepository) {
         List<Role> rolesList = new LinkedList<>();
 

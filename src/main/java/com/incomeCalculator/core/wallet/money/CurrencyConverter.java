@@ -25,10 +25,10 @@ public class CurrencyConverter {
     }
 
     public  BigDecimal getConvertSellRatio(CurrencyUnit currencyFromUnit, CurrencyUnit currencyToUnit) {
-        return currencyUpdater.getRatio(currencyFromUnit.toString(),currencyToUnit.toString());
+        return currencyUpdater.getRatio(currencyFromUnit.getCurrencyName(),currencyToUnit.getCurrencyName());
     }
     public Money convert(Money money, CurrencyUnit currencyToConvertToUnit) {
-        BigDecimal newAmount = money.getAmount().multiply(getConvertSellRatio(currencyToConvertToUnit,money.getCurrency()));
+        BigDecimal newAmount = money.getAmount().multiply(getConvertSellRatio(money.getCurrency(),currencyToConvertToUnit));
         return new Money(currencyToConvertToUnit,newAmount);
     }
 

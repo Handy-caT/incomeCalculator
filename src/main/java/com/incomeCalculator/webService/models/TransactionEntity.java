@@ -55,7 +55,7 @@ public class TransactionEntity implements Transaction {
         CurrencyConverterSQL converter = new CurrencyConverterSQL(updater);
         Money moneyAmount = Money.of(currencyUnit,transactionAmount.abs());
         if(!card.getCurrencyUnit().equals(currencyUnit)) {
-            moneyAmount = converter.convert(moneyAmount,currencyUnit);
+            moneyAmount = converter.convert(moneyAmount,card.getCurrencyUnit());
         }
 
         if(addition) {
