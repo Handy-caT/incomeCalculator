@@ -408,4 +408,58 @@ class CardControllerTest {
 
     }
 
+    @Test
+    public void shouldPostSubtractTransactionInOtherCurrency() throws Exception {
+        User regularUser = AuthControllerTest.getRawUser();
+        Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
+
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
+        CurrencyUnitEntity eurCurrencyUnit = new CurrencyUnitEntity(2L,"EUR",433,1);
+        Card card = new Card(1L,currencyUnit,randomValue(), regularUser,"cardName");
+
+        ObjectMapper mapper = new ObjectMapper();
+        TransactionRequest request = new TransactionRequest("EUR",randomValue().negate());
+        String json = mapper.writeValueAsString(request);
+
+        BigDecimal ratio = BigDecimal.valueOf(1.5);
+
+        TransactionEntity transaction = new TransactionEntity(eurCurrencyUnit,request.getAmount(),false);
+        transaction.setUpdater(updater);
+        transaction.setCard(card);
+        transaction.setBeforeBalance(card.getBalance().getAmount());
+        transaction.setAfterBalance(card.getBalance().getAmount().subtract(request.getAmount().multiply(ratio)));
+
+        TransactionEntity savedTransaction = new TransactionEntity(1L,eurCurrencyUnit,request.getAmount(),false);
+        savedTransaction.setUpdater(updater);
+        savedTransaction.setCard(card);
+        savedTransaction.setBeforeBalance(card.getBalance().getAmount());
+        savedTransaction.setAfterBalance(card.getBalance().getAmount().subtract(request.getAmount().multiply(ratio)));
+
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+        when(tokenRepository.findByUser(regularUser)).thenReturn(Optional.of(tokenEntity));
+        when(repository.findById(card.getId())).thenReturn(Optional.of(card));
+        when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
+        when(currencyUnitRepository.findByCurrencyName(eurCurrencyUnit.getCurrencyName()))
+                .thenReturn(Optional.of(eurCurrencyUnit));
+        when(transactionRepository.save(transaction)).thenReturn(savedTransaction);
+        when(updater.getRatio(eurCurrencyUnit.getCurrencyName(),currencyUnit.getCurrencyName()))
+                .thenReturn(ratio);
+        when(updater.createUpdater()).thenReturn(updater);
+
+        mockMvc.perform(post("/cards/{id}/transactions",card.getId())
+                        .contentType(MediaType.APPLICATION_JSON).content(json)
+                        .header("Authorization",bearer + tokenEntity.getToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(savedTransaction.getId()))
+                .andExpect(jsonPath("$.currencyUnit.currencyName")
+                        .value(savedTransaction.getCurrencyUnit().getCurrencyName()))
+                .andExpect(jsonPath("$.transactionAmount.amount").value(request.getAmount().doubleValue()))
+                .andExpect(jsonPath("$.beforeBalance").value(transaction.getBeforeBalance().doubleValue()))
+                .andExpect(jsonPath("$.afterBalance").value(transaction.getAfterBalance().doubleValue()))
+                .andExpect(jsonPath("$.cardName").value(card.getCardName()))
+                .andDo(print());
+
+    }
+
+
 }
