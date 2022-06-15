@@ -108,8 +108,11 @@ class RatioControllerTest {
         String dateString = DateFormatter.sqlFormat(date);
         CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
         Ratio ratio = new Ratio(id,currencyUnit,ratioAmount,dateString);
+        List<Ratio> list = new LinkedList<>();
+        list.add(ratio);
 
         when(repository.findById(id)).thenReturn(Optional.of(ratio));
+        when(repository.findAllByDateString(dateString)).thenReturn(list);
 
         mockMvc.perform(get("/ratios/{id}",id))
                 .andExpect(status().isOk())

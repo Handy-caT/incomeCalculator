@@ -10,6 +10,7 @@ import com.incomeCalculator.webService.repositories.CardRepository;
 import com.incomeCalculator.webService.repositories.CurrencyUnitRepository;
 import com.incomeCalculator.webService.repositories.RatioRepository;
 import com.incomeCalculator.webService.repositories.RoleRepository;
+import com.incomeCalculator.webService.services.RatioService;
 import com.incomeCalculator.webService.util.CurrencyUnitEntitiesBuilder;
 import com.incomeCalculator.webService.util.RatioBuilder;
 import org.slf4j.Logger;
@@ -46,26 +47,6 @@ class LoadDatabase {
                         .save(new CurrencyUnitEntity("BYN", 1, 1)));
             }
         };
-    }
-
-    @Bean
-    CommandLineRunner initRatio(RatioRepository repository,CurrencyUnitRepository currencies) {
-
-        Date date = new Date();
-        String dateString = DateFormatter.sqlFormat(date);
-
-        RatioBuilder builder = new RatioBuilder(repository,currencies,dateString);
-        List<String> namesList = builder.getBuildPlan();
-
-        if(repository.findAllByDateString(dateString).isEmpty()) {
-            return args -> {
-                for(String currencyName : namesList) {
-                    builder.buildCurrency(currencyName);
-                }
-                log.info("Preloading " + repository
-                        .save(new Ratio(currencies.findByCurrencyName("BYN").get(), BigDecimal.ONE, dateString)));
-            };
-        } else return null;
     }
 
     @Bean

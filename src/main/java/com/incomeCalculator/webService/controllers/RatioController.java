@@ -56,11 +56,22 @@ public class RatioController {
         Date date = new Date();
         String dateStringNow = DateFormatter.sqlFormat(date);
 
+        if(dateString.isPresent()) {
+            if (repository.findAllByDateString(dateString.get()).isEmpty()) {
+                service.initRatios(dateString.get());
+            }
+        } else {
+            if (repository.findAllByDateString(dateStringNow).isEmpty()) {
+                service.initRatios(dateStringNow);
+            }
+        }
+
         ratios = dateString.map(s -> repository.findAllByDateString(s).stream()
                 .map(assembler::toModel)
                 .collect(Collectors.toList())).orElseGet(() -> repository.findAll().stream()
                 .map(assembler::toModel)
                 .collect(Collectors.toList()));
+
         return CollectionModel.of(ratios, linkTo(methodOn(RatioController.class)
                 .all(Optional.of(dateStringNow)))
                 .withSelfRel());
@@ -71,6 +82,11 @@ public class RatioController {
             , @RequestParam(defaultValue = "0",name = "parammode") String paramMode) {
         Ratio ratio;
         Date date = new Date();
+
+        if (repository.findAllByDateString(DateFormatter.sqlFormat(date)).isEmpty()) {
+            service.initRatios(DateFormatter.sqlFormat(date));
+        }
+
         if(Objects.equals(paramMode, "1")) {
             ratio = repository
                     .findByCurrencyUnit_CurrencyNameAndDateString(param, DateFormatter.sqlFormat(date))
