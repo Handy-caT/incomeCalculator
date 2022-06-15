@@ -10,6 +10,7 @@ import com.incomeCalculator.core.wallet.money.currencyUnit.interfaces.CurrencyUp
 import com.incomeCalculator.core.wallet.money.currencyUnit.interfaces.CurrencyUpdaterFactory;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class CurrencyConverter {
 
@@ -29,7 +30,7 @@ public class CurrencyConverter {
     }
     public Money convert(Money money, CurrencyUnit currencyToConvertToUnit) {
         BigDecimal newAmount = money.getAmount().multiply(getConvertSellRatio(money.getCurrency(),currencyToConvertToUnit));
-        return new Money(currencyToConvertToUnit,newAmount);
+        return new Money(currencyToConvertToUnit,newAmount.setScale(4, RoundingMode.HALF_DOWN));
     }
 
     private static CurrencyConverter createInstance() {

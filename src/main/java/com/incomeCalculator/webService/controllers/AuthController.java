@@ -46,6 +46,7 @@ public class AuthController {
         User userEntity = service.findByLoginAndPassword(request.getLogin(), request.getPassword());
         String token = tokenService.generateToken(userEntity.getLogin());
         tokenService.saveToken(token,userEntity);
+        log.info("User authenticated, id=" + userEntity.getId() + ", login=" + userEntity.getLogin());
 
         return new AuthResponse(token);
     }

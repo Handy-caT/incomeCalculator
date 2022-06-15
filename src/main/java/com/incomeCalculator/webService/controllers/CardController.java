@@ -63,17 +63,22 @@ public class CardController {
 
         String token = tokenService.getTokenFromRequest(request);
         User user = tokenService.getUserFromToken(token);
+        List<EntityModel<Card>> cards;
         if(userService.isAdmin(user)) {
-
-            List<EntityModel<Card>> cards = repository.findAll().stream()
+            cards = repository.findAll().stream()
                     .map(assembler::toModel)
                     .collect(Collectors.toList());
 
-            return CollectionModel.of(cards, linkTo(CardController.class)
-                    .withSelfRel());
+
         } else {
-            throw new PermissionException();
+            List<Card> list = repository.findByUser_Login(user.getLogin())
+                    .orElseThrow(() -> new CardNotFoundException(user));
+            cards = list.stream()
+                    .map(assembler::toModel)
+                    .collect(Collectors.toList());
         }
+        return CollectionModel.of(cards, linkTo(CardController.class)
+                .withSelfRel());
     }
 
     @GetMapping("/cards/{id}")
@@ -121,6 +126,7 @@ public class CardController {
         User user = tokenService.getUserFromToken(token);
 
         Card card = service.createCardByRequest(user,cardRequest);
+        log.info("Card created: "  + card);
         return assembler.toModel(card);
     }
 
@@ -137,6 +143,7 @@ public class CardController {
 
         if(tokenService.validateUsersToken(cardUser,token)) {
             TransactionEntity transaction = service.executeTransaction(card,transactionRequest);
+            log.info("Transaction executed: " + transaction);
             return transactionAssembler.toModel(transaction);
         } else {
             throw new PermissionException();
@@ -162,6 +169,7 @@ public class CardController {
             card = service.revertTransaction(card,revertTransaction);
 
             transactionRepository.delete(transaction);
+            log.info("Transaction deleted: " + transaction);
             return assembler.toModel(card);
         } else {
             throw new PermissionException();
@@ -208,6 +216,7 @@ public class CardController {
         if(tokenService.validateUsersToken(cardUser,token)) {
             card.setCardName(cardName);
             card = repository.save(card);
+            log.info("Card patched: " + card);
             return assembler.toModel(card);
         } else {
             throw new PermissionException();
@@ -224,6 +233,7 @@ public class CardController {
 
         if(tokenService.validateUsersToken(cardUser,token)) {
             repository.delete(card);
+            log.info("Card deleted: " + card);
             return "Card " + card + " has been deleted!";
         } else {
             throw new PermissionException();

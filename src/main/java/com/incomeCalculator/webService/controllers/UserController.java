@@ -44,21 +44,32 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public CollectionModel<EntityModel<User>> all(){
-        List<EntityModel<User>> users= repository.findAll().stream()
-                .map(assembler::toModel)
-                .collect(Collectors.toList());
+    public CollectionModel<EntityModel<User>> all(HttpServletRequest request){
+        String token = tokenService.getTokenFromRequest(request);
+        User user = tokenService.getUserFromToken(token);
+        if(service.isAdmin(user)) {
+            List<EntityModel<User>> users = repository.findAll().stream()
+                    .map(assembler::toModel)
+                    .collect(Collectors.toList());
 
-        return CollectionModel.of(users,linkTo(methodOn(UserController.class).all())
-                .withSelfRel());
+            return CollectionModel.of(users, linkTo(UserController.class).withSelfRel());
+        } else {
+            throw new PermissionException();
+        }
     }
 
     @GetMapping("/users/{id}")
-    public EntityModel<User> getOne(@PathVariable Long id) {
-        User user = repository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id));
+    public EntityModel<User> getOne(@PathVariable Long id,HttpServletRequest request) {
+        String token = tokenService.getTokenFromRequest(request);
+        User tokenUser = tokenService.getUserFromToken(token);
+        if(service.isAdmin(tokenUser) || Objects.equals(tokenUser.getId(), id)) {
+            User user = repository.findById(id)
+                    .orElseThrow(() -> new UserNotFoundException(id));
 
-        return assembler.toModel(user);
+            return assembler.toModel(user);
+        } else {
+            throw new PermissionException();
+        }
     }
 
     @DeleteMapping("/users/{id}")

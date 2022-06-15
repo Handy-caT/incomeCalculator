@@ -11,6 +11,8 @@ import com.incomeCalculator.webService.repositories.CurrencyUnitRepository;
 import com.incomeCalculator.webService.security.JwtTokenService;
 import com.incomeCalculator.webService.services.CurrencyUnitService;
 import com.incomeCalculator.webService.services.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.hateoas.CollectionModel;
@@ -24,6 +26,8 @@ import java.util.stream.Collectors;
 
 @RestController
 public class CurrencyUnitController {
+
+    private static final Logger log = LoggerFactory.getLogger(CurrencyUnitController.class);
 
     private final CurrencyUnitRepository repository;
     private final CurrencyUnitModelAssembler assembler;
@@ -73,6 +77,7 @@ public class CurrencyUnitController {
             }
             if (!repository.findByCurrencyId(currencyUnit.getCurrencyId()).isPresent()) {
                 currencyUnit = repository.save(currencyUnit);
+                log.info("Currency unit saved: " + currencyUnit);
                 return assembler.toModel(currencyUnit);
             } else {
                 throw new IllegalArgumentException("Currency with id " + currencyUnit.getCurrencyId() +
@@ -93,6 +98,7 @@ public class CurrencyUnitController {
             CurrencyUnitEntity currencyUnit = repository.findById(id)
                     .orElseThrow(() -> new CurrencyUnitNotFoundException(id));
             repository.delete(currencyUnit);
+            log.info("Currency unit deleted: " + currencyUnit);
             return "CurrencyUnit " + currencyUnit.getCurrencyName() + " has been deleted";
         } else {
             throw new PermissionException();
@@ -110,6 +116,7 @@ public class CurrencyUnitController {
             currencyUnit.setId(id);
             currencyUnit = repository.save(currencyUnit);
 
+            log.info("Currency unit updated: " + currencyUnit);
             return assembler.toModel(currencyUnit);
         } else {
             throw new PermissionException();

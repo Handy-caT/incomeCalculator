@@ -17,6 +17,6 @@ public class TransactionModelAssembler
     public EntityModel<TransactionEntity> toModel(TransactionEntity entity) {
         return EntityModel.of(entity,
                 linkTo(methodOn(TransactionController.class).getById(entity.getId())).withSelfRel(),
-                linkTo(methodOn(TransactionController.class).all()).withRel("cards"));
+                linkTo(methodOn(TransactionController.class).all()).withRel("transactions"));
     }
 }

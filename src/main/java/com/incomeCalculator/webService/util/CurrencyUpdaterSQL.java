@@ -41,7 +41,7 @@ public class CurrencyUpdaterSQL implements CurrencyUpdater, CurrencyUpdaterFacto
         CurrencyUnitEntity currencyUnitTo = currencyUnitRepository.findByCurrencyName(currencyTo)
                 .orElseThrow(() -> new CurrencyUnitNotFoundException(currencyTo));
 
-        BigDecimal ratio = ratioFrom.getRatio().divide(ratioTo.getRatio());
+        BigDecimal ratio = ratioFrom.getRatio().divide(ratioTo.getRatio() ,10,RoundingMode.HALF_UP);
         ratio = ratio.setScale((int) (ratio.scale() + Math.log10(currencyUnitFrom.getCurrencyScale())),RoundingMode.HALF_DOWN)
                 .divide(BigDecimal.valueOf(currencyUnitFrom.getCurrencyScale()),RoundingMode.HALF_DOWN);
         ratio = ratio.setScale((int) (ratio.scale() + Math.log10(currencyUnitTo.getCurrencyScale())),RoundingMode.HALF_DOWN)
