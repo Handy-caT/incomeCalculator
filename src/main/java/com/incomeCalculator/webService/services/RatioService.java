@@ -54,16 +54,16 @@ public class RatioService {
         return ratio;
     }
 
-    public void initRatios(String dateString) {
-        RatioBuilder builder = new RatioBuilder(repository,currencyUnitRepository,dateString);
+    public void initRatios(Date date) {
+        RatioBuilder builder = new RatioBuilder(repository, currencyUnitRepository, date);
         List<String> namesList = builder.getBuildPlan();
 
-        if(repository.findAllByDateString(dateString).isEmpty()) {
-                for(String currencyName : namesList) {
-                    builder.buildCurrency(currencyName);
-                }
-                log.info("Preloading " + repository
-                        .save(new Ratio(currencyUnitRepository.findByCurrencyName("BYN").get(), BigDecimal.ONE, dateString)));
+        for (String currencyName : namesList) {
+            builder.buildCurrency(currencyName);
         }
+        log.info("Preloading " + repository
+                .save(new Ratio(currencyUnitRepository.findByCurrencyName("BYN").get(),
+                        BigDecimal.ONE, DateFormatter.sqlFormat(date))));
+
     }
 }

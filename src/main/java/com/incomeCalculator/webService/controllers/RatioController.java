@@ -20,6 +20,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -57,12 +58,18 @@ public class RatioController {
         String dateStringNow = DateFormatter.sqlFormat(date);
 
         if(dateString.isPresent()) {
+            Date requestDate;
+            try {
+                requestDate = DateFormatter.sqlParse(dateString.get());
+            } catch (ParseException e) {
+                throw new IllegalArgumentException("Bad date format");
+            }
             if (repository.findAllByDateString(dateString.get()).isEmpty()) {
-                service.initRatios(dateString.get());
+                service.initRatios(requestDate);
             }
         } else {
             if (repository.findAllByDateString(dateStringNow).isEmpty()) {
-                service.initRatios(dateStringNow);
+                service.initRatios(date);
             }
         }
 
@@ -84,7 +91,7 @@ public class RatioController {
         Date date = new Date();
 
         if (repository.findAllByDateString(DateFormatter.sqlFormat(date)).isEmpty()) {
-            service.initRatios(DateFormatter.sqlFormat(date));
+            service.initRatios(date);
         }
 
         if(Objects.equals(paramMode, "1")) {
