@@ -29,6 +29,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.security.SecureRandom;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -179,7 +180,7 @@ class RatioControllerTest {
 
         when(repository.findAllByDateString(dateString)).thenReturn(ratioList);
 
-        mockMvc.perform(get("/ratios?ondate={date}",dateString))
+        mockMvc.perform(get("/ratios"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..ratioList.size()").value(ratioList.size()))
                 .andExpect(jsonPath("$..ratioList[0].ratio")
@@ -346,6 +347,41 @@ class RatioControllerTest {
                 .andDo(print());
 
         verify(repository,times(1)).delete(ratioEntity);
+    }
+
+    @Test
+    public void shouldReturnAllOnDate() throws Exception {
+        Date date = DateFormatter.sqlParse("12_05_2022");
+        String dateString = DateFormatter.sqlFormat(date);
+
+        CurrencyUnitEntity usdUnit = new CurrencyUnitEntity(1L,"USD",432,1);
+        CurrencyUnitEntity eurUnit = new CurrencyUnitEntity(2L,"EUR",433,1);
+        CurrencyUnitEntity bynUnit = new CurrencyUnitEntity(3L,"BYN",434,1);
+
+        Ratio usdRatio = new Ratio(1L,usdUnit,randomValue(),dateString);
+        Ratio eurRatio = new Ratio(1L,eurUnit,randomValue(),dateString);
+        Ratio bynRatio = new Ratio(1L,bynUnit,randomValue(),dateString);
+
+        List<Ratio> ratioList = new LinkedList<Ratio>();
+        ratioList.add(usdRatio);
+        ratioList.add(eurRatio);
+        ratioList.add(bynRatio);
+
+        when(repository.findAllByDateString(dateString)).thenReturn(ratioList);
+
+        mockMvc.perform(get("/ratios?ondate={date}",dateString))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$..ratioList.size()").value(ratioList.size()))
+                .andExpect(jsonPath("$..ratioList[0].ratio")
+                        .value(ratioList.get(0).getRatio().doubleValue()))
+                .andExpect(jsonPath("$..ratioList[1].ratio")
+                        .value(ratioList.get(1).getRatio().doubleValue()))
+                .andExpect(jsonPath("$..ratioList[2].ratio")
+                        .value(ratioList.get(2).getRatio().doubleValue()))
+                .andExpect(jsonPath("$._links.self.href")
+                        .value(hostName + linkTo(methodOn(RatioController.class)
+                                .all(Optional.of(dateString)))))
+                .andDo(print());
     }
 
 }

@@ -75,13 +75,19 @@ public class RatioController {
 
         ratios = dateString.map(s -> repository.findAllByDateString(s).stream()
                 .map(assembler::toModel)
-                .collect(Collectors.toList())).orElseGet(() -> repository.findAll().stream()
-                .map(assembler::toModel)
+                .collect(Collectors.toList())).orElseGet(() -> repository.findAllByDateString(dateStringNow)
+                .stream().map(assembler::toModel)
                 .collect(Collectors.toList()));
 
-        return CollectionModel.of(ratios, linkTo(methodOn(RatioController.class)
-                .all(Optional.of(dateStringNow)))
-                .withSelfRel());
+        if(dateString.isPresent()) {
+            return CollectionModel.of(ratios, linkTo(methodOn(RatioController.class)
+                    .all(dateString))
+                    .withSelfRel());
+        } else {
+            return CollectionModel.of(ratios, linkTo(methodOn(RatioController.class)
+                    .all(Optional.of(dateStringNow)))
+                    .withSelfRel());
+        }
     }
 
     @GetMapping("/ratios/{param}")

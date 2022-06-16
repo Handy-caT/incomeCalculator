@@ -33,8 +33,7 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -461,5 +460,46 @@ class CardControllerTest {
 
     }
 
+    @Test
+    public void shouldAllowUserToDeleteHisCard() throws Exception {
+        User regularUser = AuthControllerTest.getRawUser();
+        Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
+
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
+        Card card = new Card(1L,currencyUnit,randomValue(), regularUser,"cardName");
+
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+        when(tokenRepository.findByUser(regularUser)).thenReturn(Optional.of(tokenEntity));
+        when(repository.findById(card.getId())).thenReturn(Optional.of(card));
+        when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
+
+        mockMvc.perform(delete("/cards/{id}",card.getId())
+                        .header("Authorization",bearer + tokenEntity.getToken()))
+                .andDo(print());
+
+        verify(repository, times(1)).delete(card);
+
+    }
+
+    @Test
+    public void shouldAllowAdminToDeleteAnyCard() throws Exception {
+        User regularUser = AuthControllerTest.getRawUser();
+        Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
+
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
+        Card card = new Card(1L,currencyUnit,randomValue(), regularUser,"cardName");
+
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+        when(tokenRepository.findByUser(regularUser)).thenReturn(Optional.of(tokenEntity));
+        when(repository.findById(card.getId())).thenReturn(Optional.of(card));
+        when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
+
+        mockMvc.perform(delete("/cards/{id}",card.getId())
+                        .header("Authorization",bearer + tokenEntity.getToken()))
+                .andDo(print());
+
+        verify(repository, times(1)).delete(card);
+
+    }
 
 }
