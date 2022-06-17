@@ -483,14 +483,17 @@ class CardControllerTest {
 
     @Test
     public void shouldAllowAdminToDeleteAnyCard() throws Exception {
+        User admin = AuthControllerTest.getRawAdmin();
         User regularUser = AuthControllerTest.getRawUser();
-        Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
+        Token tokenEntity = AuthControllerTest.createTokenForUser(admin);
+        Token userToken = AuthControllerTest.createTokenForUser(regularUser);
 
         CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
         Card card = new Card(1L,currencyUnit,randomValue(), regularUser,"cardName");
 
         when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
-        when(tokenRepository.findByUser(regularUser)).thenReturn(Optional.of(tokenEntity));
+        when(tokenRepository.findByUser(admin)).thenReturn(Optional.of(tokenEntity));
+        when(tokenRepository.findByUser(regularUser)).thenReturn(Optional.of(userToken));
         when(repository.findById(card.getId())).thenReturn(Optional.of(card));
         when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
 
