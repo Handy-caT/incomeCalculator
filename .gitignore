@@ -16,3 +16,4 @@
 /src/main/resources/application.properties
 *.db
 .env
+AuthApi/src/main/resources/application.properties
