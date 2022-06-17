@@ -1,5 +1,6 @@
 package com.incomeCalculator.webService.modelAssembelrs;
 
+
 import com.incomeCalculator.webService.controllers.RatioController;
 import com.incomeCalculator.webService.controllers.UserController;
 import com.incomeCalculator.webService.models.User;
@@ -19,5 +20,6 @@ public class UserModelAssembler
         return EntityModel.of(entity,
                 linkTo(UserController.class).slash(entity.getId()).withSelfRel(),
                 linkTo(UserController.class).withRel("users"));
+
     }
 }
