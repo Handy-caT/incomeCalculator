@@ -11,4 +11,5 @@ public class CurrencyConverterSQL extends CurrencyConverter {
     public CurrencyConverterSQL(CurrencyUpdaterFactory factory) {
         super(factory);
     }
+
 }

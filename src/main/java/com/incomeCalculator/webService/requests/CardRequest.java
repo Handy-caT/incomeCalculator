@@ -5,6 +5,14 @@ public class CardRequest {
     private String cardName;
     private String currencyName;
 
+    public CardRequest() {
+    }
+
+    public CardRequest(String cardName, String currencyName) {
+        this.cardName = cardName;
+        this.currencyName = currencyName;
+    }
+
     public String getCardName() {
         return cardName;
     }

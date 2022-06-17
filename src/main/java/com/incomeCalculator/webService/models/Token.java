@@ -18,6 +18,12 @@ public class Token {
         this.token = token;
     }
 
+    public Token(Long id, User user, String token) {
+        this.id = id;
+        this.user = user;
+        this.token = token;
+    }
+
     public Token() {
 
     }

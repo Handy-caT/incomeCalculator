@@ -134,6 +134,11 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<image>
+						<name>docker.io/handycat/income-calulator-web-service:v1</name>
+					</image>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

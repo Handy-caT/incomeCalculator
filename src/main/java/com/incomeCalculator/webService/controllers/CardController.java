@@ -24,6 +24,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,26 +59,31 @@ public class CardController {
     }
 
     @GetMapping("/cards")
-    public CollectionModel<EntityModel<Card>> all(HttpServletResponse response) {
+    public CollectionModel<EntityModel<Card>> all(HttpServletRequest request) {
 
-        String token = tokenService.getTokenFromResponse(response);
+        String token = tokenService.getTokenFromRequest(request);
         User user = tokenService.getUserFromToken(token);
+        List<EntityModel<Card>> cards;
         if(userService.isAdmin(user)) {
-
-            List<EntityModel<Card>> cards = repository.findAll().stream()
+            cards = repository.findAll().stream()
                     .map(assembler::toModel)
                     .collect(Collectors.toList());
 
-            return CollectionModel.of(cards, linkTo(CardController.class)
-                    .withSelfRel());
+
         } else {
-            throw new PermissionException();
+            List<Card> list = repository.findByUser_Login(user.getLogin())
+                    .orElseThrow(() -> new CardNotFoundException(user));
+            cards = list.stream()
+                    .map(assembler::toModel)
+                    .collect(Collectors.toList());
         }
+        return CollectionModel.of(cards, linkTo(CardController.class)
+                .withSelfRel());
     }
 
     @GetMapping("/cards/{id}")
-    public EntityModel<Card> getById(@PathVariable Long id, HttpServletResponse response) {
-        String token = tokenService.getTokenFromResponse(response);
+    public EntityModel<Card> getById(@PathVariable Long id, HttpServletRequest request) {
+        String token = tokenService.getTokenFromRequest(request);
         Card card = repository.findById(id)
                 .orElseThrow(() -> new CardNotFoundException(id));
         User cardUser = userRepository.findByLogin(card.getUserName())
@@ -92,9 +98,9 @@ public class CardController {
 
     @GetMapping("/cards/{id}/transactions")
     public CollectionModel<EntityModel<TransactionEntity>> getTransactions(@PathVariable Long id,
-                                                                           HttpServletResponse response) {
+                                                                           HttpServletRequest request) {
 
-        String token = tokenService.getTokenFromResponse(response);
+        String token = tokenService.getTokenFromRequest(request);
         Card card = repository.findById(id)
                 .orElseThrow(() -> new CardNotFoundException(id));
         User cardUser = userRepository.findByLogin(card.getUserName())
@@ -115,20 +121,21 @@ public class CardController {
     }
 
     @PostMapping("/cards")
-    public EntityModel<Card> createCard(@RequestBody CardRequest cardRequest, HttpServletResponse response) {
-        String token = tokenService.getTokenFromResponse(response);
+    public EntityModel<Card> createCard(@RequestBody CardRequest cardRequest, HttpServletRequest request) {
+        String token = tokenService.getTokenFromRequest(request);
         User user = tokenService.getUserFromToken(token);
 
         Card card = service.createCardByRequest(user,cardRequest);
+        log.info("Card created: "  + card);
         return assembler.toModel(card);
     }
 
     @PostMapping("/cards/{id}/transactions")
     public EntityModel<TransactionEntity> receiveTransaction(@PathVariable Long id,
                                                              @RequestBody TransactionRequest transactionRequest,
-                                                             HttpServletResponse response) {
+                                                             HttpServletRequest request) {
 
-        String token = tokenService.getTokenFromResponse(response);
+        String token = tokenService.getTokenFromRequest(request);
         Card card = repository.findById(id)
                 .orElseThrow(() -> new CardNotFoundException(id));
         User cardUser = userRepository.findByLogin(card.getUserName())
@@ -136,6 +143,7 @@ public class CardController {
 
         if(tokenService.validateUsersToken(cardUser,token)) {
             TransactionEntity transaction = service.executeTransaction(card,transactionRequest);
+            log.info("Transaction executed: " + transaction);
             return transactionAssembler.toModel(transaction);
         } else {
             throw new PermissionException();
@@ -144,10 +152,10 @@ public class CardController {
 
     @DeleteMapping("/cards/{id}/transactions/{transactionId}")
     public EntityModel<Card> deleteTransaction(@PathVariable Long id,
-                                    @PathVariable Long transactionId,
-                                    HttpServletResponse response) {
+                                               @PathVariable Long transactionId,
+                                               HttpServletRequest request) {
 
-        String token = tokenService.getTokenFromResponse(response);
+        String token = tokenService.getTokenFromRequest(request);
         Card card = repository.findById(id)
                 .orElseThrow(() -> new CardNotFoundException(id));
         Card finalCard = card;
@@ -161,6 +169,7 @@ public class CardController {
             card = service.revertTransaction(card,revertTransaction);
 
             transactionRepository.delete(transaction);
+            log.info("Transaction deleted: " + transaction);
             return assembler.toModel(card);
         } else {
             throw new PermissionException();
@@ -170,9 +179,9 @@ public class CardController {
     @GetMapping("/cards/{id}/transactions/{transactionId}")
     public EntityModel<TransactionEntity> receiveTransaction(@PathVariable Long id,
                                                              @PathVariable Long transactionId,
-                                                             HttpServletResponse response) {
+                                                             HttpServletRequest request) {
 
-        String token = tokenService.getTokenFromResponse(response);
+        String token = tokenService.getTokenFromRequest(request);
         Card card = repository.findById(id)
                 .orElseThrow(() -> new CardNotFoundException(id));
         User cardUser = userRepository.findByLogin(card.getUserName())
@@ -196,8 +205,8 @@ public class CardController {
     @PatchMapping("/cards/{id}")
     public EntityModel<Card> renameCard(@PathVariable Long id,
                                         @RequestBody String cardName,
-                                        HttpServletResponse response) {
-        String token = tokenService.getTokenFromResponse(response);
+                                        HttpServletRequest request) {
+        String token = tokenService.getTokenFromRequest(request);
         Card card = repository.findById(id)
                 .orElseThrow(() -> new CardNotFoundException(id));
         Card finalCard = card;
@@ -207,6 +216,7 @@ public class CardController {
         if(tokenService.validateUsersToken(cardUser,token)) {
             card.setCardName(cardName);
             card = repository.save(card);
+            log.info("Card patched: " + card);
             return assembler.toModel(card);
         } else {
             throw new PermissionException();
@@ -214,8 +224,8 @@ public class CardController {
     }
 
     @DeleteMapping("/cards/{id}")
-    public String deleteCardById(@PathVariable Long id, HttpServletResponse response) {
-        String token = tokenService.getTokenFromResponse(response);
+    public String deleteCardById(@PathVariable Long id, HttpServletRequest request) {
+        String token = tokenService.getTokenFromRequest(request);
         Card card = repository.findById(id)
                 .orElseThrow(() -> new CardNotFoundException(id));
         User cardUser = userRepository.findByLogin(card.getUserName())
@@ -223,6 +233,7 @@ public class CardController {
 
         if(tokenService.validateUsersToken(cardUser,token)) {
             repository.delete(card);
+            log.info("Card deleted: " + card);
             return "Card " + card + " has been deleted!";
         } else {
             throw new PermissionException();

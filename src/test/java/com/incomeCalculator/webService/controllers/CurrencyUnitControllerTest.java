@@ -1,17 +1,21 @@
 package com.incomeCalculator.webService.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.incomeCalculator.webService.exceptions.CurrencyUnitNotFoundException;
 import com.incomeCalculator.webService.modelAssembelrs.RatioModelAssembler;
 import com.incomeCalculator.webService.models.CurrencyUnitEntity;
 import com.incomeCalculator.webService.modelAssembelrs.CurrencyUnitModelAssembler;
 import com.incomeCalculator.webService.models.Role;
+import com.incomeCalculator.webService.models.Token;
 import com.incomeCalculator.webService.models.User;
 import com.incomeCalculator.webService.repositories.CurrencyUnitRepository;
+import com.incomeCalculator.webService.repositories.RoleRepository;
 import com.incomeCalculator.webService.repositories.TokenRepository;
 import com.incomeCalculator.webService.repositories.UserRepository;
 import com.incomeCalculator.webService.security.JwtFilter;
 import com.incomeCalculator.webService.security.JwtTokenService;
 import com.incomeCalculator.webService.services.CurrencyUnitService;
+import com.incomeCalculator.webService.services.CustomUserDetailsService;
 import com.incomeCalculator.webService.services.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,16 +25,20 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -47,11 +55,11 @@ public class CurrencyUnitControllerTest {
     @MockBean
     TokenRepository tokenRepository;
     @MockBean
-    JwtFilter filter;
-    @MockBean
-    UserService userService;
-    @MockBean
     UserRepository userRepository;
+    @MockBean
+    CustomUserDetailsService customUserDetailsService;
+    @MockBean
+    RoleRepository roleRepository;
 
     private final String hostName = "http://localhost";
     private String bearer = "Bearer ";
@@ -68,17 +76,14 @@ public class CurrencyUnitControllerTest {
             return new JwtTokenService();
         }
 
+        @Bean
+        public UserService getUserService() {
+            return new UserService();
+        }
     }
 
     @Autowired
     MockMvc mockMvc;
-
-    private static User getRawUser() {
-        return new User(1L,"user","password",new Role("ROLE_USER"));
-    }
-    private static User getRawAdmin() {
-        return new User(1L,"admin","password",new Role("ROLE_ADMIN"));
-    }
 
     @Test
     public void getTestWithParammode0() throws Exception {
@@ -187,18 +192,179 @@ public class CurrencyUnitControllerTest {
                 .andExpect(jsonPath("$..currencyUnitEntityList[2].currencyName")
                         .value(currenciesList.get(2).getCurrencyName()))
                 .andExpect(jsonPath("$._links.self.href")
-                        .value(hostName + linkTo(methodOn(CurrencyUnitController.class).all()).toString()))
+                        .value(hostName + linkTo(methodOn(CurrencyUnitController.class).all())))
                 .andDo(print());
     }
 
     @Test
     public void shouldNotAllowDeleteForRegularUser() throws Exception {
 
-        String token = "tokenString";
+        User regularUser = AuthControllerTest.getRawUser();
+        Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
 
-        mockMvc.perform(get("/currencyUnits")
-                .header("Authorization",bearer + token));
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+        when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
+
+        mockMvc.perform(delete("/currencyUnits/{id}",1)
+                        .header("Authorization",bearer + tokenEntity.getToken()))
+                .andExpect(status().isForbidden())
+                .andDo(print());
 
     }
 
+    @Test
+    public void shouldNotAllowPostForRegularUser() throws Exception {
+
+        User regularUser = AuthControllerTest.getRawUser();
+        Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"ABC",444,1);
+        String json = objectMapper.writeValueAsString(currencyUnit);
+
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+
+        mockMvc.perform(post("/currencyUnits")
+                        .contentType(MediaType.APPLICATION_JSON).content(json)
+                        .header("Authorization",bearer + tokenEntity.getToken()))
+                .andExpect(status().isForbidden())
+                .andDo(print());
+
+    }
+
+    @Test
+    public void shouldNotAllowPutForRegularUser() throws Exception {
+
+        User regularUser = AuthControllerTest.getRawUser();
+        Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"ABC",444,1);
+        String json = objectMapper.writeValueAsString(currencyUnit);
+
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+
+        mockMvc.perform(put("/currencyUnits/{id}",1)
+                        .contentType(MediaType.APPLICATION_JSON).content(json)
+                        .header("Authorization",bearer + tokenEntity.getToken()))
+                .andExpect(status().isForbidden())
+                .andDo(print());
+
+    }
+
+    @Test
+    public void shouldAllowDeleteForAdmin() throws Exception {
+
+        User admin = AuthControllerTest.getRawAdmin();
+        Token tokenEntity = AuthControllerTest.createTokenForUser(admin);
+
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
+
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+        when(repository.findById(currencyUnit.getId())).thenReturn(Optional.of(currencyUnit));
+
+        mockMvc.perform(delete("/currencyUnits/{id}",1)
+                        .header("Authorization",bearer + tokenEntity.getToken()))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+        verify(repository,times(1)).delete(currencyUnit);
+    }
+
+    @Test
+    public void shouldAllowPutForAdmin() throws Exception {
+
+        User admin = AuthControllerTest.getRawAdmin();
+        Token tokenEntity = AuthControllerTest.createTokenForUser(admin);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
+        String json = objectMapper.writeValueAsString(currencyUnit);
+
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+        when(repository.findById(currencyUnit.getId())).thenReturn(Optional.of(currencyUnit));
+        when(repository.save(currencyUnit)).thenReturn(currencyUnit);
+
+        mockMvc.perform(put("/currencyUnits/{id}",1)
+                        .contentType(MediaType.APPLICATION_JSON).content(json)
+                        .header("Authorization",bearer + tokenEntity.getToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(currencyUnit.getId()))
+                .andExpect(jsonPath("$.currencyName").value(currencyUnit.getCurrencyName()))
+                .andExpect(jsonPath("$.currencyId").value(currencyUnit.getCurrencyId()))
+                .andExpect(jsonPath("$.currencyScale").value(currencyUnit.getCurrencyScale()))
+                .andDo(print());
+
+    }
+
+    @Test
+    public void shouldAllowPostForAdmin() throws Exception {
+
+        User admin = AuthControllerTest.getRawAdmin();
+        Token tokenEntity = AuthControllerTest.createTokenForUser(admin);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
+        String json = objectMapper.writeValueAsString(currencyUnit);
+
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+        when(repository.findById(currencyUnit.getId())).thenReturn(Optional.of(currencyUnit));
+        when(repository.findByCurrencyId(currencyUnit.getCurrencyId())).thenReturn(Optional.empty());
+        when(repository.save(currencyUnit)).thenReturn(currencyUnit);
+
+        mockMvc.perform(post("/currencyUnits")
+                        .contentType(MediaType.APPLICATION_JSON).content(json)
+                        .header("Authorization",bearer + tokenEntity.getToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(currencyUnit.getId()))
+                .andExpect(jsonPath("$.currencyName").value(currencyUnit.getCurrencyName()))
+                .andExpect(jsonPath("$.currencyId").value(currencyUnit.getCurrencyId()))
+                .andExpect(jsonPath("$.currencyScale").value(currencyUnit.getCurrencyScale()))
+                .andDo(print());
+
+    }
+
+    @Test
+    public void shouldntPostNotValidByName() throws Exception {
+        User admin = AuthControllerTest.getRawAdmin();
+        Token tokenEntity = AuthControllerTest.createTokenForUser(admin);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USDD",432,1);
+        String json = objectMapper.writeValueAsString(currencyUnit);
+
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+        when(repository.findById(currencyUnit.getId())).thenReturn(Optional.of(currencyUnit));
+        when(repository.findByCurrencyId(currencyUnit.getCurrencyId())).thenReturn(Optional.empty());
+        when(repository.save(currencyUnit)).thenReturn(currencyUnit);
+
+        mockMvc.perform(post("/currencyUnits")
+                        .contentType(MediaType.APPLICATION_JSON).content(json)
+                        .header("Authorization",bearer + tokenEntity.getToken()))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+
+    }
+
+    @Test
+    public void shouldntPostNotValidByCurrencyId() throws Exception {
+        User admin = AuthControllerTest.getRawAdmin();
+        Token tokenEntity = AuthControllerTest.createTokenForUser(admin);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
+        String json = objectMapper.writeValueAsString(currencyUnit);
+
+        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+        when(repository.findById(currencyUnit.getId())).thenReturn(Optional.of(currencyUnit));
+        when(repository.findByCurrencyId(currencyUnit.getCurrencyId())).thenReturn(Optional.of(currencyUnit));
+        when(repository.save(currencyUnit)).thenReturn(currencyUnit);
+
+        mockMvc.perform(post("/currencyUnits")
+                        .contentType(MediaType.APPLICATION_JSON).content(json)
+                        .header("Authorization",bearer + tokenEntity.getToken()))
+                .andExpect(status().isBadRequest())
+                .andDo(print());
+
+    }
 }

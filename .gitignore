@@ -15,3 +15,4 @@
 /testFiles/db/
 /src/main/resources/application.properties
 *.db
+.env

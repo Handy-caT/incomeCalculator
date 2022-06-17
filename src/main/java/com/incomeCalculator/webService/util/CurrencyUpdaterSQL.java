@@ -10,6 +10,7 @@ import com.incomeCalculator.webService.models.CurrencyUnitEntity;
 import com.incomeCalculator.webService.models.Ratio;
 import com.incomeCalculator.webService.repositories.CurrencyUnitRepository;
 import com.incomeCalculator.webService.repositories.RatioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
@@ -20,13 +21,11 @@ import java.util.*;
 @Component
 public class CurrencyUpdaterSQL implements CurrencyUpdater, CurrencyUpdaterFactory {
 
-    private final RatioRepository ratioRepository;
-    private final CurrencyUnitRepository currencyUnitRepository;
+    @Autowired
+    private RatioRepository ratioRepository;
+    @Autowired
+    private CurrencyUnitRepository currencyUnitRepository;
 
-    public CurrencyUpdaterSQL(RatioRepository ratioRepository, CurrencyUnitRepository currencyUnitRepository) {
-        this.ratioRepository = ratioRepository;
-        this.currencyUnitRepository = currencyUnitRepository;
-    }
 
 
     private BigDecimal getRatioOnDate(String currencyFrom, String currencyTo,String dateString) {
@@ -42,7 +41,7 @@ public class CurrencyUpdaterSQL implements CurrencyUpdater, CurrencyUpdaterFacto
         CurrencyUnitEntity currencyUnitTo = currencyUnitRepository.findByCurrencyName(currencyTo)
                 .orElseThrow(() -> new CurrencyUnitNotFoundException(currencyTo));
 
-        BigDecimal ratio = ratioFrom.getRatio().divide(ratioTo.getRatio());
+        BigDecimal ratio = ratioFrom.getRatio().divide(ratioTo.getRatio() ,10,RoundingMode.HALF_UP);
         ratio = ratio.setScale((int) (ratio.scale() + Math.log10(currencyUnitFrom.getCurrencyScale())),RoundingMode.HALF_DOWN)
                 .divide(BigDecimal.valueOf(currencyUnitFrom.getCurrencyScale()),RoundingMode.HALF_DOWN);
         ratio = ratio.setScale((int) (ratio.scale() + Math.log10(currencyUnitTo.getCurrencyScale())),RoundingMode.HALF_DOWN)

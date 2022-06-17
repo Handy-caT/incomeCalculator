@@ -11,18 +11,23 @@ import com.incomeCalculator.webService.repositories.CurrencyUnitRepository;
 import com.incomeCalculator.webService.security.JwtTokenService;
 import com.incomeCalculator.webService.services.CurrencyUnitService;
 import com.incomeCalculator.webService.services.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 public class CurrencyUnitController {
+
+    private static final Logger log = LoggerFactory.getLogger(CurrencyUnitController.class);
 
     private final CurrencyUnitRepository repository;
     private final CurrencyUnitModelAssembler assembler;
@@ -62,9 +67,9 @@ public class CurrencyUnitController {
 
     @PostMapping("/currencyUnits")
     public EntityModel<CurrencyUnitEntity> createCurrencyUnit(@RequestBody CurrencyUnitEntity currencyUnit,
-                                                              HttpServletResponse response) {
+                                                              HttpServletRequest request) {
 
-        String token = tokenService.getTokenFromResponse(response);
+        String token = tokenService.getTokenFromRequest(request);
         User user = tokenService.getUserFromToken(token);
         if(userService.isAdmin(user)) {
             if (currencyUnit.getCurrencyName().length() > 3) {
@@ -72,6 +77,7 @@ public class CurrencyUnitController {
             }
             if (!repository.findByCurrencyId(currencyUnit.getCurrencyId()).isPresent()) {
                 currencyUnit = repository.save(currencyUnit);
+                log.info("Currency unit saved: " + currencyUnit);
                 return assembler.toModel(currencyUnit);
             } else {
                 throw new IllegalArgumentException("Currency with id " + currencyUnit.getCurrencyId() +
@@ -84,13 +90,15 @@ public class CurrencyUnitController {
 
     @DeleteMapping("/currencyUnits/{id}")
     public String deleteCurrencyUnit(@PathVariable Long id,
-                                     HttpServletResponse response) {
-        String token = tokenService.getTokenFromResponse(response);
+                                     HttpServletRequest request) {
+
+        String token = tokenService.getTokenFromRequest(request);
         User user = tokenService.getUserFromToken(token);
         if(userService.isAdmin(user)) {
             CurrencyUnitEntity currencyUnit = repository.findById(id)
                     .orElseThrow(() -> new CurrencyUnitNotFoundException(id));
             repository.delete(currencyUnit);
+            log.info("Currency unit deleted: " + currencyUnit);
             return "CurrencyUnit " + currencyUnit.getCurrencyName() + " has been deleted";
         } else {
             throw new PermissionException();
@@ -99,17 +107,16 @@ public class CurrencyUnitController {
 
     @PutMapping("/currencyUnits/{id}")
     public EntityModel<CurrencyUnitEntity> updateCurrencyUnit(@PathVariable Long id,
-                                                              CurrencyUnitEntity currencyUnit,
-                                                              HttpServletResponse response) {
+                                                              @RequestBody CurrencyUnitEntity currencyUnit,
+                                                              HttpServletRequest request) {
 
-        String token = tokenService.getTokenFromResponse(response);
+        String token = tokenService.getTokenFromRequest(request);
         User user = tokenService.getUserFromToken(token);
         if(userService.isAdmin(user)) {
-            CurrencyUnitEntity foundCurrencyUnit = repository.findById(id)
-                    .orElseThrow(() -> new CurrencyUnitNotFoundException(id));
-            currencyUnit.setId(foundCurrencyUnit.getId());
+            currencyUnit.setId(id);
             currencyUnit = repository.save(currencyUnit);
 
+            log.info("Currency unit updated: " + currencyUnit);
             return assembler.toModel(currencyUnit);
         } else {
             throw new PermissionException();

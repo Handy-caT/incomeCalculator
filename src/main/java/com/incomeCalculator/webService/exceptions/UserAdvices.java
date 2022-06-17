@@ -18,7 +18,7 @@ public class UserAdvices {
 
     @ResponseBody
     @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     String illegalArgumentHandler(IllegalArgumentException ex) {
         return ex.getMessage();
     }

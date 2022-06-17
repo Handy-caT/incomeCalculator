@@ -15,6 +15,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Objects;
@@ -43,28 +44,39 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public CollectionModel<EntityModel<User>> all(){
-        List<EntityModel<User>> users= repository.findAll().stream()
-                .map(assembler::toModel)
-                .collect(Collectors.toList());
+    public CollectionModel<EntityModel<User>> all(HttpServletRequest request){
+        String token = tokenService.getTokenFromRequest(request);
+        User user = tokenService.getUserFromToken(token);
+        if(service.isAdmin(user)) {
+            List<EntityModel<User>> users = repository.findAll().stream()
+                    .map(assembler::toModel)
+                    .collect(Collectors.toList());
 
-        return CollectionModel.of(users,linkTo(methodOn(UserController.class).all())
-                .withSelfRel());
+            return CollectionModel.of(users, linkTo(UserController.class).withSelfRel());
+        } else {
+            throw new PermissionException();
+        }
     }
 
     @GetMapping("/users/{id}")
-    public EntityModel<User> getOne(@PathVariable Long id) {
-        User user = repository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id));
+    public EntityModel<User> getOne(@PathVariable Long id,HttpServletRequest request) {
+        String token = tokenService.getTokenFromRequest(request);
+        User tokenUser = tokenService.getUserFromToken(token);
+        if(service.isAdmin(tokenUser) || Objects.equals(tokenUser.getId(), id)) {
+            User user = repository.findById(id)
+                    .orElseThrow(() -> new UserNotFoundException(id));
 
-        return assembler.toModel(user);
+            return assembler.toModel(user);
+        } else {
+            throw new PermissionException();
+        }
     }
 
     @DeleteMapping("/users/{id}")
-    public String deleteUser(@PathVariable Long id, HttpServletResponse response) {
+    public String deleteUser(@PathVariable Long id, HttpServletRequest request) {
         User user = repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
-        String token = tokenService.getTokenFromResponse(response);
+        String token = tokenService.getTokenFromRequest(request);
         if(tokenService.validateUsersToken(user,token)) {
             repository.deleteById(id);
             log.info("User deleted: " + user);
@@ -76,14 +88,14 @@ public class UserController {
 
     @PatchMapping("/users/{id}")
     public EntityModel<User> updateUsersPassword(@PathVariable Long id,
-                            @RequestBody UserUpdateRequest request, HttpServletResponse response) {
+                            @RequestBody UserUpdateRequest updateRequest, HttpServletRequest request) {
         User user = repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
-        String token = tokenService.getTokenFromResponse(response);
+        String token = tokenService.getTokenFromRequest(request);
         if(tokenService.validateUsersToken(user,token)) {
-            User requestUser = service.findByLoginAndPassword(request.getLogin(),request.getOldPassword());
+            User requestUser = service.findByLoginAndPassword(updateRequest.getLogin(),updateRequest.getOldPassword());
             if(requestUser.equals(user)) {
-                user.setPassword(request.getNewPassword());
+                user.setPassword(updateRequest.getNewPassword());
                 user = service.saveUser(user);
             }
         } else{
