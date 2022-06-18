@@ -9,6 +9,7 @@ import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,8 +32,8 @@ public class JwtTokenService {
     @Autowired
     private UserRepository userRepository;
 
-    public String getTokenFromRequest(HttpServletRequest request) {
-        String bearer = request.getHeader(AUTHORIZATION);
+    public String getTokenFromRequest(ServerHttpRequest request) {
+        String bearer = request.getHeaders().getOrEmpty(AUTHORIZATION).get(0);
         if (hasText(bearer) && bearer.startsWith("Bearer ")) {
             return bearer.substring(7);
         }
