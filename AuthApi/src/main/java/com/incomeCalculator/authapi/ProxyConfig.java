@@ -9,10 +9,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProxyConfig {
 
-    @Value("${CALCULATOR_HOST}")
+    @Value("${CALCULATOR_HOST:localhost}")
     private String calculatorHost;
 
-    @Value("$CALCULATOR_PORT")
+    @Value("${CALCULATOR_PORT:8081}")
     private Long calculatorPort;
 
 
@@ -23,7 +23,7 @@ public class ProxyConfig {
                 .route(p -> p
                         .path("/cards/*")
                         .filters(f -> f.stripPrefix(1))
-                        .uri("http://" + calculatorHost + ':' + calculatorPort))
+                        .uri("https://" + calculatorHost + ':' + calculatorPort))
                 .build();
     }
 
