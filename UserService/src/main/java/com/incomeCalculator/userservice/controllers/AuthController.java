@@ -1,6 +1,7 @@
 package com.incomeCalculator.userservice.controllers;
 
 
+import com.incomeCalculator.userservice.exceptions.UserNotFoundException;
 import com.incomeCalculator.userservice.models.User;
 import com.incomeCalculator.userservice.requests.AuthResponse;
 import com.incomeCalculator.userservice.requests.UserAuthRequest;
@@ -10,8 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
-//@RestController
+@RestController
 public class AuthController {
 
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
@@ -30,13 +32,20 @@ public class AuthController {
         user.setPassword(registrationRequest.getPassword());
         user.setLogin(registrationRequest.getLogin());
 
-        user = service.saveUser(user);
+        try {
+            User potentialCopy = service.findByLogin(user.getLogin());
 
-        String token = tokenService.generateToken(user.getLogin());
-        tokenService.saveToken(token,user);
-        log.info("User saved, id=" + user.getId() + ", login=" + user.getLogin());
+            throw new IllegalArgumentException("User with this login already exists");
+        } catch (UserNotFoundException e) {
 
-        return new AuthResponse(token);
+            user = service.saveUser(user);
+
+            String token = tokenService.generateToken(user.getLogin());
+            tokenService.saveToken(token, user);
+            log.info("User saved, id=" + user.getId() + ", login=" + user.getLogin());
+
+            return new AuthResponse(token);
+        }
     }
 
     @PostMapping("/auth")

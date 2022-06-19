@@ -13,19 +13,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProxyConfig {
 
-    @Value("${CALCULATOR_HOST:localhost}")
+    @Value("${CALCULATOR_HOST:192.168.70.251}")
     private String calculatorHost;
-
-    @Value("${CALCULATOR_PORT:8081}")
+    @Value("${CALCULATOR_PORT:8080}")
     private Long calculatorPort;
+
+    @Value("${CALCULATOR_HOST:localhost}")
+    private String usersHost;
+    @Value("${CALCULATOR_PORT:8081}")
+    private Long usersPort;
 
     @Autowired
     JwtFilter filter;
-
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
     @Bean
     RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
@@ -34,23 +33,27 @@ public class ProxyConfig {
                 .route(p -> p
                         .path("/cards/**")
                         .filters(f -> f.filter(filter))
-                        .uri("https://" + calculatorHost + ':' + calculatorPort))
+                        .uri("http://" + calculatorHost + ':' + calculatorPort))
                 .route(p -> p
                         .path("/currencyUnits/**")
                         .filters(f -> f.filter(filter))
-                        .uri("https://" + calculatorHost + ':' + calculatorPort))
+                        .uri("http://" + calculatorHost + ':' + calculatorPort))
                 .route(p -> p
                         .path("/ratios/**")
                         .filters(f -> f.filter(filter))
-                        .uri("https://" + calculatorHost + ':' + calculatorPort))
+                        .uri("http://" + calculatorHost + ':' + calculatorPort))
                 .route(p -> p
                         .path("/register")
                         .filters(f -> f.filter(filter))
-                        .uri("https://" + calculatorHost + ':' + calculatorPort))
+                        .uri("http://" + usersHost + ':' + usersPort))
                 .route(p -> p
                         .path("/auth")
                         .filters(f -> f.filter(filter))
-                        .uri("https://" + calculatorHost + ':' + calculatorPort))
+                        .uri("http://" + usersHost + ':' + usersPort))
+                .route(p -> p
+                        .path("/users/**")
+                        .filters(f -> f.filter(filter))
+                        .uri("http://" + usersHost + ':' + usersPort))
                 .build();
     }
 

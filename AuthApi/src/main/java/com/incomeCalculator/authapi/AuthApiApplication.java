@@ -18,13 +18,6 @@ import java.util.function.Function;
 
 @SpringBootApplication
 public class AuthApiApplication {
-
-    @Bean
-    JwtTokenService jwtTokenService() {
-        return new JwtTokenService();
-    }
-
-
     public static void main(String[] args) {
         SpringApplication.run(AuthApiApplication.class, args);
     }

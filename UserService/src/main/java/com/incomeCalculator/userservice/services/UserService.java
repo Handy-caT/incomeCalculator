@@ -58,5 +58,4 @@ public class UserService {
     public boolean isAdmin(User user) {
         return user.getRole().getRoleName().equals(adminRole);
     }
-
 }

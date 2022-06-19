@@ -14,7 +14,7 @@ services:
     depends_on:
       - mysqldb
     restart: on-failure
-    image: web-api-app:latest
+    image: handycat/web-api-app:latest
     command: sh -c './wait-for mysql_db:3306 -- npm start'
     env_file: ./.env
     ports:
