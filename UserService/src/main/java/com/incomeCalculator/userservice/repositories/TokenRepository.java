@@ -1,8 +1,8 @@
-package com.incomeCalculator.authapi.repositories;
+package com.incomeCalculator.userservice.repositories;
 
 
-import com.incomeCalculator.authapi.models.Token;
-import com.incomeCalculator.authapi.models.User;
+import com.incomeCalculator.userservice.models.Token;
+import com.incomeCalculator.userservice.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

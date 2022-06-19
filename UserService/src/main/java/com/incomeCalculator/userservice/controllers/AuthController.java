@@ -1,16 +1,15 @@
-package com.incomeCalculator.authapi;
+package com.incomeCalculator.userservice.controllers;
 
 
-import com.incomeCalculator.authapi.models.User;
-import com.incomeCalculator.authapi.requests.AuthResponse;
-import com.incomeCalculator.authapi.requests.UserAuthRequest;
-import com.incomeCalculator.authapi.services.JwtTokenService;
-import com.incomeCalculator.authapi.services.UserService;
+import com.incomeCalculator.userservice.models.User;
+import com.incomeCalculator.userservice.requests.AuthResponse;
+import com.incomeCalculator.userservice.requests.UserAuthRequest;
+import com.incomeCalculator.userservice.services.JwtTokenService;
+import com.incomeCalculator.userservice.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 
 //@RestController
 public class AuthController {

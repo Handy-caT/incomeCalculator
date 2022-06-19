@@ -1,8 +1,8 @@
 package com.incomeCalculator.authapi;
 
 
-import com.incomeCalculator.authapi.models.User;
-import com.incomeCalculator.authapi.services.JwtTokenService;
+import com.incomeCalculator.userservice.models.User;
+import com.incomeCalculator.userservice.services.JwtTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

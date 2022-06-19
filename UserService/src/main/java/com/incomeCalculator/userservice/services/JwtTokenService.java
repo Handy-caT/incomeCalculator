@@ -1,18 +1,17 @@
-package com.incomeCalculator.authapi.services;
+package com.incomeCalculator.userservice.services;
 
-import com.incomeCalculator.authapi.exceptions.TokenNotFoundException;
-import com.incomeCalculator.authapi.models.Token;
-import com.incomeCalculator.authapi.models.User;
-import com.incomeCalculator.authapi.repositories.TokenRepository;
-import com.incomeCalculator.authapi.repositories.UserRepository;
+
+import com.incomeCalculator.userservice.exceptions.TokenNotFoundException;
+import com.incomeCalculator.userservice.models.Token;
+import com.incomeCalculator.userservice.models.User;
+import com.incomeCalculator.userservice.repositories.TokenRepository;
+import com.incomeCalculator.userservice.repositories.UserRepository;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
-
-import javax.servlet.http.HttpServletRequest;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;

@@ -9,6 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+
 @Component
 public class ProxyConfig {
 
@@ -28,6 +29,7 @@ public class ProxyConfig {
 
     @Bean
     RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
+
         return builder.routes()
                 .route(p -> p
                         .path("/cards/**")

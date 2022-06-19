@@ -1,17 +1,16 @@
-package com.incomeCalculator.authapi.services;
+package com.incomeCalculator.userservice.services;
 
 
-import com.incomeCalculator.authapi.exceptions.RoleNotFoundException;
-import com.incomeCalculator.authapi.exceptions.UserNotFoundException;
-import com.incomeCalculator.authapi.models.User;
-import com.incomeCalculator.authapi.repositories.RoleRepository;
-import com.incomeCalculator.authapi.repositories.UserRepository;
+import com.incomeCalculator.userservice.exceptions.RoleNotFoundException;
+import com.incomeCalculator.userservice.exceptions.UserNotFoundException;
+import com.incomeCalculator.userservice.models.User;
+import com.incomeCalculator.userservice.repositories.RoleRepository;
+import com.incomeCalculator.userservice.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
 
 import java.util.Objects;
 

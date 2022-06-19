@@ -1,4 +1,4 @@
-package com.incomeCalculator.authapi.exceptions;
+package com.incomeCalculator.userservice.exceptions;
 
 public class RoleNotFoundException extends RuntimeException{
 

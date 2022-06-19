@@ -1,4 +1,4 @@
-package com.incomeCalculator.authapi.models;
+package com.incomeCalculator.userservice.models;
 
 
 import javax.persistence.*;
@@ -32,7 +32,7 @@ public class User {
         this.role = role;
     }
 
-    public User(Long id,String login, String password, Role role) {
+    public User(Long id, String login, String password, Role role) {
         this.id = id;
         this.password = password;
         this.login = login;

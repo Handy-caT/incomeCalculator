@@ -1,7 +1,7 @@
-package com.incomeCalculator.authapi.exceptions;
+package com.incomeCalculator.userservice.exceptions;
 
 
-import com.incomeCalculator.authapi.models.User;
+import com.incomeCalculator.userservice.models.User;
 
 public class TokenNotFoundException extends RuntimeException{
 

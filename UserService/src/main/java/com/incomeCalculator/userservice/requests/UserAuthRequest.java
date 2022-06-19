@@ -1,4 +1,4 @@
-package com.incomeCalculator.authapi.requests;
+package com.incomeCalculator.userservice.requests;
 
 public class UserAuthRequest {
     private String login;
