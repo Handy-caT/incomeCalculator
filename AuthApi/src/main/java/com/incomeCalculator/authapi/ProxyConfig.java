@@ -20,7 +20,7 @@ public class ProxyConfig {
 
     @Value("${CALCULATOR_HOST:localhost}")
     private String usersHost;
-    @Value("${CALCULATOR_PORT:8081}")
+    @Value("${CALCULATOR_PORT:8082}")
     private Long usersPort;
 
     @Autowired

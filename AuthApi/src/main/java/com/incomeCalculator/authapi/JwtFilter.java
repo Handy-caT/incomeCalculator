@@ -6,11 +6,13 @@ import com.incomeCalculator.userservice.services.JwtTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -29,7 +31,9 @@ import java.io.IOException;
 
 @Component
 @RefreshScope
-@ComponentScan(basePackages = {"com.incomeCalculator.userservice"})
+@ComponentScan(basePackages = {"com.incomeCalculator.userservice.services"})
+@EntityScan(basePackages = {"com.incomeCalculator.userservice.models"})
+@EnableJpaRepositories(basePackages = {"com.incomeCalculator.userservice.repositories"})
 public class JwtFilter implements GatewayFilter {
 
     private static final Logger log = LoggerFactory.getLogger(JwtFilter.class);
@@ -60,7 +64,11 @@ public class JwtFilter implements GatewayFilter {
                     .header("role",user.getRole().getRoleName())
                     .build();
             String newToken = service.generateToken(user.getLogin());
-            exchange.getResponse().getHeaders().add(HttpHeaders.AUTHORIZATION,newToken);
+            return chain.filter(exchange).then(Mono.fromRunnable(() -> {
+                       service.saveToken(newToken,user);
+                       exchange.getResponse().getHeaders().add(HttpHeaders.AUTHORIZATION,newToken);
+                    }
+            ));
         }
         return chain.filter(exchange);
     }
