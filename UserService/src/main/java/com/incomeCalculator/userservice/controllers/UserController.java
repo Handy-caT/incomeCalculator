@@ -1,13 +1,12 @@
 package com.incomeCalculator.userservice.controllers;
 
-import com.incomeCalculator.userservice.RequestHandler;
+import com.incomeCalculator.userservice.services.RequestHandler;
 import com.incomeCalculator.userservice.exceptions.PermissionException;
 import com.incomeCalculator.userservice.exceptions.UserNotFoundException;
 import com.incomeCalculator.userservice.models.User;
-import com.incomeCalculator.userservice.models.UserModelAssembler;
+import com.incomeCalculator.userservice.services.UserModelAssembler;
 import com.incomeCalculator.userservice.repositories.UserRepository;
 import com.incomeCalculator.userservice.requests.UserUpdateRequest;
-import com.incomeCalculator.userservice.services.JwtTokenService;
 import com.incomeCalculator.userservice.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,8 +57,8 @@ public class UserController {
 
     @GetMapping("/users/{id}")
     public EntityModel<User> getOne(@PathVariable Long id,HttpServletRequest request) {
-        User userFromRequest = handler.getUserFromRequest(request);
-        if(service.isAdmin(userFromRequest) || Objects.equals(userFromRequest.getId(), id)) {
+        User authUser= handler.getUserFromRequest(request);
+        if(service.validateUser(id,authUser)) {
             User user = repository.findById(id)
                     .orElseThrow(() -> new UserNotFoundException(id));
 
@@ -73,8 +72,8 @@ public class UserController {
     public String deleteUser(@PathVariable Long id, HttpServletRequest request) {
         User user = repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
-        User userFromRequest = handler.getUserFromRequest(request);
-        if(userFromRequest.getId().equals(id)) {
+        User authUser = handler.getUserFromRequest(request);
+        if(service.validateUser(id,authUser)) {
             repository.deleteById(id);
             log.info("User deleted: " + user);
         } else{
@@ -88,12 +87,15 @@ public class UserController {
                                                  @RequestBody UserUpdateRequest updateRequest, HttpServletRequest request) {
         User user = repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
-        User userFromRequest = handler.getUserFromRequest(request);
-        if(userFromRequest.getId().equals(id)) {
+        User authUser = handler.getUserFromRequest(request);
+        if(service.validateUser(id,authUser)) {
             User requestUser = service.findByLoginAndPassword(updateRequest.getLogin(),updateRequest.getOldPassword());
-            if(requestUser.equals(user)) {
+            if(requestUser.equals(user) || service.isAdmin(authUser)) {
                 user.setPassword(updateRequest.getNewPassword());
                 user = service.saveUser(user);
+                log.info("User " + user.getLogin() + " updated password");
+            } else {
+                throw new IllegalArgumentException("Wrong password");
             }
         } else{
             throw new PermissionException();

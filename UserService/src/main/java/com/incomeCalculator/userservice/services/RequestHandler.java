@@ -1,4 +1,4 @@
-package com.incomeCalculator.userservice;
+package com.incomeCalculator.userservice.services;
 
 import com.incomeCalculator.userservice.exceptions.UserNotFoundException;
 import com.incomeCalculator.userservice.models.User;

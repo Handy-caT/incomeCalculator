@@ -1,7 +1,8 @@
-package com.incomeCalculator.userservice.models;
+package com.incomeCalculator.userservice.services;
 
 
 import com.incomeCalculator.userservice.controllers.UserController;
+import com.incomeCalculator.userservice.models.User;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;

@@ -58,4 +58,8 @@ public class UserService {
     public boolean isAdmin(User user) {
         return user.getRole().getRoleName().equals(adminRole);
     }
+
+    public boolean validateUser(Long usersId,User requestUser) {
+        return isAdmin(requestUser) || requestUser.getId().equals(usersId);
+    }
 }
