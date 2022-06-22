@@ -1,9 +1,10 @@
 package com.incomeCalculator.cardservice.controllers;
 
-import com.incomeCalculator.webService.exceptions.TransactionNotFoundException;
-import com.incomeCalculator.webService.modelAssembelrs.TransactionModelAssembler;
-import com.incomeCalculator.webService.models.TransactionEntity;
-import com.incomeCalculator.webService.repositories.TransactionRepository;
+
+import com.incomeCalculator.cardservice.exceptions.TransactionNotFoundException;
+import com.incomeCalculator.cardservice.modelAssemblers.TransactionModelAssembler;
+import com.incomeCalculator.cardservice.models.TransactionEntity;
+import com.incomeCalculator.cardservice.repositories.TransactionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.CollectionModel;

@@ -1,17 +1,21 @@
 package com.incomeCalculator.cardservice.controllers;
 
+
+import com.incomeCalculator.cardservice.exceptions.RatioNotFoundException;
+import com.incomeCalculator.cardservice.modelAssemblers.RatioModelAssembler;
+import com.incomeCalculator.cardservice.models.Ratio;
+import com.incomeCalculator.cardservice.repositories.RatioRepository;
+import com.incomeCalculator.cardservice.requests.RatioRequest;
+import com.incomeCalculator.cardservice.services.RatioService;
 import com.incomeCalculator.core.wallet.money.util.DateFormatter;
-import com.incomeCalculator.webService.exceptions.PermissionException;
-import com.incomeCalculator.webService.exceptions.RatioNotFoundException;
-import com.incomeCalculator.webService.modelAssembelrs.RatioModelAssembler;
-import com.incomeCalculator.webService.models.Ratio;
-import com.incomeCalculator.webService.models.User;
-import com.incomeCalculator.webService.repositories.RatioRepository;
-import com.incomeCalculator.webService.requests.RatioRequest;
-import com.incomeCalculator.webService.security.JwtTokenService;
-import com.incomeCalculator.webService.services.RatioService;
-import com.incomeCalculator.webService.services.UserService;
+import com.incomeCalculator.userservice.exceptions.PermissionException;
+import com.incomeCalculator.userservice.models.User;
+import com.incomeCalculator.userservice.services.RequestHandler;
+import com.incomeCalculator.userservice.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +32,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
+@ComponentScan(basePackages = {"com.incomeCalculator.userservice.services"})
+@EntityScan(basePackages = {"com.incomeCalculator.userservice.models"})
+@EnableJpaRepositories(basePackages = {"com.incomeCalculator.userservice.repositories"})
 public class RatioController {
 
     private final RatioRepository repository;
@@ -35,7 +42,7 @@ public class RatioController {
     private final RatioService service;
 
     @Autowired
-    private JwtTokenService tokenService;
+    private RequestHandler handler;
     @Autowired
     private UserService userService;
 
@@ -110,9 +117,8 @@ public class RatioController {
 
     @DeleteMapping("/ratios/{id}")
     public String deleteById(@PathVariable Long id, HttpServletRequest request) {
-        String token = tokenService.getTokenFromRequest(request);
-        User user = tokenService.getUserFromToken(token);
-        if(userService.isAdmin(user)) {
+        User authUser = handler.getUserFromRequest(request);
+        if(userService.isAdmin(authUser)) {
             Ratio ratio = repository.findById(id)
                     .orElseThrow(() -> new RatioNotFoundException(id));
             repository.delete(ratio);
@@ -127,9 +133,8 @@ public class RatioController {
     public EntityModel<Ratio> updateById(@RequestBody RatioRequest ratioRequest
             , @PathVariable Long id, HttpServletRequest request) {
 
-        String token = tokenService.getTokenFromRequest(request);
-        User user = tokenService.getUserFromToken(token);
-        if(userService.isAdmin(user)) {
+        User authUser = handler.getUserFromRequest(request);
+        if(userService.isAdmin(authUser)) {
             Ratio ratio = repository.findById(id)
                     .orElseThrow(() -> new RatioNotFoundException(id));
             ratio = service.updateRatioByRequest(ratioRequest,ratio);
@@ -145,9 +150,8 @@ public class RatioController {
     @PostMapping("/ratios")
     public EntityModel<Ratio> addRatio(@RequestBody RatioRequest ratioRequest, HttpServletRequest request) {
 
-        String token = tokenService.getTokenFromRequest(request);
-        User user = tokenService.getUserFromToken(token);
-        if(userService.isAdmin(user)) {
+        User authUser = handler.getUserFromRequest(request);
+        if(userService.isAdmin(authUser)) {
             Date date = new Date();
             if(repository.findByCurrencyUnit_CurrencyNameAndDateString(ratioRequest.getCurrencyName(),
                     DateFormatter.sqlFormat(date)).isPresent() ) {

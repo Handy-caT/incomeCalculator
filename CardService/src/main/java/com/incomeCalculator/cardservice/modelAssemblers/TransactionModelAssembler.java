@@ -1,11 +1,12 @@
 package com.incomeCalculator.cardservice.modelAssemblers;
 
-import com.incomeCalculator.webService.controllers.TransactionController;
-import com.incomeCalculator.webService.models.TransactionEntity;
+import com.incomeCalculator.cardservice.controllers.TransactionController;
+import com.incomeCalculator.cardservice.models.TransactionEntity;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component

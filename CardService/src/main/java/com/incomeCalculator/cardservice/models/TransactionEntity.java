@@ -1,10 +1,10 @@
 package com.incomeCalculator.cardservice.models;
 
+import com.incomeCalculator.cardservice.util.CurrencyConverterSQL;
+import com.incomeCalculator.cardservice.util.CurrencyUpdaterSQL;
 import com.incomeCalculator.core.wallet.card.CardProvider;
 import com.incomeCalculator.core.wallet.card.transaction.Transaction;
 import com.incomeCalculator.core.wallet.money.Money;
-import com.incomeCalculator.webService.util.CurrencyConverterSQL;
-import com.incomeCalculator.webService.util.CurrencyUpdaterSQL;
 
 import javax.persistence.*;
 import java.math.BigDecimal;

@@ -1,14 +1,15 @@
 package com.incomeCalculator.cardservice.modelAssemblers;
 
-import com.incomeCalculator.webService.controllers.CurrencyUnitController;
-import com.incomeCalculator.webService.controllers.RatioController;
-import com.incomeCalculator.webService.models.Ratio;
+import com.incomeCalculator.cardservice.controllers.CurrencyUnitController;
+import com.incomeCalculator.cardservice.controllers.RatioController;
+import com.incomeCalculator.cardservice.models.Ratio;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component

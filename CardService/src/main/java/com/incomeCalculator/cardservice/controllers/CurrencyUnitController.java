@@ -1,17 +1,21 @@
 package com.incomeCalculator.cardservice.controllers;
 
-import com.incomeCalculator.webService.exceptions.CurrencyUnitNotFoundException;
-import com.incomeCalculator.webService.exceptions.PermissionException;
-import com.incomeCalculator.webService.modelAssembelrs.CurrencyUnitModelAssembler;
-import com.incomeCalculator.webService.models.CurrencyUnitEntity;
-import com.incomeCalculator.webService.models.User;
-import com.incomeCalculator.webService.repositories.CurrencyUnitRepository;
-import com.incomeCalculator.webService.security.JwtTokenService;
-import com.incomeCalculator.webService.services.CurrencyUnitService;
-import com.incomeCalculator.webService.services.UserService;
+
+import com.incomeCalculator.cardservice.exceptions.CurrencyUnitNotFoundException;
+import com.incomeCalculator.cardservice.modelAssemblers.CurrencyUnitModelAssembler;
+import com.incomeCalculator.cardservice.models.CurrencyUnitEntity;
+import com.incomeCalculator.cardservice.repositories.CurrencyUnitRepository;
+import com.incomeCalculator.cardservice.services.CurrencyUnitService;
+import com.incomeCalculator.userservice.exceptions.PermissionException;
+import com.incomeCalculator.userservice.models.User;
+import com.incomeCalculator.userservice.services.RequestHandler;
+import com.incomeCalculator.userservice.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +28,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
+@ComponentScan(basePackages = {"com.incomeCalculator.userservice.services"})
+@EntityScan(basePackages = {"com.incomeCalculator.userservice.models"})
+@EnableJpaRepositories(basePackages = {"com.incomeCalculator.userservice.repositories"})
 public class CurrencyUnitController {
 
     private static final Logger log = LoggerFactory.getLogger(CurrencyUnitController.class);
@@ -32,8 +39,9 @@ public class CurrencyUnitController {
     private final CurrencyUnitModelAssembler assembler;
     private final CurrencyUnitService service;
 
+
     @Autowired
-    private JwtTokenService tokenService;
+    private RequestHandler handler;
     @Autowired
     private UserService userService;
 
@@ -68,9 +76,8 @@ public class CurrencyUnitController {
     public EntityModel<CurrencyUnitEntity> createCurrencyUnit(@RequestBody CurrencyUnitEntity currencyUnit,
                                                               HttpServletRequest request) {
 
-        String token = tokenService.getTokenFromRequest(request);
-        User user = tokenService.getUserFromToken(token);
-        if(userService.isAdmin(user)) {
+        User authUser = handler.getUserFromRequest(request);
+        if(userService.isAdmin(authUser)) {
             if (currencyUnit.getCurrencyName().length() > 3) {
                 throw new IllegalArgumentException("Currency name must be 3 chars length");
             }
@@ -91,9 +98,8 @@ public class CurrencyUnitController {
     public String deleteCurrencyUnit(@PathVariable Long id,
                                      HttpServletRequest request) {
 
-        String token = tokenService.getTokenFromRequest(request);
-        User user = tokenService.getUserFromToken(token);
-        if(userService.isAdmin(user)) {
+        User authUser = handler.getUserFromRequest(request);
+        if(userService.isAdmin(authUser)) {
             CurrencyUnitEntity currencyUnit = repository.findById(id)
                     .orElseThrow(() -> new CurrencyUnitNotFoundException(id));
             repository.delete(currencyUnit);
@@ -109,9 +115,8 @@ public class CurrencyUnitController {
                                                               @RequestBody CurrencyUnitEntity currencyUnit,
                                                               HttpServletRequest request) {
 
-        String token = tokenService.getTokenFromRequest(request);
-        User user = tokenService.getUserFromToken(token);
-        if(userService.isAdmin(user)) {
+        User authUser = handler.getUserFromRequest(request);
+        if(userService.isAdmin(authUser)) {
             currencyUnit.setId(id);
             currencyUnit = repository.save(currencyUnit);
 

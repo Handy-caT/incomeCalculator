@@ -1,6 +1,6 @@
 package com.incomeCalculator.cardservice.exceptions;
 
-import com.incomeCalculator.webService.models.User;
+import com.incomeCalculator.userservice.models.User;
 
 public class TokenNotFoundException extends RuntimeException{
 

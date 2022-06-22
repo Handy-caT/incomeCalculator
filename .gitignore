@@ -7,12 +7,12 @@
 /.idea
 /out
 /lib
-/db
+/Core/db
 /target
 
 *.DS_Store
 .PVS-Studio/settings.json
-/testFiles/db/
+/Core/testFiles/db/
 /src/main/resources/application.properties
 *.db
 .env

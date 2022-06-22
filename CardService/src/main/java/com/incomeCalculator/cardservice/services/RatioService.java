@@ -1,13 +1,13 @@
 package com.incomeCalculator.cardservice.services;
 
+import com.incomeCalculator.cardservice.exceptions.CurrencyUnitNotFoundException;
+import com.incomeCalculator.cardservice.models.CurrencyUnitEntity;
+import com.incomeCalculator.cardservice.models.Ratio;
+import com.incomeCalculator.cardservice.repositories.CurrencyUnitRepository;
+import com.incomeCalculator.cardservice.repositories.RatioRepository;
+import com.incomeCalculator.cardservice.requests.RatioRequest;
+import com.incomeCalculator.cardservice.util.RatioBuilder;
 import com.incomeCalculator.core.wallet.money.util.DateFormatter;
-import com.incomeCalculator.webService.exceptions.CurrencyUnitNotFoundException;
-import com.incomeCalculator.webService.models.CurrencyUnitEntity;
-import com.incomeCalculator.webService.models.Ratio;
-import com.incomeCalculator.webService.repositories.CurrencyUnitRepository;
-import com.incomeCalculator.webService.repositories.RatioRepository;
-import com.incomeCalculator.webService.requests.RatioRequest;
-import com.incomeCalculator.webService.util.RatioBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

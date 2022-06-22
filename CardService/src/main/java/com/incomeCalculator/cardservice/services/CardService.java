@@ -1,23 +1,16 @@
 package com.incomeCalculator.cardservice.services;
 
+import com.incomeCalculator.cardservice.exceptions.CurrencyUnitNotFoundException;
 import com.incomeCalculator.cardservice.models.Card;
 import com.incomeCalculator.cardservice.models.CurrencyUnitEntity;
 import com.incomeCalculator.cardservice.models.TransactionEntity;
 import com.incomeCalculator.cardservice.repositories.CardRepository;
 import com.incomeCalculator.cardservice.repositories.CurrencyUnitRepository;
 import com.incomeCalculator.cardservice.repositories.TransactionRepository;
+import com.incomeCalculator.cardservice.requests.CardRequest;
+import com.incomeCalculator.cardservice.requests.TransactionRequest;
+import com.incomeCalculator.cardservice.util.CurrencyUpdaterSQL;
 import com.incomeCalculator.userservice.models.User;
-import com.incomeCalculator.webService.exceptions.CurrencyUnitNotFoundException;
-import com.incomeCalculator.webService.models.Card;
-import com.incomeCalculator.webService.models.CurrencyUnitEntity;
-import com.incomeCalculator.webService.models.TransactionEntity;
-import com.incomeCalculator.webService.models.User;
-import com.incomeCalculator.webService.repositories.CardRepository;
-import com.incomeCalculator.webService.repositories.CurrencyUnitRepository;
-import com.incomeCalculator.webService.repositories.TransactionRepository;
-import com.incomeCalculator.webService.requests.CardRequest;
-import com.incomeCalculator.webService.requests.TransactionRequest;
-import com.incomeCalculator.webService.util.CurrencyUpdaterSQL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

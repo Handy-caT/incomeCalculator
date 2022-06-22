@@ -1,6 +1,6 @@
 package com.incomeCalculator.cardservice.exceptions;
 
-import com.incomeCalculator.webService.models.Card;
+import com.incomeCalculator.cardservice.models.Card;
 
 public class TransactionNotFoundException extends RuntimeException{
 

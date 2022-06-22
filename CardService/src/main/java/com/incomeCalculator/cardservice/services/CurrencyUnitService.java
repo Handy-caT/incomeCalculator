@@ -1,8 +1,8 @@
 package com.incomeCalculator.cardservice.services;
 
-import com.incomeCalculator.webService.exceptions.CurrencyUnitNotFoundException;
-import com.incomeCalculator.webService.models.CurrencyUnitEntity;
-import com.incomeCalculator.webService.repositories.CurrencyUnitRepository;
+import com.incomeCalculator.cardservice.exceptions.CurrencyUnitNotFoundException;
+import com.incomeCalculator.cardservice.models.CurrencyUnitEntity;
+import com.incomeCalculator.cardservice.repositories.CurrencyUnitRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;

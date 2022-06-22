@@ -1,11 +1,10 @@
 package com.incomeCalculator.cardservice.util;
 
+import com.incomeCalculator.cardservice.models.CurrencyUnitEntity;
 import com.incomeCalculator.cardservice.repositories.CurrencyUnitRepository;
 import com.incomeCalculator.core.wallet.money.currencyUnit.interfaces.CurrencyUnitStorageBuilder;
 import com.incomeCalculator.core.wallet.money.util.WebApiJSON;
 import com.incomeCalculator.core.wallet.money.util.WebJSONConverter;
-import com.incomeCalculator.webService.models.CurrencyUnitEntity;
-import com.incomeCalculator.webService.repositories.CurrencyUnitRepository;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
