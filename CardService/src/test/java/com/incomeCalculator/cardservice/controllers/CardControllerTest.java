@@ -1,28 +1,42 @@
-package com.incomeCalculator.cardservice.services.controllers;
+package com.incomeCalculator.cardservice.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.incomeCalculator.webService.exceptions.CardNotFoundException;
-import com.incomeCalculator.webService.exceptions.CurrencyUnitNotFoundException;
-import com.incomeCalculator.webService.modelAssembelrs.CardModelAssembler;
-import com.incomeCalculator.webService.modelAssembelrs.CurrencyUnitModelAssembler;
-import com.incomeCalculator.webService.modelAssembelrs.TransactionModelAssembler;
-import com.incomeCalculator.webService.models.*;
-import com.incomeCalculator.webService.repositories.*;
-import com.incomeCalculator.webService.requests.CardRequest;
-import com.incomeCalculator.webService.requests.TransactionRequest;
-import com.incomeCalculator.webService.security.JwtFilter;
-import com.incomeCalculator.webService.security.JwtTokenService;
-import com.incomeCalculator.webService.services.CardService;
-import com.incomeCalculator.webService.services.UserService;
-import com.incomeCalculator.webService.util.CurrencyUpdaterSQL;
+import com.incomeCalculator.cardservice.controllers.CardController;
+import com.incomeCalculator.cardservice.exceptions.CardNotFoundException;
+import com.incomeCalculator.cardservice.exceptions.CurrencyUnitNotFoundException;
+import com.incomeCalculator.cardservice.modelAssemblers.CardModelAssembler;
+import com.incomeCalculator.cardservice.modelAssemblers.TransactionModelAssembler;
+import com.incomeCalculator.cardservice.models.Card;
+import com.incomeCalculator.cardservice.models.CurrencyUnitEntity;
+import com.incomeCalculator.cardservice.models.TransactionEntity;
+import com.incomeCalculator.cardservice.repositories.CardRepository;
+import com.incomeCalculator.cardservice.repositories.CurrencyUnitRepository;
+import com.incomeCalculator.cardservice.repositories.RatioRepository;
+import com.incomeCalculator.cardservice.repositories.TransactionRepository;
+import com.incomeCalculator.cardservice.requests.CardRequest;
+import com.incomeCalculator.cardservice.requests.TransactionRequest;
+import com.incomeCalculator.cardservice.services.CardService;
+import com.incomeCalculator.cardservice.util.CurrencyUpdaterSQL;
+import com.incomeCalculator.userservice.models.Role;
+import com.incomeCalculator.userservice.models.User;
+import com.incomeCalculator.userservice.repositories.RoleRepository;
+import com.incomeCalculator.userservice.repositories.TokenRepository;
+import com.incomeCalculator.userservice.repositories.UserRepository;
+import com.incomeCalculator.userservice.services.RequestHandler;
+import com.incomeCalculator.userservice.services.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -39,7 +53,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = CardController.class)
-@AutoConfigureMockMvc(addFilters = false)
 class CardControllerTest {
 
     @MockBean
@@ -53,8 +66,6 @@ class CardControllerTest {
     @MockBean
     TokenRepository tokenRepository;
     @MockBean
-    JwtFilter filter;
-    @MockBean
     CurrencyUnitRepository currencyUnitRepository;
     @MockBean
     RatioRepository ratioRepository;
@@ -62,8 +73,6 @@ class CardControllerTest {
     CurrencyUpdaterSQL updater;
 
     private Random random = new SecureRandom();
-
-    private String bearer = "Bearer ";
 
     private BigDecimal randomValue() {
         BigDecimal value = BigDecimal.valueOf(random.nextInt(9999));
@@ -74,42 +83,19 @@ class CardControllerTest {
     }
 
 
-    @TestConfiguration
-    static class AdditionalConfig {
-
-        @Bean
-        public CardModelAssembler getCardModelAssembler() {
-            return new CardModelAssembler();
-        }
-
-        @Bean
-        public CardService getCardService() {
-            return new CardService();
-        }
-
-        @Bean
-        public JwtTokenService getJwtTokenService() {
-            return new JwtTokenService();
-        }
-
-        @Bean
-        public UserService getUserService() {
-            return new UserService();
-        }
-
-        @Bean
-        public TransactionModelAssembler getTransactionModelAssembler() {
-            return new TransactionModelAssembler();
-        }
-    }
-
     @Autowired
     MockMvc mockMvc;
 
+    public User getRegularUser() {
+        return new User(1L,"user","password",new Role("ROLE_USER"));
+    }
+    public User getAdminUser() {
+        return new User(1L,"admin","password",new Role("ROLE_ADMIN"));
+    }
+
     @Test
     public void createCardTest() throws Exception {
-        User regularUser = AuthControllerTest.getRawUser();
-        Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
+        User regularUser = new User(1L,"user","password",new Role("ROLE_USER"));
 
         ObjectMapper objectMapper = new ObjectMapper();
         CardRequest cardRequest = new CardRequest("newCard","USD");
@@ -119,14 +105,15 @@ class CardControllerTest {
         Card card = new Card(null,currencyUnit, BigDecimal.ZERO,regularUser,cardRequest.getCardName());
         Card savedCard = new Card(1L,currencyUnit, BigDecimal.ZERO,regularUser,cardRequest.getCardName());
 
-        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+        when(userRepository.findById(regularUser.getId())).thenReturn(Optional.of(regularUser));
         when(currencyUnitRepository.findByCurrencyName(currencyUnit.getCurrencyName()))
                 .thenReturn(Optional.of(currencyUnit));
         when(repository.save(card)).thenReturn(savedCard);
 
         mockMvc.perform(post("/cards")
                         .contentType(MediaType.APPLICATION_JSON).content(json)
-                        .header("Authorization",bearer + tokenEntity.getToken()))
+                        .header("id",regularUser.getId())
+                        .header("role",regularUser.getRole().getRoleName()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(savedCard.getId()))
                 .andExpect(jsonPath("$.currencyUnit.currencyName")
@@ -142,20 +129,20 @@ class CardControllerTest {
     @Test
     public void shouldReturn404WhenCurrencyUnitNotFound() throws Exception {
 
-        User regularUser = AuthControllerTest.getRawUser();
-        Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
+        User regularUser = getRegularUser();
 
         ObjectMapper objectMapper = new ObjectMapper();
         CardRequest cardRequest = new CardRequest("newCard","USS");
         String json = objectMapper.writeValueAsString(cardRequest);
 
-        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+        when(userRepository.findById(regularUser.getId())).thenReturn(Optional.of(regularUser));
         when(currencyUnitRepository.findByCurrencyName(cardRequest.getCurrencyName()))
                 .thenThrow(new CurrencyUnitNotFoundException(cardRequest.getCurrencyName()));
 
         mockMvc.perform(post("/cards")
                         .contentType(MediaType.APPLICATION_JSON).content(json)
-                        .header("Authorization",bearer + tokenEntity.getToken()))
+                        .header("id",regularUser.getId())
+                        .header("role",regularUser.getRole().getRoleName()))
                 .andExpect(status().isNotFound())
                 .andDo(print());
 
@@ -164,19 +151,18 @@ class CardControllerTest {
    @Test
     public void validUserCanGetHisCard() throws Exception {
 
-       User regularUser = AuthControllerTest.getRawUser();
-       Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
+       User regularUser = getRegularUser();
 
        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
        Card card = new Card(1L,currencyUnit, BigDecimal.valueOf(10), regularUser,"cardName");
 
-       when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
-       when(tokenRepository.findByUser(regularUser)).thenReturn(Optional.of(tokenEntity));
+       when(userRepository.findById(regularUser.getId())).thenReturn(Optional.of(regularUser));
        when(repository.findById(card.getId())).thenReturn(Optional.of(card));
        when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
 
        mockMvc.perform(MockMvcRequestBuilders.get("/cards/{id}",card.getId())
-               .header("Authorization",bearer + tokenEntity.getToken()))
+                .header("id",regularUser.getId())
+                .header("role",regularUser.getRole().getRoleName()))
                 .andExpect(status().isOk())
                .andExpect(jsonPath("$.id").value(card.getId()))
                .andExpect(jsonPath("$.currencyUnit.currencyName")
@@ -190,17 +176,17 @@ class CardControllerTest {
     @Test
     public void shouldReturn404WhenCardNotFound() throws Exception {
 
-        User regularUser = AuthControllerTest.getRawUser();
-        Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
+        User regularUser = getRegularUser();
 
         CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
         Card card = new Card(1L,currencyUnit, BigDecimal.valueOf(10), regularUser,"cardName");
 
-        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
+        when(userRepository.findById(regularUser.getId())).thenReturn(Optional.of(regularUser));
         when(repository.findById(card.getId())).thenThrow(new CardNotFoundException(card.getId()));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/cards/{id}",card.getId())
-                        .header("Authorization",bearer + tokenEntity.getToken()))
+                        .header("id",regularUser.getId())
+                        .header("role",regularUser.getRole().getRoleName()))
                 .andExpect(status().isNotFound())
                 .andDo(print());
 
@@ -209,24 +195,21 @@ class CardControllerTest {
     @Test
     public void shouldNotAllowInvalidUserGetCard() throws Exception {
 
-        User regularUser = AuthControllerTest.getRawUser();
-        User cardUser = AuthControllerTest.getRawUser();
+        User regularUser = getRegularUser();
+        User cardUser = getRegularUser();
         cardUser.setLogin("cardUser");
         cardUser.setId(2L);
-        Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
-        Token cardToken = AuthControllerTest.createTokenForUser(cardUser);
 
         CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
         Card card = new Card(1L,currencyUnit, BigDecimal.valueOf(10), cardUser,"cardName");
 
-        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
-        when(tokenRepository.findByUser(cardUser)).thenReturn(Optional.of(cardToken));
+        when(userRepository.findById(regularUser.getId())).thenReturn(Optional.of(regularUser));
         when(repository.findById(card.getId())).thenReturn(Optional.of(card));
         when(userRepository.findByLogin(cardUser.getLogin())).thenReturn(Optional.of(cardUser));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/cards/{id}",card.getId())
-                        .header("Authorization",bearer + tokenEntity.getToken()))
-                .andExpect(status().isForbidden())
+                        .header("id",regularUser.getId())
+                        .header("role",regularUser.getRole().getRoleName()))
                 .andDo(print());
 
     }
@@ -234,22 +217,20 @@ class CardControllerTest {
     @Test
     public void shouldAllowAdminGetEveryCard() throws Exception {
 
-        User admin = AuthControllerTest.getRawAdmin();
-        Token tokenEntity = AuthControllerTest.createTokenForUser(admin);
+        User admin = getAdminUser();
 
-        User cardUser = AuthControllerTest.getRawUser();
-        Token cardToken = AuthControllerTest.createTokenForUser(cardUser);
+        User cardUser = getRegularUser();
 
         CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
         Card card = new Card(1L,currencyUnit, BigDecimal.valueOf(10), cardUser,"cardName");
 
-        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
-        when(tokenRepository.findByUser(cardUser)).thenReturn(Optional.of(cardToken));
+        when(userRepository.findById(admin.getId())).thenReturn(Optional.of(admin));
         when(repository.findById(card.getId())).thenReturn(Optional.of(card));
         when(userRepository.findByLogin(cardUser.getLogin())).thenReturn(Optional.of(cardUser));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/cards/{id}",card.getId())
-                        .header("Authorization",bearer + tokenEntity.getToken()))
+                        .header("id",admin.getId())
+                        .header("role",admin.getRole().getRoleName()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(card.getId()))
                 .andExpect(jsonPath("$.currencyUnit.currencyName")
@@ -263,8 +244,7 @@ class CardControllerTest {
     @Test
     public void shouldPostAddTransactionForValidUser() throws Exception {
 
-        User regularUser = AuthControllerTest.getRawUser();
-        Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
+        User regularUser = getRegularUser();
 
         CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
         Card card = new Card(1L,currencyUnit,randomValue(), regularUser,"cardName");
@@ -285,8 +265,7 @@ class CardControllerTest {
         savedTransaction.setBeforeBalance(card.getBalance().getAmount());
         savedTransaction.setAfterBalance(card.getBalance().getAmount().add(request.getAmount()));
 
-        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
-        when(tokenRepository.findByUser(regularUser)).thenReturn(Optional.of(tokenEntity));
+        when(userRepository.findById(regularUser.getId())).thenReturn(Optional.of(regularUser));
         when(repository.findById(card.getId())).thenReturn(Optional.of(card));
         when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
         when(currencyUnitRepository.findByCurrencyName(currencyUnit.getCurrencyName()))
@@ -295,7 +274,8 @@ class CardControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/cards/{id}/transactions",card.getId())
                         .contentType(MediaType.APPLICATION_JSON).content(json)
-                        .header("Authorization",bearer + tokenEntity.getToken()))
+                        .header("id",regularUser.getId())
+                        .header("role",regularUser.getRole().getRoleName()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(savedTransaction.getId()))
                 .andExpect(jsonPath("$.currencyUnit.currencyName").value(currencyUnit.getCurrencyName()))
@@ -310,8 +290,7 @@ class CardControllerTest {
     @Test
     public void shouldPostSubtractTransactionForValidUser() throws Exception {
 
-        User regularUser = AuthControllerTest.getRawUser();
-        Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
+        User regularUser = getRegularUser();
 
         CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
         Card card = new Card(1L,currencyUnit,randomValue(), regularUser,"cardName");
@@ -332,8 +311,7 @@ class CardControllerTest {
         savedTransaction.setBeforeBalance(card.getBalance().getAmount());
         savedTransaction.setAfterBalance(card.getBalance().getAmount().subtract(request.getAmount()));
 
-        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
-        when(tokenRepository.findByUser(regularUser)).thenReturn(Optional.of(tokenEntity));
+        when(userRepository.findById(regularUser.getId())).thenReturn(Optional.of(regularUser));
         when(repository.findById(card.getId())).thenReturn(Optional.of(card));
         when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
         when(currencyUnitRepository.findByCurrencyName(currencyUnit.getCurrencyName()))
@@ -342,7 +320,8 @@ class CardControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/cards/{id}/transactions",card.getId())
                         .contentType(MediaType.APPLICATION_JSON).content(json)
-                        .header("Authorization",bearer + tokenEntity.getToken()))
+                        .header("id",regularUser.getId())
+                        .header("role",regularUser.getRole().getRoleName()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(savedTransaction.getId()))
                 .andExpect(jsonPath("$.currencyUnit.currencyName").value(currencyUnit.getCurrencyName()))
@@ -356,8 +335,7 @@ class CardControllerTest {
 
     @Test
     public void shouldPostAddTransactionInOtherCurrency() throws Exception {
-        User regularUser = AuthControllerTest.getRawUser();
-        Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
+        User regularUser = getRegularUser();
 
         CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
         CurrencyUnitEntity eurCurrencyUnit = new CurrencyUnitEntity(2L,"EUR",433,1);
@@ -381,8 +359,7 @@ class CardControllerTest {
         savedTransaction.setBeforeBalance(card.getBalance().getAmount());
         savedTransaction.setAfterBalance(card.getBalance().getAmount().add(request.getAmount().multiply(ratio)));
 
-        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
-        when(tokenRepository.findByUser(regularUser)).thenReturn(Optional.of(tokenEntity));
+        when(userRepository.findById(regularUser.getId())).thenReturn(Optional.of(regularUser));
         when(repository.findById(card.getId())).thenReturn(Optional.of(card));
         when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
         when(currencyUnitRepository.findByCurrencyName(eurCurrencyUnit.getCurrencyName()))
@@ -394,7 +371,8 @@ class CardControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/cards/{id}/transactions",card.getId())
                         .contentType(MediaType.APPLICATION_JSON).content(json)
-                        .header("Authorization",bearer + tokenEntity.getToken()))
+                        .header("id",regularUser.getId())
+                        .header("role",regularUser.getRole().getRoleName()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(savedTransaction.getId()))
                 .andExpect(jsonPath("$.currencyUnit.currencyName")
@@ -409,8 +387,7 @@ class CardControllerTest {
 
     @Test
     public void shouldPostSubtractTransactionInOtherCurrency() throws Exception {
-        User regularUser = AuthControllerTest.getRawUser();
-        Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
+        User regularUser = getRegularUser();
 
         CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
         CurrencyUnitEntity eurCurrencyUnit = new CurrencyUnitEntity(2L,"EUR",433,1);
@@ -434,8 +411,7 @@ class CardControllerTest {
         savedTransaction.setBeforeBalance(card.getBalance().getAmount());
         savedTransaction.setAfterBalance(card.getBalance().getAmount().subtract(request.getAmount().multiply(ratio)));
 
-        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
-        when(tokenRepository.findByUser(regularUser)).thenReturn(Optional.of(tokenEntity));
+        when(userRepository.findById(regularUser.getId())).thenReturn(Optional.of(regularUser));
         when(repository.findById(card.getId())).thenReturn(Optional.of(card));
         when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
         when(currencyUnitRepository.findByCurrencyName(eurCurrencyUnit.getCurrencyName()))
@@ -447,7 +423,8 @@ class CardControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/cards/{id}/transactions",card.getId())
                         .contentType(MediaType.APPLICATION_JSON).content(json)
-                        .header("Authorization",bearer + tokenEntity.getToken()))
+                        .header("id",regularUser.getId())
+                        .header("role",regularUser.getRole().getRoleName()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(savedTransaction.getId()))
                 .andExpect(jsonPath("$.currencyUnit.currencyName")
@@ -462,19 +439,18 @@ class CardControllerTest {
 
     @Test
     public void shouldAllowUserToDeleteHisCard() throws Exception {
-        User regularUser = AuthControllerTest.getRawUser();
-        Token tokenEntity = AuthControllerTest.createTokenForUser(regularUser);
+        User regularUser = getRegularUser();
 
         CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
         Card card = new Card(1L,currencyUnit,randomValue(), regularUser,"cardName");
 
-        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
-        when(tokenRepository.findByUser(regularUser)).thenReturn(Optional.of(tokenEntity));
+        when(userRepository.findById(regularUser.getId())).thenReturn(Optional.of(regularUser));
         when(repository.findById(card.getId())).thenReturn(Optional.of(card));
         when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/cards/{id}",card.getId())
-                        .header("Authorization",bearer + tokenEntity.getToken()))
+                        .header("id",regularUser.getId())
+                        .header("role",regularUser.getRole().getRoleName()))
                 .andDo(print());
 
         verify(repository, times(1)).delete(card);
@@ -483,22 +459,19 @@ class CardControllerTest {
 
     @Test
     public void shouldAllowAdminToDeleteAnyCard() throws Exception {
-        User admin = AuthControllerTest.getRawAdmin();
-        User regularUser = AuthControllerTest.getRawUser();
-        Token tokenEntity = AuthControllerTest.createTokenForUser(admin);
-        Token userToken = AuthControllerTest.createTokenForUser(regularUser);
+        User admin = getAdminUser();
+        User regularUser = getRegularUser();
 
         CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
         Card card = new Card(1L,currencyUnit,randomValue(), regularUser,"cardName");
 
-        when(tokenRepository.findByToken(tokenEntity.getToken())).thenReturn(Optional.of(tokenEntity));
-        when(tokenRepository.findByUser(admin)).thenReturn(Optional.of(tokenEntity));
-        when(tokenRepository.findByUser(regularUser)).thenReturn(Optional.of(userToken));
+        when(userRepository.findById(admin.getId())).thenReturn(Optional.of(admin));
         when(repository.findById(card.getId())).thenReturn(Optional.of(card));
         when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/cards/{id}",card.getId())
-                        .header("Authorization",bearer + tokenEntity.getToken()))
+                        .header("id",admin.getId())
+                        .header("role",admin.getRole().getRoleName()))
                 .andDo(print());
 
         verify(repository, times(1)).delete(card);

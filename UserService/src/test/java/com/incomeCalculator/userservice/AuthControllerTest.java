@@ -1,21 +1,18 @@
-package com.incomeCalculator.cardservice.services.controllers;
+package com.incomeCalculator.userservice;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.incomeCalculator.webService.modelAssembelrs.RatioModelAssembler;
-import com.incomeCalculator.webService.models.Role;
-import com.incomeCalculator.webService.models.Token;
-import com.incomeCalculator.webService.models.User;
-import com.incomeCalculator.webService.repositories.RoleRepository;
-import com.incomeCalculator.webService.repositories.TokenRepository;
-import com.incomeCalculator.webService.repositories.UserRepository;
-import com.incomeCalculator.webService.requests.AuthResponse;
-import com.incomeCalculator.webService.requests.UserAuthRequest;
-import com.incomeCalculator.webService.security.JwtTokenService;
-import com.incomeCalculator.webService.services.CustomUserDetails;
-import com.incomeCalculator.webService.services.CustomUserDetailsService;
-import com.incomeCalculator.webService.services.UserService;
+import com.incomeCalculator.userservice.controllers.AuthController;
+import com.incomeCalculator.userservice.models.Role;
+import com.incomeCalculator.userservice.models.Token;
+import com.incomeCalculator.userservice.models.User;
+import com.incomeCalculator.userservice.repositories.RoleRepository;
+import com.incomeCalculator.userservice.repositories.TokenRepository;
+import com.incomeCalculator.userservice.repositories.UserRepository;
+import com.incomeCalculator.userservice.requests.UserAuthRequest;
+import com.incomeCalculator.userservice.services.JwtTokenService;
+import com.incomeCalculator.userservice.services.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.Assert;
@@ -53,8 +50,6 @@ class AuthControllerTest {
 
     @MockBean
     UserRepository userRepository;
-    @MockBean
-    CustomUserDetailsService userDetailsService;
     @MockBean
     TokenRepository tokenRepository;
     @MockBean

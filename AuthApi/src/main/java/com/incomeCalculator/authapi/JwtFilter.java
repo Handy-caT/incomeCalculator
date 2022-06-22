@@ -30,10 +30,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-@RefreshScope
-@ComponentScan(basePackages = {"com.incomeCalculator.userservice.services"})
-@EntityScan(basePackages = {"com.incomeCalculator.userservice.models"})
-@EnableJpaRepositories(basePackages = {"com.incomeCalculator.userservice.repositories"})
 public class JwtFilter implements GatewayFilter {
 
     private static final Logger log = LoggerFactory.getLogger(JwtFilter.class);

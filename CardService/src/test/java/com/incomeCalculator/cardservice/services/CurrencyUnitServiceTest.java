@@ -1,7 +1,7 @@
 package com.incomeCalculator.cardservice.services;
 
-import com.incomeCalculator.webService.models.CurrencyUnitEntity;
-import com.incomeCalculator.webService.repositories.CurrencyUnitRepository;
+import com.incomeCalculator.cardservice.models.CurrencyUnitEntity;
+import com.incomeCalculator.cardservice.repositories.CurrencyUnitRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
