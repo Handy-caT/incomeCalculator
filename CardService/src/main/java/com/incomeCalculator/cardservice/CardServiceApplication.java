@@ -11,9 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.incomeCalculator.userservice.exceptions"})
-@ComponentScan(basePackages = {"com.incomeCalculator.userservice.services", "com.incomeCalculator.cardservice"})
-@EntityScan(basePackages = {"com.incomeCalculator.userservice.models","com.incomeCalculator.cardservice.models"})
-@EnableJpaRepositories(basePackages = {"com.incomeCalculator.userservice.repositories","com.incomeCalculator.cardservice.repositories"})
+@EntityScan(basePackages = {"com.incomeCalculator.userservice.models", "com.incomeCalculator.cardservice.models"})
+@EnableJpaRepositories(basePackages = {"com.incomeCalculator.userservice.repositories"})
 public class CardServiceApplication {
 
     @Bean

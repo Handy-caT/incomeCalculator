@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @RestController
+@ComponentScan(basePackages = {"com.incomeCalculator.userservice.services"})
 public class CardController {
 
     private static final Logger log = LoggerFactory.getLogger(CardController.class);

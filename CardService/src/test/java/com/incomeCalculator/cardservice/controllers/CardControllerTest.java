@@ -46,6 +46,8 @@ import java.security.SecureRandom;
 import java.util.Optional;
 import java.util.Random;
 
+import static com.incomeCalculator.cardservice.controllers.ModelMocks.getAdminUser;
+import static com.incomeCalculator.cardservice.controllers.ModelMocks.getRegularUser;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -53,6 +55,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = CardController.class)
+@ComponentScan(basePackages = {"com.incomeCalculator.cardservice"})
 class CardControllerTest {
 
     @MockBean
@@ -86,12 +89,7 @@ class CardControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-    public User getRegularUser() {
-        return new User(1L,"user","password",new Role("ROLE_USER"));
-    }
-    public User getAdminUser() {
-        return new User(1L,"admin","password",new Role("ROLE_ADMIN"));
-    }
+
 
     @Test
     public void createCardTest() throws Exception {

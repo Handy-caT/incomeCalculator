@@ -28,6 +28,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
+@ComponentScan(basePackages = {"com.incomeCalculator.userservice.services"})
 public class CurrencyUnitController {
 
     private static final Logger log = LoggerFactory.getLogger(CurrencyUnitController.class);
