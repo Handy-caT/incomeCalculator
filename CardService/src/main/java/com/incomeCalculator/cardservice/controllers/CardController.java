@@ -216,7 +216,7 @@ public class CardController {
 
         if(userService.validateUser(cardUser.getId(),authUser)) {
             card.setCardName(cardName);
-            card = repository.save(card);
+            repository.save(card);
             log.info("Card patched: " + card);
             return assembler.toModel(card);
         } else {

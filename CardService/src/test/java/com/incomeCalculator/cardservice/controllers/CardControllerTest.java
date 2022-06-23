@@ -476,4 +476,72 @@ class CardControllerTest {
 
     }
 
+    @Test
+    public void shouldNotAllowUserToDeleteOtherUsersCard() throws Exception {
+        User regularUser = getRegularUser();
+        User otherUser = getRegularUser();
+        otherUser.setId(2L);
+        otherUser.setLogin("otherUser");
+
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
+        Card card = new Card(1L,currencyUnit,randomValue(), regularUser,"cardName");
+
+        when(userRepository.findById(otherUser.getId())).thenReturn(Optional.of(otherUser));
+        when(repository.findById(card.getId())).thenReturn(Optional.of(card));
+        when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/cards/{id}",card.getId())
+                        .header("id",otherUser.getId())
+                        .header("role",otherUser.getRole().getRoleName()))
+                .andExpect(status().isForbidden())
+                .andDo(print());
+
+    }
+
+    @Test
+    public void shouldNotAllowUserToDeleteCardIfNotExists() throws Exception {
+        User regularUser = getRegularUser();
+
+        when(userRepository.findById(regularUser.getId())).thenReturn(Optional.of(regularUser));
+        when(repository.findById(1L)).thenThrow(new CardNotFoundException(1L));
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/cards/{id}",1L)
+                        .header("id",regularUser.getId())
+                        .header("role",regularUser.getRole().getRoleName()))
+                .andExpect(status().isNotFound())
+                .andDo(print());
+
+    }
+
+    @Test
+    public void shouldAllowValidUserToChangeCardName() throws Exception {
+        User regularUser = getRegularUser();
+
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
+        Card card = new Card(1L,currencyUnit,randomValue(), regularUser,"cardName");
+
+        String newCardName = "newCardName";
+
+        Card updatedCard = new Card(1L,currencyUnit,card.getBalance().getAmount(), regularUser,newCardName);
+
+        when(userRepository.findById(regularUser.getId())).thenReturn(Optional.of(regularUser));
+        when(repository.findById(card.getId())).thenReturn(Optional.of(card));
+        when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/cards/{id}",card.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newCardName)
+                .header("id",regularUser.getId())
+                .header("role",regularUser.getRole().getRoleName()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.cardName").value(newCardName))
+                .andExpect(jsonPath("$.balance.amount").value(card.getBalance().getAmount()))
+                .andExpect(jsonPath("$.currencyUnit.currencyName")
+                        .value(card.getCurrencyUnit().getCurrencyName()))
+                .andExpect(jsonPath("$.id").value(card.getId()))
+                .andDo(print());
+
+        verify(repository, times(1)).save(updatedCard);
+    }
+
 }
