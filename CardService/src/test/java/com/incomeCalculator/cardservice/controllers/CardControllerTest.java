@@ -436,6 +436,75 @@ class CardControllerTest {
     }
 
     @Test
+    public void shouldNotPostTransactionForInvalidUser() throws Exception {
+        User regularUser = getRegularUser();
+        User invalidUser = getRegularUser();
+        invalidUser.setId(2L);
+        invalidUser.setLogin("invalidUser");
+
+        Card card = new Card(1L,new CurrencyUnitEntity(1L,"USD",432,1),randomValue(), regularUser,"cardName");
+        TransactionRequest request = new TransactionRequest("USD",randomValue());
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(request);
+
+        when(userRepository.findById(invalidUser.getId())).thenReturn(Optional.of(invalidUser));
+        when(repository.findById(card.getId())).thenReturn(Optional.of(card));
+        when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/cards/{id}/transactions",card.getId())
+                        .contentType(MediaType.APPLICATION_JSON).content(json)
+                        .header("id",invalidUser.getId())
+                        .header("role",invalidUser.getRole().getRoleName()))
+                .andExpect(status().isForbidden())
+                .andDo(print());
+    }
+
+    @Test
+    public void shouldPostAnyTransactionFroAdmin() throws Exception {
+        User admin = getAdminUser();
+        User regularUser = getRegularUser();
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
+        Card card = new Card(1L,currencyUnit,randomValue(), regularUser,"cardName");
+        TransactionRequest request = new TransactionRequest("USD",randomValue());
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(request);
+
+        TransactionEntity transaction = new TransactionEntity(currencyUnit,request.getAmount(),true);
+        transaction.setUpdater(updater);
+        transaction.setCard(card);
+        transaction.setBeforeBalance(card.getBalance().getAmount());
+        transaction.setAfterBalance(card.getBalance().getAmount().add(request.getAmount()));
+
+        TransactionEntity savedTransaction = new TransactionEntity(1L,currencyUnit,request.getAmount(),true);
+        savedTransaction.setUpdater(updater);
+        savedTransaction.setCard(card);
+        savedTransaction.setBeforeBalance(card.getBalance().getAmount());
+        savedTransaction.setAfterBalance(card.getBalance().getAmount().add(request.getAmount()));
+
+        when(userRepository.findById(admin.getId())).thenReturn(Optional.of(admin));
+        when(repository.findById(card.getId())).thenReturn(Optional.of(card));
+        when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
+        when(currencyUnitRepository.findByCurrencyName(currencyUnit.getCurrencyName()))
+                .thenReturn(Optional.of(currencyUnit));
+        when(transactionRepository.save(transaction)).thenReturn(savedTransaction);
+
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/cards/{id}/transactions",card.getId())
+                        .contentType(MediaType.APPLICATION_JSON).content(json)
+                        .header("id",admin.getId())
+                        .header("role",admin.getRole().getRoleName()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(savedTransaction.getId()))
+                .andExpect(jsonPath("$.currencyUnit.currencyName")
+                        .value(savedTransaction.getCurrencyUnit().getCurrencyName()))
+                .andExpect(jsonPath("$.transactionAmount.amount").value(request.getAmount().doubleValue()))
+                .andExpect(jsonPath("$.beforeBalance").value(transaction.getBeforeBalance().doubleValue()))
+                .andExpect(jsonPath("$.afterBalance").value(transaction.getAfterBalance().doubleValue()))
+                .andExpect(jsonPath("$.cardName").value(card.getCardName()))
+                .andDo(print());
+    }
+
+    @Test
     public void shouldAllowUserToDeleteHisCard() throws Exception {
         User regularUser = getRegularUser();
 
@@ -535,7 +604,7 @@ class CardControllerTest {
                 .header("role",regularUser.getRole().getRoleName()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.cardName").value(newCardName))
-                .andExpect(jsonPath("$.balance.amount").value(card.getBalance().getAmount()))
+                .andExpect(jsonPath("$.balance.amount").value(card.getBalance().getAmount().doubleValue()))
                 .andExpect(jsonPath("$.currencyUnit.currencyName")
                         .value(card.getCurrencyUnit().getCurrencyName()))
                 .andExpect(jsonPath("$.id").value(card.getId()))
@@ -543,5 +612,66 @@ class CardControllerTest {
 
         verify(repository, times(1)).save(updatedCard);
     }
+
+    @Test
+    public void shouldNotAllowInvalidUserToChangeCardName() throws Exception {
+        User regularUser = getRegularUser();
+        User otherUser = getRegularUser();
+        otherUser.setId(2L);
+        otherUser.setLogin("otherUser");
+
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
+        Card card = new Card(1L,currencyUnit,randomValue(), regularUser,"cardName");
+
+        String newCardName = "newCardName";
+
+        Card updatedCard = new Card(1L,currencyUnit,card.getBalance().getAmount(), regularUser,newCardName);
+
+        when(userRepository.findById(otherUser.getId())).thenReturn(Optional.of(otherUser));
+        when(repository.findById(card.getId())).thenReturn(Optional.of(card));
+        when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/cards/{id}",card.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newCardName)
+                        .header("id",otherUser.getId())
+                        .header("role",otherUser.getRole().getRoleName()))
+                .andExpect(status().isForbidden())
+                .andDo(print());
+
+    }
+
+    @Test
+    public void shouldAllowAdminToChangeEveryCardName() throws Exception {
+        User admin = getAdminUser();
+        User regularUser = getRegularUser();
+
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L, "USD", 432, 1);
+        Card card = new Card(1L, currencyUnit, randomValue(), regularUser, "cardName");
+
+        String newCardName = "newCardName";
+
+        Card updatedCard = new Card(1L, currencyUnit, card.getBalance().getAmount(), regularUser, newCardName);
+
+        when(userRepository.findById(admin.getId())).thenReturn(Optional.of(admin));
+        when(repository.findById(card.getId())).thenReturn(Optional.of(card));
+        when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/cards/{id}", card.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newCardName)
+                        .header("id", admin.getId())
+                        .header("role", admin.getRole().getRoleName()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.cardName").value(newCardName))
+                .andExpect(jsonPath("$.balance.amount").value(card.getBalance().getAmount().doubleValue()))
+                .andExpect(jsonPath("$.currencyUnit.currencyName")
+                        .value(card.getCurrencyUnit().getCurrencyName()))
+                .andExpect(jsonPath("$.id").value(card.getId()))
+                .andDo(print());
+
+        verify(repository, times(1)).save(updatedCard);
+    }
+
 
 }
