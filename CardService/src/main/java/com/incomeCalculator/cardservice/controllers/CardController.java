@@ -72,7 +72,7 @@ public class CardController {
 
 
         } else {
-            List<Card> list = repository.findByUser_Login(user.getLogin())
+            List<Card> list = repository.findAllByUser(user)
                     .orElseThrow(() -> new CardNotFoundException(user));
             cards = list.stream()
                     .map(assembler::toModel)

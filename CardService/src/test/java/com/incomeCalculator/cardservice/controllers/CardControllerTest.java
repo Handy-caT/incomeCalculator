@@ -17,6 +17,8 @@ import com.incomeCalculator.cardservice.requests.CardRequest;
 import com.incomeCalculator.cardservice.requests.TransactionRequest;
 import com.incomeCalculator.cardservice.services.CardService;
 import com.incomeCalculator.cardservice.util.CurrencyUpdaterSQL;
+import com.incomeCalculator.core.wallet.card.transaction.AddTransaction;
+import com.incomeCalculator.core.wallet.card.transaction.Transaction;
 import com.incomeCalculator.userservice.models.Role;
 import com.incomeCalculator.userservice.models.User;
 import com.incomeCalculator.userservice.repositories.RoleRepository;
@@ -43,6 +45,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -639,6 +643,8 @@ class CardControllerTest {
                 .andExpect(status().isForbidden())
                 .andDo(print());
 
+        verify(repository, times(0)).save(updatedCard);
+
     }
 
     @Test
@@ -673,5 +679,144 @@ class CardControllerTest {
         verify(repository, times(1)).save(updatedCard);
     }
 
+
+    @Test
+    public void shouldNotAllowUserToChangeCardNameIfNotExists() throws Exception {
+        User regularUser = getRegularUser();
+
+        when(userRepository.findById(regularUser.getId())).thenReturn(Optional.of(regularUser));
+        when(repository.findById(1L)).thenThrow(new CardNotFoundException(1L));
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/cards/{id}",1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("newCardName")
+                        .header("id",regularUser.getId())
+                        .header("role",regularUser.getRole().getRoleName()))
+                .andExpect(status().isNotFound())
+                .andDo(print());
+
+    }
+
+    @Test
+    public void shouldAllowAdminGetAllCards() throws Exception {
+        User admin = getAdminUser();
+        User regularUser = getRegularUser();
+        User otherUser = getRegularUser();
+        otherUser.setId(2L);
+        otherUser.setLogin("otherUser");
+
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L, "USD", 432, 1);
+        Card card = new Card(1L, currencyUnit, randomValue(), regularUser, "cardName");
+        Card otherCard = new Card(2L, currencyUnit, randomValue(), otherUser, "otherCardName");
+        List<Card> cards = new ArrayList<>();
+        cards.add(card);
+        cards.add(otherCard);
+
+        when(userRepository.findById(admin.getId())).thenReturn(Optional.of(admin));
+        when(repository.findAll()).thenReturn(cards);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/cards")
+                        .header("id",admin.getId())
+                        .header("role",admin.getRole().getRoleName()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$..cardList[0].cardName").value(card.getCardName()))
+                .andExpect(jsonPath("$..cardList[0].balance.amount").value(card.getBalance().getAmount().doubleValue()))
+                .andExpect(jsonPath("$..cardList[0].currencyUnit.currencyName")
+                        .value(card.getCurrencyUnit().getCurrencyName()))
+                .andExpect(jsonPath("$..cardList[1].cardName").value(otherCard.getCardName()))
+                .andExpect(jsonPath("$..cardList[1].balance.amount").value(otherCard.getBalance().getAmount().doubleValue()))
+                .andExpect(jsonPath("$..cardList[1].currencyUnit.currencyName")
+                        .value(otherCard.getCurrencyUnit().getCurrencyName()))
+                .andDo(print());
+
+    }
+
+    @Test
+    public void shouldAllowValidUserToGetAllHisCards() throws Exception {
+        User regularUser = getRegularUser();
+        User otherUser = getRegularUser();
+        otherUser.setId(2L);
+        otherUser.setLogin("otherUser");
+
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L, "USD", 432, 1);
+        Card card = new Card(1L, currencyUnit, randomValue(), regularUser, "cardName");
+        Card secondCard = new Card(2L, currencyUnit, randomValue(), regularUser, "secondCardName");
+
+        List<Card> cards = new ArrayList<>();
+        cards.add(card);
+        cards.add(secondCard);
+
+        when(userRepository.findById(regularUser.getId())).thenReturn(Optional.of(regularUser));
+        when(repository.findAllByUser(regularUser)).thenReturn(Optional.of(cards));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/cards")
+                        .header("id", regularUser.getId())
+                        .header("role", regularUser.getRole().getRoleName()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$..cardList[0].cardName").value(card.getCardName()))
+                .andExpect(jsonPath("$..cardList[0].balance.amount").value(card.getBalance().getAmount().doubleValue()))
+                .andExpect(jsonPath("$..cardList[0].currencyUnit.currencyName")
+                        .value(card.getCurrencyUnit().getCurrencyName()))
+                .andExpect(jsonPath("$..cardList[1].cardName").value(secondCard.getCardName()))
+                .andExpect(jsonPath("$..cardList[1].balance.amount").value(secondCard.getBalance().getAmount().doubleValue()))
+                .andExpect(jsonPath("$..cardList[1].currencyUnit.currencyName")
+                        .value(secondCard.getCurrencyUnit().getCurrencyName()))
+                .andDo(print());
+
+    }
+
+    @Test
+    public void shouldAllowValidUserGetAllTransactionsForHisCard() throws Exception {
+        User regularUser = getRegularUser();
+
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L, "USD", 432, 1);
+        Card card = new Card(1L, currencyUnit, randomValue(), regularUser, "cardName");
+
+        TransactionEntity transaction = new TransactionEntity(currencyUnit,randomValue(),true);
+        transaction.setCard(card);
+        transaction.setBeforeBalance(card.getBalance().getAmount());
+        transaction.setAfterBalance(card.getBalance().getAmount().add(transaction.getTransactionAmount().getAmount()));
+
+        TransactionEntity secondTransaction = new TransactionEntity(currencyUnit,randomValue(),true);
+        secondTransaction.setCard(card);
+        secondTransaction.setBeforeBalance(card.getBalance().getAmount());
+        secondTransaction.setAfterBalance(card.getBalance().getAmount().add(secondTransaction.getTransactionAmount().getAmount()));
+
+
+        List<TransactionEntity> transactions = new ArrayList<>();
+        transactions.add(transaction);
+        transactions.add(secondTransaction);
+
+        when(userRepository.findById(regularUser.getId())).thenReturn(Optional.of(regularUser));
+        when(transactionRepository.findAllByCard(card)).thenReturn(Optional.of(transactions));
+        when(repository.findById(card.getId())).thenReturn(Optional.of(card));
+        when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/cards/{id}/transactions",card.getId())
+                        .header("id",regularUser.getId())
+                        .header("role",regularUser.getRole().getRoleName()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$..transactionEntityList.length()").value(2))
+                .andExpect(jsonPath("$..transactionEntityList[0].transactionAmount.amount")
+                        .value(transaction.getTransactionAmount().getAmount().doubleValue()))
+                .andExpect(jsonPath("$..transactionEntityList[0].currencyUnit.currencyName")
+                        .value(transaction.getCurrencyUnit().getCurrencyName()))
+                .andExpect(jsonPath("$..transactionEntityList[0].beforeBalance")
+                        .value(transaction.getBeforeBalance().doubleValue()))
+                .andExpect(jsonPath("$..transactionEntityList[0].afterBalance")
+                        .value(transaction.getAfterBalance().doubleValue()))
+                .andExpect(jsonPath("$..transactionEntityList[1].transactionAmount.amount")
+                        .value(secondTransaction.getTransactionAmount().getAmount().doubleValue()))
+                .andExpect(jsonPath("$..transactionEntityList[1].currencyUnit.currencyName")
+                        .value(secondTransaction.getCurrencyUnit().getCurrencyName()))
+                .andExpect(jsonPath("$..transactionEntityList[1].beforeBalance")
+                        .value(secondTransaction.getBeforeBalance().doubleValue()))
+                .andExpect(jsonPath("$..transactionEntityList[1].afterBalance")
+                        .value(secondTransaction.getAfterBalance().doubleValue()))
+                .andDo(print());
+
+    }
+
+    
 
 }
