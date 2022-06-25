@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.incomeCalculator.cardservice.controllers.CardController;
 import com.incomeCalculator.cardservice.exceptions.CardNotFoundException;
 import com.incomeCalculator.cardservice.exceptions.CurrencyUnitNotFoundException;
+import com.incomeCalculator.cardservice.exceptions.TransactionNotFoundException;
 import com.incomeCalculator.cardservice.modelAssemblers.CardModelAssembler;
 import com.incomeCalculator.cardservice.modelAssemblers.TransactionModelAssembler;
 import com.incomeCalculator.cardservice.models.Card;
@@ -782,7 +783,6 @@ class CardControllerTest {
         secondTransaction.setBeforeBalance(card.getBalance().getAmount());
         secondTransaction.setAfterBalance(card.getBalance().getAmount().add(secondTransaction.getTransactionAmount().getAmount()));
 
-
         List<TransactionEntity> transactions = new ArrayList<>();
         transactions.add(transaction);
         transactions.add(secondTransaction);
@@ -817,6 +817,189 @@ class CardControllerTest {
 
     }
 
-    
+    @Test
+    public void shouldNotAllowInvalidUserToGetTransactions() throws Exception {
+        User regularUser = getRegularUser();
+        User otherUser = getRegularUser();
+        otherUser.setId(2L);
+        otherUser.setLogin("otherUser");
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L, "USD", 432, 1);
+        Card card = new Card(1L, currencyUnit, randomValue(), regularUser, "cardName");
+
+        when(userRepository.findById(otherUser.getId())).thenReturn(Optional.of(otherUser));
+        when(repository.findById(card.getId())).thenReturn(Optional.of(card));
+        when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/cards/{id}/transactions",card.getId())
+                        .header("id",otherUser.getId())
+                        .header("role",otherUser.getRole().getRoleName()))
+                .andExpect(status().isForbidden())
+                .andDo(print());
+
+    }
+
+    @Test
+    public void shouldAllowAdminToGetAllTransactionsForEveryCard() throws Exception {
+
+        User admin = getAdminUser();
+        User regularUser = getRegularUser();
+
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L, "USD", 432, 1);
+        Card card = new Card(1L, currencyUnit, randomValue(), regularUser, "cardName");
+
+        TransactionEntity transaction = new TransactionEntity(currencyUnit,randomValue(),true);
+        transaction.setCard(card);
+        transaction.setBeforeBalance(card.getBalance().getAmount());
+        transaction.setAfterBalance(card.getBalance().getAmount().add(transaction.getTransactionAmount().getAmount()));
+
+        TransactionEntity secondTransaction = new TransactionEntity(currencyUnit,randomValue(),true);
+        secondTransaction.setCard(card);
+        secondTransaction.setBeforeBalance(card.getBalance().getAmount());
+        secondTransaction.setAfterBalance(card.getBalance().getAmount().add(secondTransaction.getTransactionAmount().getAmount()));
+
+        List<TransactionEntity> transactions = new ArrayList<>();
+        transactions.add(transaction);
+        transactions.add(secondTransaction);
+
+        when(userRepository.findById(admin.getId())).thenReturn(Optional.of(admin));
+        when(transactionRepository.findAll()).thenReturn(transactions);
+        when(repository.findById(card.getId())).thenReturn(Optional.of(card));
+        when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/transactions")
+                        .header("id",admin.getId())
+                        .header("role",admin.getRole().getRoleName()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$..transactionEntityList.length()").value(2))
+                .andExpect(jsonPath("$..transactionEntityList[0].transactionAmount.amount")
+                        .value(transaction.getTransactionAmount().getAmount().doubleValue()))
+                .andExpect(jsonPath("$..transactionEntityList[0].currencyUnit.currencyName")
+                        .value(transaction.getCurrencyUnit().getCurrencyName()))
+                .andExpect(jsonPath("$..transactionEntityList[0].beforeBalance")
+                        .value(transaction.getBeforeBalance().doubleValue()))
+                .andExpect(jsonPath("$..transactionEntityList[0].afterBalance")
+                        .value(transaction.getAfterBalance().doubleValue()))
+                .andExpect(jsonPath("$..transactionEntityList[1].transactionAmount.amount")
+                        .value(secondTransaction.getTransactionAmount().getAmount().doubleValue()))
+                .andExpect(jsonPath("$..transactionEntityList[1].currencyUnit.currencyName")
+                        .value(secondTransaction.getCurrencyUnit().getCurrencyName()))
+                .andExpect(jsonPath("$..transactionEntityList[1].beforeBalance")
+                        .value(secondTransaction.getBeforeBalance().doubleValue()))
+                .andExpect(jsonPath("$..transactionEntityList[1].afterBalance")
+                        .value(secondTransaction.getAfterBalance().doubleValue()))
+                .andDo(print());
+
+    }
+
+    @Test
+    public void shouldAllowValidUserGetTransactionToHisCard() throws Exception {
+        User regularUser = getRegularUser();
+
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L, "USD", 432, 1);
+        Card card = new Card(1L, currencyUnit, randomValue(), regularUser, "cardName");
+
+        TransactionEntity transaction = new TransactionEntity(1L,currencyUnit,randomValue(),true);
+        transaction.setCard(card);
+        transaction.setBeforeBalance(card.getBalance().getAmount());
+        transaction.setAfterBalance(card.getBalance().getAmount().add(transaction.getTransactionAmount().getAmount()));
+
+        when(userRepository.findById(regularUser.getId())).thenReturn(Optional.of(regularUser));
+        when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
+        when(repository.findById(card.getId())).thenReturn(Optional.of(card));
+        when(transactionRepository.findById(transaction.getId())).thenReturn(Optional.of(transaction));
+        when(repository.findByCardName(card.getCardName())).thenReturn(Optional.of(card));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/cards/{id}/transactions/{transactionId}"
+                , card.getId(),transaction.getId())
+                .header("id",regularUser.getId())
+                .header("role",regularUser.getRole().getRoleName()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.transactionAmount.amount")
+                        .value(transaction.getTransactionAmount().getAmount().doubleValue()))
+                .andExpect(jsonPath("$.currencyUnit.currencyName")
+                        .value(transaction.getCurrencyUnit().getCurrencyName()))
+                .andExpect(jsonPath("$.beforeBalance")
+                        .value(transaction.getBeforeBalance().doubleValue()))
+                .andExpect(jsonPath("$.afterBalance")
+                        .value(transaction.getAfterBalance().doubleValue()))
+                .andDo(print());
+
+    }
+
+    @Test
+    public void shouldNotAllowInvalidUserToGetTransaction() throws Exception {
+        User regularUser = getRegularUser();
+        User otherUser = getRegularUser();
+        otherUser.setId(2L);
+        otherUser.setLogin("otherUser");
+
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L, "USD", 432, 1);
+        Card card = new Card(1L, currencyUnit, randomValue(), regularUser, "cardName");
+
+        when(userRepository.findById(otherUser.getId())).thenReturn(Optional.of(otherUser));
+        when(repository.findById(card.getId())).thenReturn(Optional.of(card));
+        when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/cards/{id}/transactions/{transactionId}"
+                        ,card.getId(),1L)
+                .header("id",otherUser.getId())
+                .header("role",otherUser.getRole().getRoleName()))
+                .andExpect(status().isForbidden())
+                .andDo(print());
+    }
+
+    @Test
+    public void shouldReturn404WhenTransactionNotFound() throws Exception {
+
+        User regularUser = getRegularUser();
+
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L, "USD", 432, 1);
+        Card card = new Card(1L, currencyUnit, randomValue(), regularUser, "cardName");
+
+        Long transactionId = 1L;
+
+        when(userRepository.findById(regularUser.getId())).thenReturn(Optional.of(regularUser));
+        when(repository.findById(card.getId())).thenReturn(Optional.of(card));
+        when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
+        when(transactionRepository.findById(transactionId))
+                .thenThrow(new TransactionNotFoundException(transactionId));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/cards/{id}/transactions/{transactionId}"
+                ,card.getId(),transactionId)
+                    .header("id",regularUser.getId())
+                    .header("role",regularUser.getRole().getRoleName()))
+                .andExpect(status().isNotFound())
+                .andDo(print());
+
+    }
+
+    @Test
+    public void shouldNotAllowToGetTransactionForOtherCard() throws Exception {
+        User regularUser = getRegularUser();
+
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L, "USD", 432, 1);
+        Card card = new Card(1L, currencyUnit, randomValue(), regularUser, "cardName");
+        Card otherCard = new Card(2L, currencyUnit, randomValue(), regularUser, "otherCardName");
+
+        TransactionEntity transaction = new TransactionEntity(1L,currencyUnit,randomValue(),true);
+        transaction.setCard(otherCard);
+        transaction.setBeforeBalance(card.getBalance().getAmount());
+        transaction.setAfterBalance(card.getBalance().getAmount().add(transaction.getTransactionAmount().getAmount()));
+
+        when(userRepository.findById(regularUser.getId())).thenReturn(Optional.of(regularUser));
+        when(repository.findById(card.getId())).thenReturn(Optional.of(card));
+        when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
+        when(transactionRepository.findById(transaction.getId())).thenReturn(Optional.of(transaction));
+        when(repository.findByCardName(card.getCardName())).thenReturn(Optional.of(card));
+        when(repository.findByCardName(otherCard.getCardName())).thenReturn(Optional.of(otherCard));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/cards/{id}/transactions/{transactionId}",
+                card.getId(),transaction.getId())
+                .header("id",regularUser.getId())
+                .header("role",regularUser.getRole().getRoleName()))
+                .andExpect(status().isForbidden())
+                .andDo(print());
+
+    }
 
 }

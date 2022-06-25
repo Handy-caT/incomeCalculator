@@ -151,8 +151,8 @@ public class CardController {
     }
 
     @DeleteMapping("/cards/{id}/transactions/{transactionId}")
-    public EntityModel<Card> deleteTransaction(@PathVariable Long id,
-                                               @PathVariable Long transactionId,
+    public EntityModel<Card> deleteTransaction(@PathVariable("id") Long id,
+                                               @PathVariable("transactionId") Long transactionId,
                                                HttpServletRequest request) {
 
         User authUser = handler.getUserFromRequest(request);
@@ -177,8 +177,8 @@ public class CardController {
     }
 
     @GetMapping("/cards/{id}/transactions/{transactionId}")
-    public EntityModel<TransactionEntity> receiveTransaction(@PathVariable Long id,
-                                                             @PathVariable Long transactionId,
+    public EntityModel<TransactionEntity> receiveTransaction(@PathVariable("id") Long id,
+                                                             @PathVariable("transactionId") Long transactionId,
                                                              HttpServletRequest request) {
 
         User authUser = handler.getUserFromRequest(request);
