@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProxyConfig {
 
-    @Value("${CALCULATOR_HOST:192.168.70.251}")
+    @Value("${CALCULATOR_HOST:localhost}")
     private String calculatorHost;
-    @Value("${CALCULATOR_PORT:8080}")
+    @Value("${CALCULATOR_PORT:8081}")
     private Long calculatorPort;
 
     @Value("${CALCULATOR_HOST:localhost}")

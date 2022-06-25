@@ -60,7 +60,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = CardController.class)
-@ComponentScan(basePackages = {"com.incomeCalculator.cardservice"})
 class CardControllerTest {
 
     @MockBean

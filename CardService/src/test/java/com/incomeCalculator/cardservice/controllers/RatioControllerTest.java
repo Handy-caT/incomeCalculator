@@ -45,7 +45,6 @@ import static com.incomeCalculator.cardservice.controllers.ModelMocks.getAdminUs
 import static com.incomeCalculator.cardservice.controllers.ModelMocks.getRegularUser;
 
 @WebMvcTest(controllers = RatioController.class)
-@ComponentScan(basePackages = {"com.incomeCalculator.cardservice"})
 class RatioControllerTest {
 
     static SecureRandom random = new SecureRandom();

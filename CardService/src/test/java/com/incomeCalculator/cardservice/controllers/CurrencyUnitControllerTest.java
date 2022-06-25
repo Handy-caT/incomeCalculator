@@ -44,7 +44,6 @@ import static com.incomeCalculator.cardservice.controllers.ModelMocks.getRegular
 
 
 @WebMvcTest(controllers = CurrencyUnitController.class)
-@ComponentScan(basePackages = {"com.incomeCalculator.cardservice"})
 public class CurrencyUnitControllerTest {
 
     @MockBean

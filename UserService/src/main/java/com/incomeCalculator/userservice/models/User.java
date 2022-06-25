@@ -99,4 +99,15 @@ public class User {
     public int hashCode() {
         return Objects.hash(id, login, password, role);
     }
+
+    @ManyToOne
+    private Role manyToOne;
+
+    public Role getManyToOne() {
+        return manyToOne;
+    }
+
+    public void setManyToOne(Role manyToOne) {
+        this.manyToOne = manyToOne;
+    }
 }

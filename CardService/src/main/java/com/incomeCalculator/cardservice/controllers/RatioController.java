@@ -32,7 +32,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@ComponentScan(basePackages = {"com.incomeCalculator.userservice.services"})
 public class RatioController {
 
     private final RatioRepository repository;
