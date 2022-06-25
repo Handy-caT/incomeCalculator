@@ -1002,4 +1002,102 @@ class CardControllerTest {
 
     }
 
+    @Test
+    public void shouldAllowValidUserToDeleteTransactions() throws Exception {
+        User regularUser = getRegularUser();
+
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L, "USD", 432, 1);
+        Card card = new Card(1L, currencyUnit, randomValue(), regularUser, "cardName");
+
+        TransactionEntity transaction = new TransactionEntity(1L,currencyUnit,randomValue(),true);
+        transaction.setCard(card);
+        transaction.setBeforeBalance(card.getBalance().getAmount());
+        transaction.setAfterBalance(card.getBalance().getAmount().add(transaction.getTransactionAmount().getAmount()));
+
+        when(userRepository.findById(regularUser.getId())).thenReturn(Optional.of(regularUser));
+        when(repository.findById(card.getId())).thenReturn(Optional.of(card));
+        when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
+        when(transactionRepository.findById(transaction.getId())).thenReturn(Optional.of(transaction));
+
+        Card savedCard = new Card(1L, currencyUnit
+                , card.getBalance().getAmount().subtract(transaction.getTransactionAmount().getAmount())
+                , regularUser, "cardName");
+
+        when(repository.save(savedCard)).thenReturn(savedCard);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/cards/{id}/transactions/{transactionId}",
+                card.getId(),transaction.getId())
+                .header("id",regularUser.getId())
+                .header("role",regularUser.getRole().getRoleName()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.cardName").value(savedCard.getCardName()))
+                .andExpect(jsonPath("$.balance.amount").value(savedCard.getBalance().getAmount().doubleValue()))
+                .andExpect(jsonPath("$.currencyUnit.currencyName").value(savedCard.getCurrencyUnit().getCurrencyName()))
+                .andExpect(jsonPath("$.id").value(savedCard.getId()))
+                .andDo(print());
+
+    }
+
+    @Test
+    public void shouldAllowAdminToDeleteEveryTransaction() throws Exception {
+        User adminUser = getAdminUser();
+        User regularUser = getRegularUser();
+
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L, "USD", 432, 1);
+        Card card = new Card(1L, currencyUnit, randomValue(), regularUser, "cardName");
+
+        TransactionEntity transaction = new TransactionEntity(1L,currencyUnit,randomValue(),true);
+        transaction.setCard(card);
+        transaction.setBeforeBalance(card.getBalance().getAmount());
+        transaction.setAfterBalance(card.getBalance().getAmount().add(transaction.getTransactionAmount().getAmount()));
+
+        when(userRepository.findById(adminUser.getId())).thenReturn(Optional.of(adminUser));
+        when(repository.findById(card.getId())).thenReturn(Optional.of(card));
+        when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
+        when(transactionRepository.findById(transaction.getId())).thenReturn(Optional.of(transaction));
+
+        Card savedCard = new Card(1L, currencyUnit
+                , card.getBalance().getAmount().subtract(transaction.getTransactionAmount().getAmount())
+                , regularUser, "cardName");
+
+        when(repository.save(savedCard)).thenReturn(savedCard);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/cards/{id}/transactions/{transactionId}",
+                                card.getId(),transaction.getId())
+                        .header("id",regularUser.getId())
+                        .header("role",regularUser.getRole().getRoleName()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.cardName").value(savedCard.getCardName()))
+                .andExpect(jsonPath("$.balance.amount").value(savedCard.getBalance().getAmount().doubleValue()))
+                .andExpect(jsonPath("$.currencyUnit.currencyName").value(savedCard.getCurrencyUnit().getCurrencyName()))
+                .andExpect(jsonPath("$.id").value(savedCard.getId()))
+                .andDo(print());
+
+
+    }
+
+    @Test
+    public void shouldNotAllowInvalidUserToDeleteTransaction() throws Exception {
+        User regularUser = getRegularUser();
+        User otherUser = getRegularUser();
+        otherUser.setId(2L);
+        otherUser.setLogin("otherUser");
+
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L, "USD", 432, 1);
+        Card card = new Card(1L, currencyUnit, randomValue(), regularUser, "cardName");
+
+        when(userRepository.findById(otherUser.getId())).thenReturn(Optional.of(otherUser));
+        when(repository.findById(card.getId())).thenReturn(Optional.of(card));
+        when(userRepository.findByLogin(regularUser.getLogin())).thenReturn(Optional.of(regularUser));
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/cards/{id}/transactions/{transactionId}",
+                card.getId(),1L)
+                .header("id",otherUser.getId())
+                .header("role",otherUser.getRole().getRoleName()))
+                .andExpect(status().isForbidden())
+                .andDo(print());
+
+
+    }
+
 }
