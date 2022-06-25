@@ -361,4 +361,43 @@ class RatioControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    public void getWithParammode1() throws Exception {
+        Long id = 1L;
+        BigDecimal ratioAmount = randomValue();
+        Date date = new Date();
+        String dateString = DateFormatter.sqlFormat(date);
+        CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
+        Ratio ratio = new Ratio(id,currencyUnit,ratioAmount,dateString);
+        List<Ratio> list = new LinkedList<>();
+        list.add(ratio);
+
+        when(repository.findByCurrencyUnit_CurrencyNameAndDateString(currencyUnit.getCurrencyName(),dateString))
+                .thenReturn(Optional.of(ratio));
+        when(repository.findAllByDateString(dateString)).thenReturn(list);
+
+        mockMvc.perform(get("/ratios/{currencyName}",currencyUnit.getCurrencyName())
+                        .param("parammode",String.valueOf(1)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(id))
+                .andExpect(jsonPath("$.ratio")
+                        .value(ratioAmount.doubleValue()))
+                .andExpect(jsonPath("$.dateString").value(dateString))
+                .andExpect(jsonPath("$.currencyUnit.id").value(currencyUnit.getId()))
+                .andExpect(jsonPath("$.currencyUnit.currencyName").value(currencyUnit.getCurrencyName()))
+                .andExpect(jsonPath("$.currencyUnit.currencyId").value(currencyUnit.getCurrencyId()))
+                .andExpect(jsonPath("$.currencyUnit.currencyScale").value(currencyUnit.getCurrencyScale()))
+                .andExpect(jsonPath("$._links.self.href")
+                        .value(hostName + WebMvcLinkBuilder.linkTo(methodOn(RatioController.class)
+                                .one(ratio.getId().toString(),"0")).toString()))
+                .andExpect(jsonPath("$._links.currencyUnit.href")
+                        .value(hostName +  WebMvcLinkBuilder.linkTo(methodOn(CurrencyUnitController.class)
+                                .one(currencyUnit.getId().toString(),"0")).toString()))
+                .andExpect(jsonPath("$._links.ratios.href")
+                        .value(hostName + WebMvcLinkBuilder.linkTo(methodOn(RatioController.class)
+                                .all(Optional.of(ratio.getDateString()))).toString()))
+                .andDo(print());
+
+    }
+
 }
