@@ -8,12 +8,17 @@
 /out
 /lib
 /Core/db
-/target
+*/target
+*.class
 
 *.DS_Store
 .PVS-Studio/settings.json
 /Core/testFiles/db/
 /src/main/resources/application.properties
 *.db
+*.jar
+*.properties
+
 .env
 AuthApi/src/main/resources/application.properties
+*.class

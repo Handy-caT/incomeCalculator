@@ -12,7 +12,7 @@
 		<module>UserService</module>
 		<module>AuthApi</module>
 		<module>Core</module>
-		<module>CardService</module>
+		<module>CardApi</module>
 		<module>UserApi</module>
 	</modules>
 

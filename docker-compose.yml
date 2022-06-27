@@ -15,7 +15,6 @@ services:
       - mysqldb
     restart: on-failure
     image: handycat/web-api-app:latest
-    command: sh -c './wait-for mysql_db:3306 -- npm start'
     env_file: ./.env
     ports:
       - ${SPRING_LOCAL_PORT}:${SPRING_DOCKER_PORT}

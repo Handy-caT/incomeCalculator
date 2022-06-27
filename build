@@ -1,0 +1,37 @@
+#!/bin/sh
+set -e
+
+userApiName=handycat/user-api
+cardApiName=handycat/card-api
+gatewayName=handycat/auth-api
+
+
+while getopts 'CAacus' OPTION; do
+    case "$OPTION" in
+        C)mvn clean install -DskipTests
+            ;;
+        A)docker build -t $cardApiName ./CardApi
+          docker build -t $gatewayName ./AuthApi
+          docker build -t $userApiName ./UserApi
+          docker pull $cardApiName
+          docker pull $gatewayName
+          docker pull $userApiName
+            ;;
+        a)docker build -t $gatewayName ./AuthApi
+          docker pull $gatewayName
+            ;;
+        c)docker build -t $cardApiName ./CardApi
+          docker pull $cardApiName
+           ;;
+        u)docker build -t $userApiName ./UserApi
+          docker pull $userApiName
+            ;;
+        s)docker-compose up -d
+            ;;
+        ?)echo "Usage: $0 [-b] [-a] [-g] [-c] [-u]"
+          exit 1
+           ;;
+    esac
+done
+
+

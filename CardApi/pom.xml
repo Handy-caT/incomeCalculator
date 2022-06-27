@@ -11,8 +11,8 @@
     <groupId>com.incomeCalculator</groupId>
     <artifactId>CardService</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>CardService</name>
-    <description>CardService</description>
+    <name>CardApi</name>
+    <description>CardSApi</description>
     <properties>
         <java.version>1.8</java.version>
     </properties>
