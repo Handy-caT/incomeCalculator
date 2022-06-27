@@ -1,0 +1,8 @@
+test/CurrencyUpdaterSQLTest.class
+test/CardTest.class
+test/CurrencyUnitSQLStorageConstructorTest.class
+test/CurrencyUpdaterWebTest.class
+test/MoneyTest.class
+test/CurrencyUpdaterJSONTest.class
+test/TestAPI.class
+test/CurrencyUnitSQLStorageTest.class
