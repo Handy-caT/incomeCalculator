@@ -1,4 +1,4 @@
-version: "3"
+version: "3.9"
 services:
   mysqldb:
       image: mysql:latest
@@ -10,15 +10,43 @@ services:
         MYSQL_USER: $MYSQL_USER
         MYSQL_PASSWORD: $MYSQL_PASSWORD
         MYSQL_DATABASE: $MYSQL_DATABASE
-  webapi:
+      healthcheck:
+        test: ["CMD", "mysqladmin", "-h", "localhost", "-u", "$MYSQL_USER", "-p$MYSQL_PASSWORD", "ping"]
+        timeout: 5s
+        retries: 10
+
+  gateway:
     depends_on:
-      - mysqldb
-    restart: on-failure
-    image: handycat/web-api-app:latest
+      mysqldb:
+        condition: service_healthy
+
+    image: handycat/auth-api:latest
     env_file: ./.env
     ports:
       - ${SPRING_LOCAL_PORT}:${SPRING_DOCKER_PORT}
-    environment:
-      MYSQL_HOST: mysqldb
 
+  userapi:
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    image: handycat/user-api:latest
+    env_file: ./.env
+    ports:
+      - ${USER_DOCKER_PORT}:${USER_PORT}
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://$USER_HOST:$USER_PORT" ]
+      timeout: 5s
+      retries: 10
 
+  cardapi:
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    image: handycat/card-api:latest
+    env_file: ./.env
+    ports:
+      - ${CARD_DOCKER_PORT}:${CARD_PORT}
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://$CARD_HOST:$CARD_PORT" ]
+      timeout: 5s
+      retries: 10

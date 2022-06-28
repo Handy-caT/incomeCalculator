@@ -13,14 +13,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProxyConfig {
 
-    @Value("${CALCULATOR_HOST:localhost}")
+    @Value("${card.host}")
     private String calculatorHost;
-    @Value("${CALCULATOR_PORT:8081}")
+    @Value("${card.port}")
     private Long calculatorPort;
 
-    @Value("${CALCULATOR_HOST:localhost}")
+    @Value("${user.host}")
     private String usersHost;
-    @Value("${CALCULATOR_PORT:8082}")
+    @Value("${user.port}")
     private Long usersPort;
 
     @Autowired
