@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>DATABASE</ID>
+  <OriginalElement>dba39458-3351-48b4-b15e-4c2cd5000f6a.SCHEMA:incomeCalculator</OriginalElement>
+  <nodes>
+    <node x="122.7275596877871" y="65.0">dba39458-3351-48b4-b15e-4c2cd5000f6a.TABLE:incomeCalculator.ratios</node>
+    <node x="368.8592171717171" y="-132.20661157024793">dba39458-3351-48b4-b15e-4c2cd5000f6a.TABLE:incomeCalculator.role</node>
+    <node x="-235.75413223140495" y="65.0">dba39458-3351-48b4-b15e-4c2cd5000f6a.TABLE:incomeCalculator.currency_units</node>
+    <node x="-102.921875" y="407.3822314049587">dba39458-3351-48b4-b15e-4c2cd5000f6a.TABLE:incomeCalculator.transaction_entity</node>
+    <node x="274.353305785124" y="407.3822314049587">dba39458-3351-48b4-b15e-4c2cd5000f6a.TABLE:incomeCalculator.cards</node>
+    <node x="322.103305785124" y="54.0">dba39458-3351-48b4-b15e-4c2cd5000f6a.TABLE:incomeCalculator.users</node>
+    <node x="156.8364898989899" y="-143.20661157024793">dba39458-3351-48b4-b15e-4c2cd5000f6a.TABLE:incomeCalculator.tokens</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="dba39458-3351-48b4-b15e-4c2cd5000f6a.TABLE:incomeCalculator.transaction_entity" target="dba39458-3351-48b4-b15e-4c2cd5000f6a.TABLE:incomeCalculator.cards" relationship="REFERENCES">
+      <point x="59.75" y="-92.5" />
+      <point x="76.328125" y="489.3099173553719" />
+      <point x="362.853305785124" y="489.3099173553719" />
+      <point x="0.0" y="70.5" />
+    </edge>
+    <edge source="dba39458-3351-48b4-b15e-4c2cd5000f6a.TABLE:incomeCalculator.users" target="dba39458-3351-48b4-b15e-4c2cd5000f6a.TABLE:incomeCalculator.tokens" relationship="REFERENCES">
+      <point x="0.0" y="-70.5" />
+      <point x="407.103305785124" y="-8.603305785123965" />
+      <point x="266.3364898989899" y="-8.603305785123965" />
+      <point x="36.5" y="48.5" />
+    </edge>
+    <edge source="dba39458-3351-48b4-b15e-4c2cd5000f6a.TABLE:incomeCalculator.tokens" target="dba39458-3351-48b4-b15e-4c2cd5000f6a.TABLE:incomeCalculator.users" relationship="REFERENCES">
+      <point x="-36.5" y="48.5" />
+      <point x="193.3364898989899" y="29.0" />
+      <point x="350.4366391184574" y="29.0" />
+      <point x="-56.66666666666666" y="-70.5" />
+    </edge>
+    <edge source="dba39458-3351-48b4-b15e-4c2cd5000f6a.TABLE:incomeCalculator.cards" target="dba39458-3351-48b4-b15e-4c2cd5000f6a.TABLE:incomeCalculator.currency_units" relationship="REFERENCES">
+      <point x="-44.25" y="-70.5" />
+      <point x="318.603305785124" y="213.29777892561984" />
+      <point x="-141.25413223140495" y="213.29777892561984" />
+      <point x="0.0" y="59.5" />
+    </edge>
+    <edge source="dba39458-3351-48b4-b15e-4c2cd5000f6a.TABLE:incomeCalculator.cards" target="dba39458-3351-48b4-b15e-4c2cd5000f6a.TABLE:incomeCalculator.users" relationship="REFERENCES">
+      <point x="44.25" y="-70.5" />
+      <point x="0.0" y="70.5" />
+    </edge>
+    <edge source="dba39458-3351-48b4-b15e-4c2cd5000f6a.TABLE:incomeCalculator.transaction_entity" target="dba39458-3351-48b4-b15e-4c2cd5000f6a.TABLE:incomeCalculator.currency_units" relationship="REFERENCES">
+      <point x="-3.966554752066088" y="-92.32747933884298" />
+      <point x="12.611570247933912" y="304.35227272727275" />
+      <point x="-141.25413223140495" y="304.35227272727275" />
+      <point x="0.0" y="59.5" />
+    </edge>
+    <edge source="dba39458-3351-48b4-b15e-4c2cd5000f6a.TABLE:incomeCalculator.users" target="dba39458-3351-48b4-b15e-4c2cd5000f6a.TABLE:incomeCalculator.role" relationship="REFERENCES">
+      <point x="56.666666666666664" y="-70.5" />
+      <point x="456.1724489210285" y="54.0" />
+      <point x="456.1724489210285" y="37.94008264462818" />
+      <point x="455.8592171717171" y="37.94008264462818" />
+      <point x="0.0" y="37.5" />
+    </edge>
+    <edge source="dba39458-3351-48b4-b15e-4c2cd5000f6a.TABLE:incomeCalculator.ratios" target="dba39458-3351-48b4-b15e-4c2cd5000f6a.TABLE:incomeCalculator.currency_units" relationship="REFERENCES">
+      <point x="0.0" y="-59.5" />
+      <point x="208.7275596877871" y="147.08471074380162" />
+      <point x="-45.96280991735537" y="147.08471074380162" />
+      <point x="95.29132231404958" y="16.680785123966928" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="1.0" showDependencies="false" x="199.0" y="266.5" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Columns</Category>
+    <Category>Comments</Category>
+    <Category>Key columns</Category>
+    <Category>Virtual foreign keys</Category>
+  </Categories>
+</Diagram>
+
