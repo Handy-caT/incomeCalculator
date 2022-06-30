@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+
+while getopts 'd' OPTION; do
+    case "$OPTION" in
+        d)  docker-compose up
+            ;;
+        ?)echo "Usage: $0 [-d]"
+          exit 1
+           ;;
+    esac
+dones
