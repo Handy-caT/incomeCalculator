@@ -1,6 +1,6 @@
 package com.incomeCalculator.userapi.controllers;
 
-import com.incomeCalculator.userapi.requests.UserUpdateRequest;
+import com.incomeCalculator.userservice.requests.UserUpdateRequest;
 import com.incomeCalculator.userservice.services.RequestHandler;
 import com.incomeCalculator.userservice.exceptions.PermissionException;
 import com.incomeCalculator.userservice.exceptions.UserNotFoundException;
@@ -67,6 +67,13 @@ public class UserController {
         }
     }
 
+    @GetMapping("/users/me")
+    public EntityModel<User> getMe(HttpServletRequest request) {
+        User authUser= handler.getUserFromRequest(request);
+
+        return assembler.toModel(authUser);
+    }
+
     @DeleteMapping("/users/{id}")
     public String deleteUser(@PathVariable Long id, HttpServletRequest request) {
         User user = repository.findById(id)
@@ -81,7 +88,7 @@ public class UserController {
         return "Your account has been deleted. Goodbye!"; 
     }
 
-    @PatchMapping("/users/{id}")
+    @PatchMapping("/users/{id}/password")
     public EntityModel<User> updateUsersPassword(@PathVariable Long id,
                                                  @RequestBody UserUpdateRequest updateRequest, HttpServletRequest request) {
         User user = repository.findById(id)
@@ -101,4 +108,33 @@ public class UserController {
         }
         return assembler.toModel(user);
     }
+
+    @PatchMapping("/users/{id}/makeAdmin")
+    public EntityModel<User> makeUserAdmin(@PathVariable Long id, HttpServletRequest request) {
+        User user = repository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
+        User authUser = handler.getUserFromRequest(request);
+        if(service.isAdmin(authUser)) {
+            user = service.makeAdmin(user);
+            log.info("User " + user.getLogin() + " made admin");
+        } else{
+            throw new PermissionException();
+        }
+        return assembler.toModel(user);
+    }
+
+    @PatchMapping("/users/{id}/makeUser")
+    public EntityModel<User> makeUserUser(@PathVariable Long id, HttpServletRequest request) {
+        User user = repository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
+        User authUser = handler.getUserFromRequest(request);
+        if(service.isAdmin(authUser)) {
+            user = service.makeUser(user);
+            log.info("User " + user.getLogin() + " made user");
+        } else{
+            throw new PermissionException();
+        }
+        return assembler.toModel(user);
+    }
+
 }

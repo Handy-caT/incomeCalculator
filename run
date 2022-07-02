@@ -1,9 +1,11 @@
 #!/bin/sh
 set -e
 
-while getopts 'd' OPTION; do
+while getopts 'dm' OPTION; do
     case "$OPTION" in
         d)  docker-compose up
+            ;;
+        m)  mvn
             ;;
         ?)echo "Usage: $0 [-d]"
           exit 1

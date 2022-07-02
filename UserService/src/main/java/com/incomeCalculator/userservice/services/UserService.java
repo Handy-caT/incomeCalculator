@@ -62,4 +62,17 @@ public class UserService {
     public boolean validateUser(Long usersId,User requestUser) {
         return isAdmin(requestUser) || requestUser.getId().equals(usersId);
     }
+
+    public User makeAdmin(User user) {
+        user.setRole(roleRepository.findByRoleName(adminRole)
+                .orElseThrow(() -> new RoleNotFoundException(adminRole)));
+        return repository.save(user);
+    }
+
+    public User makeUser(User user) {
+        user.setRole(roleRepository.findByRoleName(userRole)
+                .orElseThrow(() -> new RoleNotFoundException(userRole)));
+        return repository.save(user);
+    }
+
 }

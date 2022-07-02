@@ -1,8 +1,8 @@
 package com.incomeCalculator.userapi.controllers;
 
 
-import com.incomeCalculator.userapi.requests.AuthResponse;
-import com.incomeCalculator.userapi.requests.UserAuthRequest;
+import com.incomeCalculator.userservice.requests.AuthResponse;
+import com.incomeCalculator.userservice.requests.UserAuthRequest;
 import com.incomeCalculator.userservice.exceptions.UserNotFoundException;
 import com.incomeCalculator.userservice.models.User;
 import com.incomeCalculator.userservice.services.JwtTokenService;

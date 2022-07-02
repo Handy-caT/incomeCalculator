@@ -3,7 +3,7 @@ package com.incomeCalculator.userapi;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.incomeCalculator.userapi.controllers.AuthController;
-import com.incomeCalculator.userapi.requests.UserAuthRequest;
+import com.incomeCalculator.userservice.requests.UserAuthRequest;
 import com.incomeCalculator.userservice.models.Role;
 import com.incomeCalculator.userservice.models.Token;
 import com.incomeCalculator.userservice.models.User;

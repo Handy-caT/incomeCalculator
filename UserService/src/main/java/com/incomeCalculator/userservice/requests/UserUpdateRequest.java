@@ -1,4 +1,4 @@
-package com.incomeCalculator.userapi.requests;
+package com.incomeCalculator.userservice.requests;
 
 public class UserUpdateRequest {
 
