@@ -46,7 +46,7 @@ The application will start running at  [http://localhost:8080/]()
 
 You need to be authenticated to use API's but some features is avaolable for not authenticated users. Let's start from authentication
 
-| **Method** | **Url**   | **Description**            | **Request sample** |
+| **Method** | **Url**   | **Description**            | **Request Sample** |
 | ---------- | --------- | -------------------------- | ------------------ |
 | POST       | /auth     | Authentication             |                    |
 | POST       | /register | Registration for new users |                    |
@@ -55,9 +55,9 @@ After registration/authentication you will recieve a token for further usage of 
 
 Token is used as a bearer token, so you need to add **Authentication header** to all requests, you will get new token in response headers. So your token is uptadet after all request. Token also has **1 day** expiration limit.
 
-### User api
+### Users
 
-| **Metoh** | **Url**               | **Description**                                          | **Request sample**      |
+| **Metoh** | **Url**               | **Description**                                          | **Request Sample**      |
 | --------- | --------------------- | -------------------------------------------------------- | ----------------------- |
 | GET       | /users                | All users list. Only for admin users                     |                         |
 | GET       | /users/me             | Get authenticated user info                              |                         |
@@ -66,6 +66,18 @@ Token is used as a bearer token, so you need to add **Authentication header** to
 | PATCH     | /users/{id}/password  | Password update                                          | [JSON](#passwordChange) |
 | PATCH     | /users/{id}/makeAdmin | Only for admins                                          |                         |
 | PATCH     | /users/{id}/makeUser  | Only for admins                                          |                         |
+
+### Currency Units
+
+| **Method** | **Url**                                   | **Description**                                                 | **Request Sample**      |
+| ---------- | ----------------------------------------- | --------------------------------------------------------------- | ----------------------- |
+| GET        | /currencyUnits                            | Currency units list. Available even for not authenticated users |                         |
+| GET        | /currencyUnits/{id}                       | Currency unit by id                                             |                         |
+| GET        | /currencyUnits/{currencyName}?parammode=1 | Currency unit by currency name                                  |                         |
+| GET        | /currencyUnits/{currencyId}?parammode=2   | Currency unit by currency id                                    |                         |
+| POST       | /currencyUnit/{id}                        | Add currency unit. Admin tool                                   | [JSON](#currencySample) |
+| DELETE     | /currencyUnit/{id}                        | Delete currency unit. Admin tool                                |                         |
+| PUT        | /currencyUnits/{id}                       | Update currency unit. Admin tool                                | [JSON](#currencySample) |
 
 
 
@@ -78,9 +90,17 @@ Token is used as a bearer token, so you need to add **Authentication header** to
 ```json
 {
     "login": "login",
-    "oldPassword": "oldPa$$W0rd"
+    "oldPassword": "oldPa$$W0rd",
     "newPassword": "nEwPa$Sw0r6"
 }
 ```
 
+<a id="currencySample">**Currency Unit sample** (/currencyUnit/{id})</a>
 
+```json
+{
+    "currencyName": "USD",
+    "currencyId": 432,
+    "currencyScale": 1
+}
+```
