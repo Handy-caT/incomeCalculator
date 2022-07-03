@@ -1,5 +1,7 @@
 # Income Calculator REST API
 
+[![GitHub commits](https://badgen.net/github/commits/Handy-caT/incomeCalculator)](https://github.com/Handy-caT/incomeCalculator/commit/) [![Docker](https://badgen.net/badge/icon/docker?icon=docker&label)](https://https://docker.com/) [![Maven](https://badgen.net/badge/icon/maven?icon=maven&label)](https://https://maven.apache.org/)
+
 - **[Setup Guide](#setup-guide)**
 
 ## <a id="setup">Setup Guide</a>
@@ -143,7 +145,7 @@ Token is used as a bearer token, so you need to add **Authentication header** to
 ```json
 {
     "cardName": "card",
-    "currencyName": "USD"
+    "currencyName": "USD"
 }
 ```
 
