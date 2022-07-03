@@ -90,6 +90,22 @@ Token is used as a bearer token, so you need to add **Authentication header** to
 | PUT        | /ratios/{id}                       | Update ratio. Admin tool               | [JSON](#ratioSample) |
 | POST       | /ratios/{id}                       | Add ratio. Admin tool                  | [JSON](#ratioSample) |
 
+### Cards
+
+| **Method** | **Url**                                 | **Description**                                            | **Request Simple**  |
+| ---------- | --------------------------------------- | ---------------------------------------------------------- | ------------------- |
+| GET        | /cards                                  | Get all your cards if user, or all existing cards if admin |                     |
+| GET        | /cards/{id}                             | Get card by id if card belogs to you                       |                     |
+| GET        | /cards/{id}/transactions                | Get all transactions for card, if cardd belong to you      |                     |
+| POST       | /cards                                  | Create new card                                            | [JSON](#cardSample) |
+| POST       | /cards/{id}/transactions                | Create new transaction to card                             |                     |
+| DELETE     | /cards/{id}/transaction/{transactionId} | Delete  transaction for card by id and transaction id      |                     |
+| GET        | /cards/{id}/transaction/{transactionId} | Get transaction for card by id and transaction id          |                     |
+| PATCH      | /cards/{id}                             | Rename card if it belongs to you                           | [JSON](#cardPatch)  |
+| DELETE     | /cards/{id}                             | Delete card if it belongs to you                           |                     |
+
+
+
 ## Valid JSON Samples
 
 <a id="passwordChange">**Password change** (/users/{id}/password)</a>
@@ -117,12 +133,27 @@ Token is used as a bearer token, so you need to add **Authentication header** to
 ```json
 {
     "currencyName": "USD",
-    "ratio": 2.3456,
-    "dateString": "21_05_2022"
+    "ratio": 2.3456,
+    "dateString": "21_05_2022"
 }
 ```
 
+<a id="cardSample">**Card sample (/cards)**</a>
 
+```json
+{
+    "cardName": "card",
+    "currencyName": "USD"
+}
+```
+
+<a id="cardPatch">Card patch (/cards)</a>
+
+```json
+{
+    "cardName": "newCard"
+}
+```
 
 ## Unit testing
 
@@ -137,3 +168,30 @@ Token is used as a bearer token, so you need to add **Authentication header** to
 4. **Auth controller**
 
 5. **User controller**
+
+
+
+## Scripts
+
+### Run
+
+**[run](./run)** script is made to easier run application
+
+| **Flag** | **Description**                        |
+| -------- | -------------------------------------- |
+| d        | Run application via **docker-compose** |
+| m        | Run application locally via **Maven**  |
+
+### Build
+
+**[build](./build)** script is made to build application
+
+| **Flag** | **Description**                     |
+| -------- | ----------------------------------- |
+| d        | Pull docker images  from docker hub |
+| C        | Compile **Maven** project           |
+| A        | Build all docker images locally     |
+| g        | Build **Gateway** docker image      |
+| c        | Build **Card API** docker image     |
+| u        | Build **User API** docker image     |
+| p        | Push created images to docker hub   |
