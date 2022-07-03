@@ -1,12 +1,10 @@
 # Income Calculator REST API
 
-..description..
-
 - **[Setup Guide](#setup-guide)**
 
 ## <a id="setup">Setup Guide</a>
 
-First of all clone repository
+First clone repository
 
 ```bash
 git clone https://github.com/Handy-caT/incomeCalculator.git
@@ -44,14 +42,14 @@ The application will start running at  [http://localhost:8080/]()
 
 ### Authentication
 
-You need to be authenticated to use API's but some features is avaolable for not authenticated users. Let's start from authentication
+You need to be authenticated to use APIs but some features is available for not authenticated users. Let's start from authentication
 
 | **Method** | **Url**   | **Description**            | **Request Sample** |
 | ---------- | --------- | -------------------------- | ------------------ |
 | POST       | /auth     | Authentication             |                    |
 | POST       | /register | Registration for new users |                    |
 
-After registration/authentication you will recieve a token for further usage of API.
+After registration/authentication you will receive a token for further usage of API.
 
 Token is used as a bearer token, so you need to add **Authentication header** to all requests, you will get new token in response headers. So your token is uptadet after all request. Token also has **1 day** expiration limit.
 
@@ -70,7 +68,7 @@ Token is used as a bearer token, so you need to add **Authentication header** to
 ### Currency Units
 
 | **Method** | **Url**                                   | **Description**                                                 | **Request Sample**      |
-| ---------- | ----------------------------------------- | --------------------------------------------------------------- | ----------------------- |
+| ---------- |:----------------------------------------- | --------------------------------------------------------------- | ----------------------- |
 | GET        | /currencyUnits                            | Currency units list. Available even for not authenticated users |                         |
 | GET        | /currencyUnits/{id}                       | Currency unit by id                                             |                         |
 | GET        | /currencyUnits/{currencyName}?parammode=1 | Currency unit by currency name                                  |                         |
@@ -79,9 +77,18 @@ Token is used as a bearer token, so you need to add **Authentication header** to
 | DELETE     | /currencyUnit/{id}                        | Delete currency unit. Admin tool                                |                         |
 | PUT        | /currencyUnits/{id}                       | Update currency unit. Admin tool                                | [JSON](#currencySample) |
 
+### Ratios
 
-
-
+| **Method** | **Url**                            | **Description**                        | **Request Sample**   |
+| ---------- | ---------------------------------- | -------------------------------------- | -------------------- |
+| GET        | /ratios                            | Get todays ratios                      |                      |
+| GET        | /ratios?ondate=21_05_2022          | Get ratio on date in format dd_MM_yyyy |                      |
+| GET        | /ratios/{id}                       | Get ratio by id                        |                      |
+| GET        | /ratios/{currencyName}?parammode=1 | Get todays ratio for currency          |                      |
+| DELETE     | /ratios/{id}                       | Delete ratio. Admin tool               |                      |
+| DELETE     | /ratios?ondate=21_05_2022          | Delete ratio on date. Admin tool       |                      |
+| PUT        | /ratios/{id}                       | Update ratio. Admin tool               | [JSON](#ratioSample) |
+| POST       | /ratios/{id}                       | Add ratio. Admin tool                  | [JSON](#ratioSample) |
 
 ## Valid JSON Samples
 
@@ -100,7 +107,33 @@ Token is used as a bearer token, so you need to add **Authentication header** to
 ```json
 {
     "currencyName": "USD",
-    "currencyId": 432,
-    "currencyScale": 1
+    "currencyId": 432,
+    "currencyScale": 1
 }
 ```
+
+<a id="ratioSample">**Ratio sample** (/ratios/{id})</a>
+
+```json
+{
+    "currencyName": "USD",
+    "ratio": 2.3456,
+    "dateString": "21_05_2022"
+}
+```
+
+
+
+## Unit testing
+
+### Card API
+
+1. **Card controller**
+
+2. **Currency Unit controller**
+
+3. **Ratio controller**
+
+4. **Auth controller**
+
+5. **User controller**

@@ -126,6 +126,18 @@ public class RatioController {
         }
     }
 
+    @DeleteMapping("/ratios")
+    public String deleteByDate(@RequestParam(name = "ondate") String dateString, HttpServletRequest request) {
+        User authUser = handler.getUserFromRequest(request);
+        if(userService.isAdmin(authUser)) {
+
+            repository.deleteAllByDateString(dateString);
+            return "Ratios deleted";
+        } else {
+            throw new PermissionException();
+        }
+    }
+
     @PutMapping("/ratios/{id}")
     public EntityModel<Ratio> updateById(@RequestBody RatioRequest ratioRequest
             , @PathVariable Long id, HttpServletRequest request) {

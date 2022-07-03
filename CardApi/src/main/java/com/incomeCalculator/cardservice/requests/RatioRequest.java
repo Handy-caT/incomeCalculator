@@ -6,13 +6,11 @@ public class RatioRequest {
 
     private String currencyName;
     private BigDecimal ratio;
-    private Long id;
     private String dateString;
 
-    public RatioRequest(Long id,String currencyName, BigDecimal ratio, String dateString) {
+    public RatioRequest(String currencyName, BigDecimal ratio, String dateString) {
         this.currencyName = currencyName;
         this.ratio = ratio;
-        this.id = id;
         this.dateString = dateString;
     }
 
@@ -30,14 +28,6 @@ public class RatioRequest {
 
     public void setRatio(BigDecimal ratio) {
         this.ratio = ratio;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getDateString() {

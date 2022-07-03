@@ -181,7 +181,7 @@ class RatioControllerTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         BigDecimal ratio = randomValue();
-        RatioRequest ratioRequest = new RatioRequest(1L,"USD",ratio,DateFormatter.sqlFormat(date));
+        RatioRequest ratioRequest = new RatioRequest("USD",ratio,DateFormatter.sqlFormat(date));
         String json = objectMapper.writeValueAsString(ratioRequest);
 
         when(userRepository.findById(regularUser.getId())).thenReturn(Optional.of(regularUser));
@@ -203,7 +203,7 @@ class RatioControllerTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         BigDecimal ratio = randomValue();
-        RatioRequest ratioRequest = new RatioRequest(1L,"USD",ratio,DateFormatter.sqlFormat(date));
+        RatioRequest ratioRequest = new RatioRequest("USD",ratio,DateFormatter.sqlFormat(date));
         String json = objectMapper.writeValueAsString(ratioRequest);
 
         when(userRepository.findById(regularUser.getId())).thenReturn(Optional.of(regularUser));
@@ -240,7 +240,7 @@ class RatioControllerTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         BigDecimal ratio = randomValue().setScale(4, RoundingMode.HALF_DOWN);
-        RatioRequest ratioRequest = new RatioRequest(1L,"USD",ratio,DateFormatter.sqlFormat(date));
+        RatioRequest ratioRequest = new RatioRequest("USD",ratio,DateFormatter.sqlFormat(date));
         String json = objectMapper.writeValueAsString(ratioRequest);
 
         CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
@@ -275,7 +275,7 @@ class RatioControllerTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         BigDecimal ratio = randomValue();
-        RatioRequest ratioRequest = new RatioRequest(1L,"USD",ratio,DateFormatter.sqlFormat(date));
+        RatioRequest ratioRequest = new RatioRequest("USD",ratio,DateFormatter.sqlFormat(date));
         String json = objectMapper.writeValueAsString(ratioRequest);
 
         CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
