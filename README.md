@@ -174,7 +174,7 @@ Token is used as a bearer token, so you need to add **Authentication header** to
 ```json
 {
     "login": "zuka",
-    "password": "pa$$W0rd"
+    "password": "pa$$W0rd"
 }
 ```
 
@@ -231,4 +231,4 @@ Token is used as a bearer token, so you need to add **Authentication header** to
 
 ## <a id="dbschema">Database tables schema</a>
 
-![schema](/Users/maksim/IdeaProjects/incomeCalculatorProject/incomeCalculator/incomeCalculatorDBSchema.png)
+![schema](/incomeCalculatorDBSchema.png)
