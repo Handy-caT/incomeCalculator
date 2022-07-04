@@ -6,7 +6,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.util.Objects;
 
-@Entity
+@Entity(name = "ROLES")
 public class Role {
 
     private @Id

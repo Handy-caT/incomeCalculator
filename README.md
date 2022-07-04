@@ -3,6 +3,20 @@
 [![GitHub commits](https://badgen.net/github/commits/Handy-caT/incomeCalculator)](https://github.com/Handy-caT/incomeCalculator/commit/) [![Docker](https://badgen.net/badge/icon/docker?icon=docker&label)](https://https://docker.com/) [![Maven](https://badgen.net/badge/icon/maven?icon=maven&label)](https://https://maven.apache.org/)
 
 - **[Setup Guide](#setup-guide)**
+- [**Using REST API**](#usage)
+  - [**Authentication**](#authentication)
+  
+  - [**Users**](#users)
+  
+  - [**Currency Units**](#currencyUnits)
+  
+  - [**Ratios**](#ratios)
+  
+  - [**Cards**](#cards)
+- [**Valid JSON Samples**](#samples)
+- [**Unit Testing**](#testing)
+- [**Scripts**](#scripts)
+- [**Database Schema**](#dbschema)
 
 ## <a id="setup">Setup Guide</a>
 
@@ -30,7 +44,7 @@ You can choose a way to start up the application
     ./run -m
     ```
   
-  If you want to know more about **[run](./run)** script usage, read here 
+  If you want to know more about **[run](./run)** script usage, read [here](#runScript) 
 
 - Manually using **Docker**
   
@@ -40,34 +54,34 @@ You can choose a way to start up the application
 
 The application will start running at  [http://localhost:8080/]()
 
-## Using REST API
+## <a id="usage">Using REST API</a>
 
-### Authentication
+### <a id="authentication">Authentication</a>
 
 You need to be authenticated to use APIs but some features is available for not authenticated users. Let's start from authentication
 
-| **Method** | **Url**   | **Description**            | **Request Sample** |
-| ---------- | --------- | -------------------------- | ------------------ |
-| POST       | /auth     | Authentication             |                    |
-| POST       | /register | Registration for new users |                    |
+| **Method** | **Url**   | **Description**            | **Request Sample**   |
+| ---------- | --------- | -------------------------- | -------------------- |
+| POST       | /auth     | Authentication             | [JSON](#authRequest) |
+| POST       | /register | Registration for new users | [JSON](#authRequest) |
 
 After registration/authentication you will receive a token for further usage of API.
 
-Token is used as a bearer token, so you need to add **Authentication header** to all requests, you will get new token in response headers. So your token is uptadet after all request. Token also has **1 day** expiration limit.
+Token is used as a bearer token, so you need to add **Authentication header** to all requests, you will get new token in response headers. So your token is updated after all request. Token also has **1 day** expiration limit.
 
-### Users
+### <a id="users">Users</a>
 
-| **Metoh** | **Url**               | **Description**                                          | **Request Sample**      |
-| --------- | --------------------- | -------------------------------------------------------- | ----------------------- |
-| GET       | /users                | All users list. Only for admin users                     |                         |
-| GET       | /users/me             | Get authenticated user info                              |                         |
-| GET       | /users/{id}           | Get user by id, if user is same to authenticated user    |                         |
-| DELETE    | /users/{id}           | Delete user by id, if user is same to authenticated user |                         |
-| PATCH     | /users/{id}/password  | Password update                                          | [JSON](#passwordChange) |
-| PATCH     | /users/{id}/makeAdmin | Only for admins                                          |                         |
-| PATCH     | /users/{id}/makeUser  | Only for admins                                          |                         |
+| **Method** | **Url**               | **Description**                                          | **Request Sample**      |
+| ---------- | --------------------- | -------------------------------------------------------- | ----------------------- |
+| GET        | /users                | All users list. Only for admin users                     |                         |
+| GET        | /users/me             | Get authenticated user info                              |                         |
+| GET        | /users/{id}           | Get user by id, if user is same to authenticated user    |                         |
+| DELETE     | /users/{id}           | Delete user by id, if user is same to authenticated user |                         |
+| PATCH      | /users/{id}/password  | Password update                                          | [JSON](#passwordChange) |
+| PATCH      | /users/{id}/makeAdmin | Only for admins                                          |                         |
+| PATCH      | /users/{id}/makeUser  | Only for admins                                          |                         |
 
-### Currency Units
+### <a id="currencyUnits">Currency Units</a>
 
 | **Method** | **Url**                                   | **Description**                                                 | **Request Sample**      |
 | ---------- |:----------------------------------------- | --------------------------------------------------------------- | ----------------------- |
@@ -79,7 +93,7 @@ Token is used as a bearer token, so you need to add **Authentication header** to
 | DELETE     | /currencyUnit/{id}                        | Delete currency unit. Admin tool                                |                         |
 | PUT        | /currencyUnits/{id}                       | Update currency unit. Admin tool                                | [JSON](#currencySample) |
 
-### Ratios
+### <a id="ratios">Ratios</a>
 
 | **Method** | **Url**                            | **Description**                        | **Request Sample**   |
 | ---------- | ---------------------------------- | -------------------------------------- | -------------------- |
@@ -92,13 +106,13 @@ Token is used as a bearer token, so you need to add **Authentication header** to
 | PUT        | /ratios/{id}                       | Update ratio. Admin tool               | [JSON](#ratioSample) |
 | POST       | /ratios/{id}                       | Add ratio. Admin tool                  | [JSON](#ratioSample) |
 
-### Cards
+### <a id="cards">Cards</a>
 
 | **Method** | **Url**                                 | **Description**                                            | **Request Simple**  |
 | ---------- | --------------------------------------- | ---------------------------------------------------------- | ------------------- |
 | GET        | /cards                                  | Get all your cards if user, or all existing cards if admin |                     |
-| GET        | /cards/{id}                             | Get card by id if card belogs to you                       |                     |
-| GET        | /cards/{id}/transactions                | Get all transactions for card, if cardd belong to you      |                     |
+| GET        | /cards/{id}                             | Get card by id if card belongs to you                      |                     |
+| GET        | /cards/{id}/transactions                | Get all transactions for card, if card belong to you       |                     |
 | POST       | /cards                                  | Create new card                                            | [JSON](#cardSample) |
 | POST       | /cards/{id}/transactions                | Create new transaction to card                             |                     |
 | DELETE     | /cards/{id}/transaction/{transactionId} | Delete  transaction for card by id and transaction id      |                     |
@@ -106,9 +120,7 @@ Token is used as a bearer token, so you need to add **Authentication header** to
 | PATCH      | /cards/{id}                             | Rename card if it belongs to you                           | [JSON](#cardPatch)  |
 | DELETE     | /cards/{id}                             | Delete card if it belongs to you                           |                     |
 
-
-
-## Valid JSON Samples
+## <a id="samples">Valid JSON Samples</a>
 
 <a id="passwordChange">**Password change** (/users/{id}/password)</a>
 
@@ -149,7 +161,7 @@ Token is used as a bearer token, so you need to add **Authentication header** to
 }
 ```
 
-<a id="cardPatch">Card patch (/cards)</a>
+<a id="cardPatch">**Card patch** (/cards)</a>
 
 ```json
 {
@@ -157,25 +169,44 @@ Token is used as a bearer token, so you need to add **Authentication header** to
 }
 ```
 
-## Unit testing
+<a id="authRequest">**Auth request** (/auth,/register)</a>
 
-### Card API
+```json
+{
+    "login": "zuka",
+    "password": "pa$$W0rd"
+}
+```
+
+## <a id = "testing">Unit testing</a>
 
 1. **Card controller**
+   
+   Tests: **32**,
+   
+   Controller coverage: **100%**
 
 2. **Currency Unit controller**
+   
+   Tests: **13**,
+   
+   Controller coverage: **100%**
 
 3. **Ratio controller**
+   
+   Tests: **12**,
+   
+   Controller coverage: **85%**
 
 4. **Auth controller**
+   
+   Tests: **3**,
+   
+   Controller coverage: **95%**
 
-5. **User controller**
+## <a id="scripts">Scripts</a>
 
-
-
-## Scripts
-
-### Run
+### <a id="runScript">Run</a>
 
 **[run](./run)** script is made to easier run application
 
@@ -197,3 +228,7 @@ Token is used as a bearer token, so you need to add **Authentication header** to
 | c        | Build **Card API** docker image     |
 | u        | Build **User API** docker image     |
 | p        | Push created images to docker hub   |
+
+## <a id="dbschema">Database tables schema</a>
+
+![schema](/Users/maksim/IdeaProjects/incomeCalculatorProject/incomeCalculator/incomeCalculatorDBSchema.png)

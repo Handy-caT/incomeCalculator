@@ -10,7 +10,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-@Entity
+@Entity(name = "TRANSACTIONS")
 public class TransactionEntity implements Transaction {
 
 
