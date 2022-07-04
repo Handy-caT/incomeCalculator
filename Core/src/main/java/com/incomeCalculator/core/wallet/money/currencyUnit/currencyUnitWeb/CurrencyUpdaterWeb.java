@@ -56,7 +56,7 @@ public class CurrencyUpdaterWeb implements CurrencyUpdater {
             long scaleTo = WebJSONConverter.getScaleFromObject(toObject);
             ratio = BigDecimal.valueOf(WebJSONConverter.getRatioFromObject(toObject));
             ratio = BigDecimal.ONE.setScale(4).divide(ratio,RoundingMode.DOWN);
-            ratio.multiply(BigDecimal.valueOf(scaleTo));
+            ratio = ratio.multiply(BigDecimal.valueOf(scaleTo));
         } else {
             long scaleFrom = WebJSONConverter.getScaleFromObject(fromObject);
             ratio = BigDecimal.valueOf(WebJSONConverter.getRatioFromObject(fromObject));

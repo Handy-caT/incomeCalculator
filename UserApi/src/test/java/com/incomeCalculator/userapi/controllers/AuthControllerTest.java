@@ -1,4 +1,4 @@
-package com.incomeCalculator.userapi;
+package com.incomeCalculator.userapi.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,20 +57,7 @@ class AuthControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-    @TestConfiguration
-    static class AdditionalConfig {
 
-        @Bean
-        public JwtTokenService getJwtTokenService() {
-            return new JwtTokenService();
-        }
-
-        @Bean
-        public UserService getUserService() {
-            return new UserService();
-        }
-
-    }
 
 
     public static User getRawUser() {
