@@ -5,12 +5,14 @@ while getopts 'dm' OPTION; do
     case "$OPTION" in
         d)  docker-compose up
             ;;
-        m)  mvn -f ./AuthApi/pom.xml spring-boot:run
-            mvn -f ./UserApi/pom.xml spring-boot:run
-            mvn -f ./CardApi/pom.xml spring-boot:run
+        m)  (trap 'kill 0' SIGINT; mvn -f ./UserApi/pom.xml spring-boot:run &
+          mvn -f ./CardApi/pom.xml spring-boot:run &
+          mvn -f ./AuthApi/pom.xml spring-boot:run)
             ;;
         ?)echo "Usage: $0 [-d]"
           exit 1
            ;;
     esac
-dones
+done
+
+

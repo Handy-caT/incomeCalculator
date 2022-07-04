@@ -3,7 +3,9 @@
 [![GitHub commits](https://badgen.net/github/commits/Handy-caT/incomeCalculator)](https://github.com/Handy-caT/incomeCalculator/commit/) [![Docker](https://badgen.net/badge/icon/docker?icon=docker&label)](https://https://docker.com/) [![Maven](https://badgen.net/badge/icon/maven?icon=maven&label)](https://https://maven.apache.org/)
 
 - **[Setup Guide](#setup-guide)**
+
 - [**Using REST API**](#usage)
+  
   - [**Authentication**](#authentication)
   
   - [**Users**](#users)
@@ -13,9 +15,13 @@
   - [**Ratios**](#ratios)
   
   - [**Cards**](#cards)
+
 - [**Valid JSON Samples**](#samples)
+
 - [**Unit Testing**](#testing)
+
 - [**Scripts**](#scripts)
+
 - [**Database Schema**](#dbschema)
 
 ## <a id="setup">Setup Guide</a>
