@@ -31,7 +31,6 @@ public class RatioService {
         Ratio ratio = new Ratio();
 
         ratio.setDateString(ratioRequest.getDateString());
-        ratio.setId(ratioRequest.getId());
         ratio.setRatio(ratioRequest.getRatio());
         CurrencyUnitEntity currencyUnit = currencyUnitRepository
                 .findByCurrencyName(ratioRequest.getCurrencyName())

@@ -1,8 +1,8 @@
-test/CurrencyUpdaterSQLTest.class
-test/CardTest.class
-test/CurrencyUnitSQLStorageConstructorTest.class
-test/CurrencyUpdaterWebTest.class
-test/MoneyTest.class
-test/CurrencyUpdaterJSONTest.class
-test/TestAPI.class
-test/CurrencyUnitSQLStorageTest.class
+com/incomeCalculator/Core/test/MoneyTest.class
+com/incomeCalculator/Core/test/CardTest.class
+com/incomeCalculator/Core/test/CurrencyUpdaterWebTest.class
+com/incomeCalculator/Core/test/TestAPI.class
+com/incomeCalculator/Core/test/CurrencyUpdaterJSONTest.class
+com/incomeCalculator/Core/test/CurrencyUpdaterSQLTest.class
+com/incomeCalculator/Core/test/CurrencyUnitSQLStorageConstructorTest.class
+com/incomeCalculator/Core/test/CurrencyUnitSQLStorageTest.class

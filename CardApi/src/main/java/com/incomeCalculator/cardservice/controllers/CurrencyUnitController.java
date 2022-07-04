@@ -79,6 +79,7 @@ public class CurrencyUnitController {
                 throw new IllegalArgumentException("Currency name must be 3 chars length");
             }
             if (!repository.findByCurrencyId(currencyUnit.getCurrencyId()).isPresent()) {
+                currencyUnit.setId(null);
                 currencyUnit = repository.save(currencyUnit);
                 log.info("Currency unit saved: " + currencyUnit);
                 return assembler.toModel(currencyUnit);

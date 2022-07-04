@@ -1,4 +1,4 @@
-package test;
+package com.incomeCalculator.Core.test;
 
 import com.incomeCalculator.core.db.ConnectionFactory;
 import org.junit.After;

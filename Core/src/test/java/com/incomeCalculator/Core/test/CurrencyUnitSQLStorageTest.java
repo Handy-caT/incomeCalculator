@@ -1,4 +1,4 @@
-package test;
+package com.incomeCalculator.Core.test;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;

@@ -22,3 +22,4 @@
 .env
 AuthApi/src/main/resources/application.properties
 *mvnw
+*.class

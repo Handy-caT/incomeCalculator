@@ -172,7 +172,7 @@ public class CurrencyUpdaterSQL implements CurrencyUpdater {
                     ratio = BigDecimal.valueOf((double)toList.get(3));
 
                     ratio = BigDecimal.ONE.setScale(4).divide(ratio,RoundingMode.DOWN);
-                    ratio.multiply(BigDecimal.valueOf(scaleTo));
+                    ratio = ratio.multiply(BigDecimal.valueOf(scaleTo));
                 } else {
                     List<Object> fromList = getCurrencyResultSet(currencyFrom,dateString);
                     long scaleFrom = (long) fromList.get(2);
