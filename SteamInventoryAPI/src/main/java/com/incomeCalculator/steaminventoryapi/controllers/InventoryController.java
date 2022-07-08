@@ -5,6 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
 @RestController
 public class InventoryController {
 
@@ -12,7 +15,24 @@ public class InventoryController {
 
     @GetMapping("/inventory")
     public String getInventory() {
-        return "Hello World";
+        try {
+            Process process = Runtime.getRuntime().exec("ruby getInventory.rb");
+            process.waitFor();
+
+            BufferedReader processIn = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()));
+
+            String line;
+            while ((line = processIn.readLine()) != null) {
+                log.info(line);
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        return "Inventory";
     }
 
 }
