@@ -1,12 +1,12 @@
 package com.incomeCalculator.steaminventoryapi.models;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Objects;
 
 @Entity(name = "ITEMS")
+@Table(indexes = {
+        @Index(name = "classIdIndex", columnList = "classId")
+})
 public class Item {
 
     private @Id
@@ -15,6 +15,17 @@ public class Item {
     private Long classId;
 
     private String name;
+
+    public Item(Long id, Long classId, String name) {
+        this.id = id;
+        this.classId = classId;
+        this.name = name;
+    }
+
+    public Item(Long classId, String name) {
+        this.classId = classId;
+        this.name = name;
+    }
 
     public Long getId() {
         return id;
@@ -61,5 +72,5 @@ public class Item {
                 ", name='" + name + '\'' +
                 '}';
     }
-    
+
 }
