@@ -6,6 +6,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity(name = "INVENTORIES")
 public class Inventory {
@@ -86,6 +87,30 @@ public class Inventory {
 
     public void deleteItem(Item item) {
         this.itemList.remove(item);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Inventory)) return false;
+        Inventory inventory = (Inventory) o;
+        return Objects.equals(id, inventory.id) && Objects.equals(inventoryUrl, inventory.inventoryUrl) && Objects.equals(costUSD, inventory.costUSD) && Objects.equals(costRUB, inventory.costRUB) && Objects.equals(itemList, inventory.itemList);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, inventoryUrl, costUSD, costRUB, itemList);
+    }
+
+    @Override
+    public String toString() {
+        return "Inventory{" +
+                "id=" + id +
+                ", inventoryUrl='" + inventoryUrl + '\'' +
+                ", costUSD=" + costUSD +
+                ", costRUB=" + costRUB +
+                ", itemList=" + itemList +
+                '}';
     }
 
 }
