@@ -1,6 +1,7 @@
 package com.incomeCalculator.steaminventoryapi.models;
 
 import com.incomeCalculator.core.wallet.money.Money;
+import com.incomeCalculator.userservice.models.User;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -9,6 +10,9 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity(name = "INVENTORIES")
+@Table(indexes = {
+        @Index(name = "userIndex", columnList = "user")
+})
 public class Inventory {
 
     private @Id
@@ -23,25 +27,33 @@ public class Inventory {
     @OneToMany
     private List<Item> itemList;
 
-    public Inventory(Long id, String inventoryUrl, BigDecimal costUSD, BigDecimal costRUB, List<Item> itemList) {
+    @OneToOne
+    private User user;
+
+    public Inventory(Long id, String inventoryUrl, BigDecimal costUSD,
+                     BigDecimal costRUB, List<Item> itemList, User user) {
         this.id = id;
         this.inventoryUrl = inventoryUrl;
         this.costUSD = costUSD;
         this.costRUB = costRUB;
         this.itemList = itemList;
+        this.user = user;
     }
 
-    public Inventory(String inventoryUrl, BigDecimal costUSD, BigDecimal costRUB, List<Item> itemList) {
+    public Inventory(String inventoryUrl, BigDecimal costUSD,
+                     BigDecimal costRUB, List<Item> itemList, User user) {
         this.inventoryUrl = inventoryUrl;
         this.costUSD = costUSD;
         this.costRUB = costRUB;
         this.itemList = itemList;
+        this.user = user;
     }
 
-    public Inventory(String inventoryUrl, BigDecimal costUSD, BigDecimal costRUB) {
+    public Inventory(String inventoryUrl, BigDecimal costUSD, BigDecimal costRUB, User user) {
         this.inventoryUrl = inventoryUrl;
         this.costUSD = costUSD;
         this.costRUB = costRUB;
+        this.user = user;
         this.itemList = new ArrayList<>();
     }
 
@@ -87,6 +99,14 @@ public class Inventory {
 
     public void deleteItem(Item item) {
         this.itemList.remove(item);
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
