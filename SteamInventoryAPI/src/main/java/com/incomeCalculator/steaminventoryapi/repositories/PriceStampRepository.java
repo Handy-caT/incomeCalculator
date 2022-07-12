@@ -13,4 +13,5 @@ public interface PriceStampRepository extends JpaRepository<ItemPriceStamp, Long
     Optional<ItemPriceStamp> findById(Long aLong);
 
     List<ItemPriceStamp> findByItem(Item item);
+
 }
