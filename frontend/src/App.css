@@ -1,5 +1,10 @@
-.App {
+.center {
   text-align: center;
+}
+
+label.form-label {
+  text-align: start;
+  font-weight: bold;
 }
 
 .App-logo {
