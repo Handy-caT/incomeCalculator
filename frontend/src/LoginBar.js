@@ -7,12 +7,17 @@ class LoginBar extends React.Component {
     }
 
     render() {
-        const isLoggedIn = this.props.isLoggedIn;
-
         return (
         <ul className={'navbar-nav d-flex align-items-baseline'}>
-
+            <li className={'nav-item'}>
+                <a className={'nav-link mx-2'} href="/">Sign Up</a>
+            </li>
+            <li className={'nav-item'}>
+                <a className={'nav-link mx-2'} href="/">Log In</a>
+            </li>
         </ul>
         );
     }
 }
+
+export default LoginBar;

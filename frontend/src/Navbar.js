@@ -1,4 +1,5 @@
 import React from 'react';
+import LoginBar from "./LoginBar";
 
 class Navbar extends React.Component {
     render() {
@@ -20,6 +21,7 @@ class Navbar extends React.Component {
                             <a className="nav-link mx-2" href="#">Help</a>
                         </li>
                     </ul>
+                    <LoginBar />
                 </nav>
             </div>
         </header>

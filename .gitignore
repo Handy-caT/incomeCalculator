@@ -26,3 +26,4 @@ AuthApi/src/main/resources/application.properties
 frontend/package-lock.json
 frontend/yarn.lock
 *.lock
+*.class

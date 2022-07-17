@@ -15,6 +15,8 @@ function formatJSON(today,yesterday) {
     console.log(today);
     console.log(yesterday);
 
+    let i = 0;
+
     today['_embedded']['ratioList'].map(item => {
         let object = {
             "currency": item['currencyUnit']['currencyName'],
@@ -23,8 +25,8 @@ function formatJSON(today,yesterday) {
         };
         array.push(object);
     })
-
-    let i = 0;
+    console.log(array);
+    i = 0;
 
     yesterday['_embedded']['ratioList'].map(item => {
         array[i]['yesterday'] = item['ratio'];
@@ -99,13 +101,31 @@ class CurrencyRatios extends React.Component {
         } else {
             let ratios = formatJSON(today,yesterday);
             return (
-                <ul>
-                    {ratios.map( item => (
-                        <li key={item.id}>
-                            {item['currency']}  {item['today']}  {item['yesterday']}  {item['difference']}  {item['differencePercentage']}  {item['positive']}
-                        </li>
-                        )) }
-                </ul>
+                <div className="container">
+                    <h1 className="mt-3 mb-3">Курсы валют</h1>
+                    <table className="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Валюта</th>
+                                <th>Сегодня</th>
+                                <th>Вчера</th>
+                                <th>Разница</th>
+                                <th>Разница процентов</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {ratios.map(item => (
+                        <tr>
+                            <th>{item.currency}</th>
+                            <td>{item.today}</td>
+                            <td>{item.yesterday}</td>
+                            <td>{item.difference.toFixed(3)}</td>
+                            <td>{item.differencePercentage.toFixed(3)}</td>
+                        </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
             );
         }
 
