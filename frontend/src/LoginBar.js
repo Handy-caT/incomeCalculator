@@ -13,7 +13,7 @@ class LoginBar extends React.Component {
                 <a className={'nav-link mx-2'} href="/signup">Sign Up</a>
             </li>
             <li className={'nav-item'}>
-                <a className={'nav-link mx-2'} href="/">Log In</a>
+                <a className={'nav-link mx-2'} href="/login">Log In</a>
             </li>
         </ul>
         );
