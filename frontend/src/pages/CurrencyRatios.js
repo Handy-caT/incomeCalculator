@@ -21,11 +21,11 @@ function formatJSON(today,yesterday) {
         let object = {
             "currency": item['currencyUnit']['currencyName'],
             "today": item['ratio'],
-            "id": item['id']
+            "id": item['id'],
+            "scale": item['currencyUnit']['currencyScale']
         };
         array.push(object);
     })
-    console.log(array);
     i = 0;
 
     yesterday['_embedded']['ratioList'].map(item => {
@@ -35,8 +35,26 @@ function formatJSON(today,yesterday) {
         array[i]['difference'] > 0 ? array[i]['positive'] = true : array[i]['positive'] = false;
         i++;
     })
-    console.log(array);
+
+    array.pop();
     return array;
+}
+
+function printItem(item) {
+    var type;
+    if(item.positive) {
+        type = 'positive-ratio';
+    } else {
+        type = 'negative-ratio';
+    }
+    return (
+        <tr>
+            <th>{item.scale} {item.currency}</th>
+            <td>{item.today}</td>
+            <td className={type}>{item.difference.toFixed(4)}</td>
+            <td className={type}>{item.differencePercentage.toFixed(4)}%</td>
+        </tr>
+    );
 }
 
 class CurrencyRatios extends React.Component {
@@ -102,29 +120,24 @@ class CurrencyRatios extends React.Component {
             let ratios = formatJSON(today,yesterday);
             return (
                 <div className="container">
+                <div className="col-md-auto">
                     <h1 className="mt-3 mb-3">Курсы валют</h1>
                     <table className="table table-bordered">
                         <thead>
                             <tr>
                                 <th>Валюта</th>
                                 <th>Сегодня</th>
-                                <th>Вчера</th>
                                 <th>Разница</th>
                                 <th>Разница процентов</th>
                             </tr>
                         </thead>
                         <tbody>
                         {ratios.map(item => (
-                        <tr>
-                            <th>{item.currency}</th>
-                            <td>{item.today}</td>
-                            <td>{item.yesterday}</td>
-                            <td>{item.difference.toFixed(3)}</td>
-                            <td>{item.differencePercentage.toFixed(3)}</td>
-                        </tr>
+                        printItem(item)
                         ))}
                         </tbody>
                     </table>
+                </div>
                 </div>
             );
         }

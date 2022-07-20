@@ -7,6 +7,19 @@ label.form-label {
   font-weight: bold;
 }
 
+.background{
+  background-color: #3BE2F5;
+}
+
+.positive-ratio {
+  color: #12873B;
+}
+
+.negative-ratio {
+  color: #E81E17;
+}
+
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;

@@ -10,10 +10,10 @@ class LoginBar extends React.Component {
         return (
         <ul className={'navbar-nav d-flex align-items-baseline'}>
             <li className={'nav-item'}>
-                <a className={'nav-link mx-2'} href="/signup">Sign Up</a>
+                <a className={'nav-link mx-2 fw-bold'} href="/signup">Sign Up</a>
             </li>
             <li className={'nav-item'}>
-                <a className={'nav-link mx-2'} href="/login">Log In</a>
+                <a className={'nav-link mx-2 fw-bold'} href="/login">Log In</a>
             </li>
         </ul>
         );

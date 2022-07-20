@@ -41,7 +41,7 @@ class LogIn extends React.Component {
                             label={'Password'}
                             placeholder={'Password'}/>
 
-                        <div className="row mb-3 justify-content-center">
+                        <div className="row mb-1 justify-content-center">
                             <div className="col-sm-2 col-form-label"></div>
                             <div className="col-sm-5">
                                 <input type="checkbox" className="form-check-input" id="exampleCheck1" />
@@ -49,7 +49,7 @@ class LogIn extends React.Component {
                             </div>
                         </div>
 
-                        <div className="row my-3 justify-content-center ">
+                        <div className="row mt-3 mb-1 justify-content-center ">
                             <input type="button" className={'btn btn-primary col-5 mb-2'} value="Log In" />
                         </div>
 
