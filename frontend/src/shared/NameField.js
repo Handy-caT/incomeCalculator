@@ -14,12 +14,12 @@ class NameField extends React.Component {
     render() {
         const value = this.props.value;
         return(
-            <div className="row mb-3 justify-content-center ">
+            <div className="row mb-2 justify-content-center ">
                 <div className="col-sm-2 col-form-label">
                     <label className={'form-label'} htmlFor="firstName">{this.props.label}</label>
                 </div>
                 <div className={'col-sm-5'}>
-                    <input type="text" className={'form-control'} placeholder={'Name'}
+                    <input type="text" className={'form-control'} placeholder={this.props.placeholder}
                         value={value} onChange={this.handleChange}/>
                 </div>
             </div>

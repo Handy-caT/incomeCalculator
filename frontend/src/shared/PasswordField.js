@@ -14,12 +14,12 @@ class PasswordField extends React.Component {
     render() {
         const value = this.props.value;
         return(
-        <div className="row mb-3 justify-content-center ">
+        <div className="row mb-2 justify-content-center ">
             <div className="col-sm-2 col-form-label">
                 <label className={'form-label'} htmlFor="password">{this.props.label}</label>
             </div>
             <div className={'col-sm-5'}>
-                <input type="password" className={'form-control'} placeholder={'Pa$$w0rd'}
+                <input type="password" className={'form-control'} placeholder={this.props.placeholder}
                        value={value} onChange={this.handleChange} />
             </div>
         </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import NameField from "../shared/NameField";
 import PasswordField from "../shared/PasswordField";
+import EmailField from "../shared/EmailField";
 
 class SignUp extends React.Component {
     constructor(props) {
@@ -44,18 +45,26 @@ class SignUp extends React.Component {
                                 <NameField
                                     onValueChange={this.handleNameChange}
                                     value={this.state.name}
-                                    label={'Name'}/>
+                                    label={'Name'}
+                                    placeholder={'Name'}/>
+                                <EmailField
+                                    onValueChange={this.handleEmailChange}
+                                    value={this.state.email}
+                                    label={'Email'}
+                                    placeholder={'name@example.com'}/>
                                 <PasswordField
                                     onValueChange={this.handlePasswordChange}
                                     value={this.state.password}
-                                    label={'Password'}/>
+                                    label={'Password'}
+                                    placeholder={'Pa$$w0rd'}/>
                                 <PasswordField
-                                    onValueChange={this.handlePasswordConfirmationChange}
-                                    value={this.state.password_confirmation}
-                                    label={'Password confirmation'}/>
+                                    onValueChange={this.handlePasswordChange}
+                                    value={this.state.password}
+                                    label={'Password confirmation'}
+                                    placeholder={'Pa$$w0rd'}/>
 
-                                <div className="row mb-3 justify-content-center ">
-                                 <input type="button" className={'btn btn-primary col-5'} value="Sign Up" />
+                                <div className="row my-3 justify-content-center ">
+                                 <input type="button" className={'btn btn-primary col-5'} value="Create me account" />
                                 </div>
 
                             </form>
