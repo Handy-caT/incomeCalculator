@@ -5,7 +5,7 @@ import com.incomeCalculator.steaminventoryapi.models.Item;
 import com.incomeCalculator.steaminventoryapi.models.ItemPriceStamp;
 import com.incomeCalculator.steaminventoryapi.repositories.InventoryRepository;
 import com.incomeCalculator.steaminventoryapi.repositories.ItemRepository;
-import com.incomeCalculator.steaminventoryapi.repositories.PriceStampRepository;
+import com.incomeCalculator.steaminventoryapi.repositories.ItemPriceStampRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
@@ -20,7 +20,7 @@ public class InventoryService {
     private ItemRepository itemRepository;
 
     @Autowired
-    private PriceStampRepository priceStampRepository;
+    private ItemPriceStampRepository priceStampRepository;
 
     public void countPrice(Inventory inventory) {
         List<Item> itemList = inventory.getItemList();
@@ -28,7 +28,9 @@ public class InventoryService {
         BigDecimal costRUB = BigDecimal.ZERO;
 
         for (Item item : itemList) {
-            ItemPriceStamp priceStamp = priceStampRepository.findByItem(item);
+            List<ItemPriceStamp> priceStampList =  priceStampRepository.findByItem(item);
+            ItemPriceStamp priceStamp = priceStampList.get(0);
+
             costUSD = costUSD.add(priceStamp.getCostUSD());
             costRUB = costRUB.add(priceStamp.getCostRUB());
         }

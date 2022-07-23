@@ -9,6 +9,8 @@ public class DateFormatter {
     private static final SimpleDateFormat webFormatter = new SimpleDateFormat("yyyy-MM-dd");
     private static final SimpleDateFormat sqlFormatter = new SimpleDateFormat("dd_MM_yyyy");
 
+    private static final SimpleDateFormat sqlTimestampFormatter = new SimpleDateFormat("dd_MM_yyyy HH:mm:ss");
+
     public static String sqlFormat(Date date) {
        return sqlFormatter.format(date);
     }
@@ -21,6 +23,14 @@ public class DateFormatter {
     }
     public static Date webParse(String dateString) throws ParseException {
         return webFormatter.parse(dateString);
+    }
+
+    public static String sqlTimestampFormat(Date date) {
+        return sqlTimestampFormatter.format(date);
+    }
+
+    public static Date sqlTimestampParse(String dateString) throws ParseException {
+        return sqlTimestampFormatter.parse(dateString);
     }
 
 }

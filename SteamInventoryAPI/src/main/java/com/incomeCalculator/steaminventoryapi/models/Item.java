@@ -5,7 +5,8 @@ import java.util.Objects;
 
 @Entity(name = "ITEMS")
 @Table(indexes = {
-        @Index(name = "classIdIndex", columnList = "classId")
+        @Index(name = "classIdIndex", columnList = "classId"),
+        @Index(name = "idx_item_classid", columnList = "classId")
 })
 public class Item {
 
@@ -13,7 +14,6 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY)  Long id;
 
     private Long classId;
-
     private String name;
 
     public Item(Long id, Long classId, String name) {

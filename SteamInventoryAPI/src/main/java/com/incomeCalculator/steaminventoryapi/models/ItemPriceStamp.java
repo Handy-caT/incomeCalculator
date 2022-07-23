@@ -3,12 +3,15 @@ package com.incomeCalculator.steaminventoryapi.models;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity(name = "PRICES")
 @Table(indexes = {
-        @Index(name = "itemIndex", columnList = "item")
+        @Index(name = "itemIndex", columnList = "item"),
+        @Index(name = "idx_itempricestamp_datestring", columnList = "dateString"),
+        @Index(name = "idx_itempricestamp_item_id", columnList = "item_id")
 })
 public class ItemPriceStamp {
 
@@ -18,28 +21,30 @@ public class ItemPriceStamp {
     @ManyToOne
     private Item item;
 
-    private Long costUSD;
+    private BigDecimal costUSD;
 
-    private Long costRUB;
+    private BigDecimal costRUB;
 
     private Long volume;
 
-    @CreationTimestamp
-    private LocalDateTime createDateTime;
+    @Column(length = 19)
+    private String dateString;
 
-    public ItemPriceStamp(Long id, Item item, Long costUSD, Long costRUB, Long volume) {
+    public ItemPriceStamp(Long id, Item item, BigDecimal costUSD, BigDecimal costRUB, Long volume, String dateString) {
         this.id = id;
         this.item = item;
         this.costUSD = costUSD;
         this.costRUB = costRUB;
         this.volume = volume;
+        this.dateString = dateString;
     }
 
-    public ItemPriceStamp(Item item, Long costUSD, Long costRUB, Long volume) {
+    public ItemPriceStamp(Item item, BigDecimal costUSD, BigDecimal costRUB, Long volume, String dateString) {
         this.item = item;
         this.costUSD = costUSD;
         this.costRUB = costRUB;
         this.volume = volume;
+        this.dateString = dateString;
     }
 
     public Long getId() {
@@ -58,19 +63,19 @@ public class ItemPriceStamp {
         this.item = item;
     }
 
-    public Long getCostUSD() {
+    public BigDecimal getCostUSD() {
         return costUSD;
     }
 
-    public void setCostUSD(Long costUSD) {
+    public void setCostUSD(BigDecimal costUSD) {
         this.costUSD = costUSD;
     }
 
-    public Long getCostRUB() {
+    public BigDecimal getCostRUB() {
         return costRUB;
     }
 
-    public void setCostRUB(Long costRUB) {
+    public void setCostRUB(BigDecimal costRUB) {
         this.costRUB = costRUB;
     }
 
@@ -82,12 +87,12 @@ public class ItemPriceStamp {
         this.volume = volume;
     }
 
-    public LocalDateTime getCreateDateTime() {
-        return createDateTime;
+    public String getDateString() {
+        return dateString;
     }
 
-    public void setCreateDateTime(LocalDateTime createDateTime) {
-        this.createDateTime = createDateTime;
+    public void setDateString(String dateString) {
+        this.dateString = dateString;
     }
 
     @Override

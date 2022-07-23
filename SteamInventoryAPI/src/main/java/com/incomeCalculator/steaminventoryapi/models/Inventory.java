@@ -11,7 +11,8 @@ import java.util.Objects;
 
 @Entity(name = "INVENTORIES")
 @Table(indexes = {
-        @Index(name = "userIndex", columnList = "user")
+        @Index(name = "userIndex", columnList = "user"),
+        @Index(name = "idx_inventory_user_id", columnList = "user_id")
 })
 public class Inventory {
 
