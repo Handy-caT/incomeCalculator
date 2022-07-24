@@ -4,7 +4,10 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "REQUEST_DESTINATIONS")
+@Table(name = "REQUEST_DESTINATIONS", indexes = {
+        @Index(name = "idx_requestdestination", columnList = "apiName"),
+        @Index(name = "idx_requestdestination_type", columnList = "requestType")
+})
 public class RequestDestination {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
