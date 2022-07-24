@@ -29,6 +29,7 @@ public class UserService {
 
     public static final String userRole = "ROLE_USER";
     public static final String adminRole = "ROLE_ADMIN";
+    public static final String siteRole = "ROLE_SITE";
 
 
     public User saveUser(User user) {
@@ -53,6 +54,10 @@ public class UserService {
             else throw new IllegalArgumentException("Wrong password");
         }
         return null;
+    }
+
+    public boolean isSite(User user) {
+        return user.getRole().getRoleName().equals(siteRole);
     }
 
     public boolean isAdmin(User user) {

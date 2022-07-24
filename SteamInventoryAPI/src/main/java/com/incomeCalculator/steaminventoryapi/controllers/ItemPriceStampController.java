@@ -5,6 +5,7 @@ import com.incomeCalculator.steaminventoryapi.modelAssemblers.ItemPriceStampMode
 import com.incomeCalculator.steaminventoryapi.models.Item;
 import com.incomeCalculator.steaminventoryapi.models.ItemPriceStamp;
 import com.incomeCalculator.steaminventoryapi.repositories.ItemPriceStampRepository;
+import com.incomeCalculator.steaminventoryapi.requests.ItemPriceStampRequest;
 import com.incomeCalculator.userservice.exceptions.PermissionException;
 import com.incomeCalculator.userservice.models.User;
 import com.incomeCalculator.userservice.repositories.UserRepository;
@@ -17,6 +18,8 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -69,6 +72,13 @@ public class ItemPriceStampController {
         } else {
             throw new PermissionException();
         }
+    }
+
+    @PostMapping("/priceStamps")
+    public EntityModel<ItemPriceStamp> addOne(@RequestBody ItemPriceStampRequest itemPriceStampRequest,
+                                              HttpServletRequest request) {
+        User user = handler.getUserFromRequest(request);
+        return null;
     }
 
 }

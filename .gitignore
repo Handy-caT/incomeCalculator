@@ -12,7 +12,6 @@
 *.class
 
 *.DS_Store
-.PVS-Studio/settings.json
 /Core/testFiles/db/
 /src/main/resources/application.properties
 *.db
@@ -22,8 +21,6 @@
 .env
 AuthApi/src/main/resources/application.properties
 *mvnw
-*.class
 frontend/package-lock.json
 frontend/yarn.lock
 *.lock
-*.class

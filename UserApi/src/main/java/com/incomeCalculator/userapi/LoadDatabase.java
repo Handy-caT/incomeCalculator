@@ -22,6 +22,7 @@ class LoadDatabase {
 
         rolesList.add(new Role("ROLE_USER"));
         rolesList.add(new Role("ROLE_ADMIN"));
+        rolesList.add(new Role("ROLE_SITE"));
 
         return args -> {
             for(Role role : rolesList) {
