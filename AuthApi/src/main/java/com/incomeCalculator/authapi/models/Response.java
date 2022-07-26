@@ -4,10 +4,10 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "request_sources", indexes = {
-        @Index(name = "idx_requestsource_request_id", columnList = "request_id")
+@Table(name = "RESPONSES", indexes = {
+        @Index(name = "idx_response_request_id", columnList = "request_id")
 })
-public class RequestSource {
+public class Response {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -16,7 +16,9 @@ public class RequestSource {
     @OneToOne
     private Request request;
 
-    private String sourceIp;
+    private short status;
+
+    private String statusText;
 
     public Long getId() {
         return id;
@@ -34,33 +36,41 @@ public class RequestSource {
         this.request = request;
     }
 
-    public String getSourceIp() {
-        return sourceIp;
+    public short getStatus() {
+        return status;
     }
 
-    public void setSourceIp(String sourceIp) {
-        this.sourceIp = sourceIp;
+    public void setStatus(short status) {
+        this.status = status;
+    }
+
+    public String getStatusText() {
+        return statusText;
+    }
+
+    public void setStatusText(String statusText) {
+        this.statusText = statusText;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof RequestSource)) return false;
-        RequestSource that = (RequestSource) o;
-        return Objects.equals(id, that.id) && Objects.equals(request, that.request) && Objects.equals(sourceIp, that.sourceIp);
+        if (!(o instanceof Response)) return false;
+        Response response = (Response) o;
+        return status == response.status && Objects.equals(id, response.id) && Objects.equals(request, response.request);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, request, sourceIp);
+        return Objects.hash(id, request, status);
     }
 
     @Override
     public String toString() {
-        return "RequestSource{" +
+        return "Response{" +
                 "id=" + id +
                 ", request=" + request +
-                ", sourceIp='" + sourceIp + '\'' +
+                ", status=" + status +
                 '}';
     }
 
