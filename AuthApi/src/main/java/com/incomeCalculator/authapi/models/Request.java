@@ -19,6 +19,20 @@ public class Request {
     @CreationTimestamp
     private LocalDateTime createDateTime;
 
+    public Request(Long id, String url, LocalDateTime createDateTime) {
+        this.id = id;
+        this.url = url;
+        this.createDateTime = createDateTime;
+    }
+
+    public Request(String url) {
+        this.url = url;
+    }
+
+    public Request() {
+
+    }
+
     public Long getId() {
         return id;
     }

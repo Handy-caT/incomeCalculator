@@ -21,6 +21,27 @@ public class RequestDestination {
 
     private String requestType;
 
+    public RequestDestination(Long id, Request request, String apiName, String requestType) {
+        this.id = id;
+        this.request = request;
+        this.apiName = apiName;
+        this.requestType = requestType;
+    }
+
+    public RequestDestination(Request request, String apiName, String requestType) {
+        this.request = request;
+        this.apiName = apiName;
+        this.requestType = requestType;
+    }
+
+    public RequestDestination(Request request) {
+        this.request = request;
+    }
+
+    public RequestDestination() {
+
+    }
+
     public Long getId() {
         return id;
     }

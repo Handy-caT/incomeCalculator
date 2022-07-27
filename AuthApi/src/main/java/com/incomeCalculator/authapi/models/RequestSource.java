@@ -18,6 +18,25 @@ public class RequestSource {
 
     private String sourceIp;
 
+    public RequestSource(Long id, Request request, String sourceIp) {
+        this.id = id;
+        this.request = request;
+        this.sourceIp = sourceIp;
+    }
+
+    public RequestSource(Request request, String sourceIp) {
+        this.request = request;
+        this.sourceIp = sourceIp;
+    }
+
+    public RequestSource(Request request) {
+        this.request = request;
+    }
+
+    public RequestSource() {
+
+    }
+
     public Long getId() {
         return id;
     }

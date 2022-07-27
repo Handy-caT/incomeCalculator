@@ -20,6 +20,23 @@ public class Response {
 
     private String statusText;
 
+    public Response(Long id, Request request, short status, String statusText) {
+        this.id = id;
+        this.request = request;
+        this.status = status;
+        this.statusText = statusText;
+    }
+
+    public Response(Request request, short status, String statusText) {
+        this.request = request;
+        this.status = status;
+        this.statusText = statusText;
+    }
+
+    public Response() {
+
+    }
+
     public Long getId() {
         return id;
     }
