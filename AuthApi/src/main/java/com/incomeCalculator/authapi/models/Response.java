@@ -8,15 +8,16 @@ import java.util.Objects;
         @Index(name = "idx_response_request_id", columnList = "request_id")
 })
 public class Response {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne
     private Request request;
 
-    private short status;
+    private int status;
 
     private String statusText;
 
@@ -33,9 +34,14 @@ public class Response {
         this.statusText = statusText;
     }
 
+    public Response(Request request) {
+        this.request = request;
+    }
+
     public Response() {
 
     }
+
 
     public Long getId() {
         return id;
@@ -53,11 +59,11 @@ public class Response {
         this.request = request;
     }
 
-    public short getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(short status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 
