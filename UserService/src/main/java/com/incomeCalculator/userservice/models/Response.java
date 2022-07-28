@@ -1,4 +1,4 @@
-package com.incomeCalculator.authapi.models;
+package com.incomeCalculator.userservice.models;
 
 import javax.persistence.*;
 import java.util.Objects;

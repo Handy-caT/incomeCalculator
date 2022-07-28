@@ -1,19 +1,18 @@
 package com.incomeCalculator.authapi;
 
-import com.incomeCalculator.authapi.models.Request;
-import com.incomeCalculator.authapi.models.RequestDestination;
-import com.incomeCalculator.authapi.models.RequestSource;
-import com.incomeCalculator.authapi.models.Response;
-import com.incomeCalculator.authapi.repositories.RequestDestinationRepository;
-import com.incomeCalculator.authapi.repositories.RequestRepository;
-import com.incomeCalculator.authapi.repositories.RequestSourceRepository;
-import com.incomeCalculator.authapi.repositories.ResponseRepository;
+import com.incomeCalculator.userservice.models.Request;
+import com.incomeCalculator.userservice.models.RequestDestination;
+import com.incomeCalculator.userservice.models.RequestSource;
+import com.incomeCalculator.userservice.models.Response;
+import com.incomeCalculator.userservice.repositories.RequestDestinationRepository;
+import com.incomeCalculator.userservice.repositories.RequestRepository;
+import com.incomeCalculator.userservice.repositories.RequestSourceRepository;
+import com.incomeCalculator.userservice.repositories.ResponseRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;

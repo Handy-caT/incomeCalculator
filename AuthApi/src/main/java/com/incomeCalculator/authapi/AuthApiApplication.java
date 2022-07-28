@@ -24,9 +24,8 @@ import java.util.function.Function;
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.incomeCalculator.userservice.exceptions"})
 @ComponentScan(basePackages = {"com.incomeCalculator.userservice.services"})
-@EntityScan(basePackages = {"com.incomeCalculator.userservice.models", "com.incomeCalculator.authapi.models"})
-@EnableJpaRepositories(basePackages = {"com.incomeCalculator.userservice.repositories",
-        "com.incomeCalculator.authapi.repositories"})
+@EntityScan(basePackages = {"com.incomeCalculator.userservice.models"})
+@EnableJpaRepositories(basePackages = {"com.incomeCalculator.userservice.repositories"})
 public class AuthApiApplication {
 
     @Bean
