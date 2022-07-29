@@ -1,7 +1,11 @@
 package com.incomeCalculator.userservice.models;
 
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity(name = "USERS")
@@ -21,6 +25,11 @@ public class User {
     @OneToOne(orphanRemoval = true)
     private Token token;
 
+    @CreationTimestamp
+    private LocalDateTime registrationDateTime;
+
+    @UpdateTimestamp
+    private LocalDateTime lastUpdateDateTime;
 
     public User() {
 
@@ -39,6 +48,14 @@ public class User {
         this.role = role;
     }
 
+    public User(Long id, String login, String password, Role role, LocalDateTime registrationDateTime, LocalDateTime lastUpdateDateTime) {
+        this.id = id;
+        this.login = login;
+        this.password = password;
+        this.role = role;
+        this.registrationDateTime = registrationDateTime;
+        this.lastUpdateDateTime = lastUpdateDateTime;
+    }
 
     public Long getId() {
         return id;
@@ -76,6 +93,26 @@ public class User {
         this.id = id;
     }
 
+    public Token getToken() {
+        return token;
+    }
+
+    public LocalDateTime getRegistrationDateTime() {
+        return registrationDateTime;
+    }
+
+    public void setRegistrationDateTime(LocalDateTime registrationDateTime) {
+        this.registrationDateTime = registrationDateTime;
+    }
+
+    public LocalDateTime getLastUpdateDateTime() {
+        return lastUpdateDateTime;
+    }
+
+    public void setLastUpdateDateTime(LocalDateTime lastUpdateDateTime) {
+        this.lastUpdateDateTime = lastUpdateDateTime;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -83,7 +120,8 @@ public class User {
                 ", login='" + login + '\'' +
                 ", password='" + password + '\'' +
                 ", role=" + role +
-                ", token=" + token.getToken() +
+                ", registrationDateTime=" + registrationDateTime +
+                ", lastUpdateDateTime=" + lastUpdateDateTime +
                 '}';
     }
 
@@ -92,22 +130,12 @@ public class User {
         if (this == o) return true;
         if (!(o instanceof User)) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(login, user.login) && Objects.equals(password, user.password) && Objects.equals(role, user.role);
+        return Objects.equals(id, user.id) && Objects.equals(login, user.login) && Objects.equals(password, user.password) && Objects.equals(role, user.role) && Objects.equals(token, user.token) && Objects.equals(registrationDateTime, user.registrationDateTime) && Objects.equals(lastUpdateDateTime, user.lastUpdateDateTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, login, password, role);
+        return Objects.hash(id, login, password, role, token, registrationDateTime, lastUpdateDateTime);
     }
 
-    @ManyToOne
-    private Role manyToOne;
-
-    public Role getManyToOne() {
-        return manyToOne;
-    }
-
-    public void setManyToOne(Role manyToOne) {
-        this.manyToOne = manyToOne;
-    }
 }
