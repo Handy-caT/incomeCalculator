@@ -2,18 +2,18 @@ package com.incomeCalculator.userservice.requests;
 
 import com.incomeCalculator.userservice.models.User;
 
-public class UserResponse {
+public class UserDTO {
 
     Long id;
     String login;
     String roleName;
 
-    public UserResponse(String login, String roleName, Long id) {
+    public UserDTO(String login, String roleName, Long id) {
         this.login = login;
         this.roleName = roleName;
         this.id = id;
     }
-    public UserResponse(User user) {
+    public UserDTO(User user) {
         this.login = user.getLogin();
         this.roleName = user.getRole().getRoleName();
         this.id = user.getId();

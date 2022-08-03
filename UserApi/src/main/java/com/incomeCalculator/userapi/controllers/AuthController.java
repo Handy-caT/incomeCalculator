@@ -2,7 +2,7 @@ package com.incomeCalculator.userapi.controllers;
 
 
 import com.incomeCalculator.userservice.requests.AuthResponse;
-import com.incomeCalculator.userservice.requests.UserAuthRequest;
+import com.incomeCalculator.userservice.requests.AuthDTO;
 import com.incomeCalculator.userservice.exceptions.UserNotFoundException;
 import com.incomeCalculator.userservice.models.User;
 import com.incomeCalculator.userservice.services.JwtTokenService;
@@ -27,7 +27,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public AuthResponse registerUser(@RequestBody UserAuthRequest registrationRequest) {
+    public AuthResponse registerUser(@RequestBody AuthDTO registrationRequest) {
         User user = new User();
         user.setPassword(registrationRequest.getPassword());
         user.setLogin(registrationRequest.getLogin());
@@ -49,7 +49,7 @@ public class AuthController {
     }
 
     @PostMapping("/auth")
-    public AuthResponse auth(@RequestBody UserAuthRequest request) {
+    public AuthResponse auth(@RequestBody AuthDTO request) {
         User userEntity = service.findByLoginAndPassword(request.getLogin(), request.getPassword());
         String token = tokenService.generateToken(userEntity.getLogin());
         tokenService.saveToken(token,userEntity);
@@ -57,5 +57,7 @@ public class AuthController {
 
         return new AuthResponse(token);
     }
+
+
 
 }
