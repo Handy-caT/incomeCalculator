@@ -15,5 +15,6 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
 
     List<Request> findAllByCreateDateTimeBetween(LocalDateTime startDateTime, LocalDateTime endDateTime);
 
+    Request findFirstByOrderByCreateDateTimeDesc();
 
 }

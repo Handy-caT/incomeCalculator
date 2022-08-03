@@ -43,8 +43,9 @@ public class RequestStatistics {
         this.createDateTime = createDateTime;
     }
 
-    public RequestStatistics(Long requestCount) {
+    public RequestStatistics(Long requestCount, Request request) {
         this.requestCount = requestCount;
+        this.lastRequest = request;
     }
 
     public RequestStatistics() {

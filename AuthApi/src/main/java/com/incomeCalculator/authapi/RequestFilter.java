@@ -43,6 +43,7 @@ public class RequestFilter implements GatewayFilter {
         requestMap.put("/ratios", "CardAPI");
         requestMap.put("/cards","CardAPI");
         requestMap.put("/users","UserAPI");
+        requestMap.put("/statistics","UserAPI");
     }
 
     @Override
