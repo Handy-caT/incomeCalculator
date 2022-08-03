@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.Objects;
 
 @Entity(name = "CARDS")
@@ -93,6 +94,7 @@ public class Card implements CardProvider {
 
     @Override
     public String toString() {
+
         return "Card{" +
                 "id=" + id +
                 ", currencyUnit=" + currencyUnit +
@@ -114,4 +116,5 @@ public class Card implements CardProvider {
     public int hashCode() {
         return Objects.hash(id, currencyUnit, balance, user, cardName);
     }
+
 }

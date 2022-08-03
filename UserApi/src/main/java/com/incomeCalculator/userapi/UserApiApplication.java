@@ -11,8 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
 @ComponentScan("com.incomeCalculator")
-@EnableJpaRepositories("com.incomeCalculator.userservice.repositories")
-@EntityScan("com.incomeCalculator.userservice.models")
+@EnableJpaRepositories({"com.incomeCalculator.userservice.repositories","com.incomeCalculator.userapi.repositories"})
+@EntityScan({"com.incomeCalculator.userservice.models","com.incomeCalculator.userapi.models"})
 public class UserApiApplication {
 
     @Bean

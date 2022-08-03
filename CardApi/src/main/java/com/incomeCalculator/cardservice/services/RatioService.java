@@ -11,6 +11,7 @@ import com.incomeCalculator.core.wallet.money.util.DateFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -63,5 +64,10 @@ public class RatioService {
                 .save(new Ratio(currencyUnitRepository.findByCurrencyName("BYN").get(),
                         BigDecimal.ONE, DateFormatter.sqlFormat(date))));
 
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void initRatios() {
+        initRatios(new Date());
     }
 }

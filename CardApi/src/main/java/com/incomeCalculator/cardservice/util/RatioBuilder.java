@@ -1,6 +1,7 @@
 package com.incomeCalculator.cardservice.util;
 
 import com.incomeCalculator.cardservice.exceptions.CurrencyUnitNotFoundException;
+import com.incomeCalculator.cardservice.exceptions.RatioNotFoundException;
 import com.incomeCalculator.cardservice.models.Ratio;
 import com.incomeCalculator.cardservice.repositories.CurrencyUnitRepository;
 import com.incomeCalculator.cardservice.repositories.RatioRepository;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public class RatioBuilder implements CurrencyUpdaterBuilder {
 
@@ -51,10 +53,16 @@ public class RatioBuilder implements CurrencyUpdaterBuilder {
         if(currencyObject != null) {
             BigDecimal ratio = BigDecimal.valueOf(WebJSONConverter.getRatioFromObject(currencyObject));
 
-            log.info("Preloading " + repository.save(new Ratio(currencyUnitRepository
-                            .findByCurrencyName(currencyString)
-                            .orElseThrow(() -> new CurrencyUnitNotFoundException(currencyString)),
-                            ratio, DateFormatter.sqlFormat(date))));
+            try{
+                Ratio ratioEntity = repository
+                        .findByCurrencyUnit_CurrencyNameAndDateString(currencyString,DateFormatter.sqlFormat(date))
+                        .orElseThrow(() -> new RatioNotFoundException(currencyString));
+            } catch (RatioNotFoundException e) {
+                log.info("Preloading " + repository.save(new Ratio(currencyUnitRepository
+                        .findByCurrencyName(currencyString)
+                        .orElseThrow(() -> new CurrencyUnitNotFoundException(currencyString)),
+                        ratio, DateFormatter.sqlFormat(date))));
+            }
         }
     }
 }

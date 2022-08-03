@@ -25,6 +25,8 @@ public class ProxyConfig {
 
     @Autowired
     JwtFilter filter;
+    @Autowired
+    RequestFilter requestFilter;
 
     @Bean
     RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
@@ -32,27 +34,31 @@ public class ProxyConfig {
         return builder.routes()
                 .route(p -> p
                         .path("/cards/**")
-                        .filters(f -> f.filter(filter))
+                        .filters(f -> f.filter(requestFilter).filter(filter))
                         .uri("http://" + calculatorHost + ':' + calculatorPort))
                 .route(p -> p
                         .path("/currencyUnits/**")
-                        .filters(f -> f.filter(filter))
+                        .filters(f -> f.filter(requestFilter).filter(filter))
                         .uri("http://" + calculatorHost + ':' + calculatorPort))
                 .route(p -> p
                         .path("/ratios/**")
-                        .filters(f -> f.filter(filter))
+                        .filters(f -> f.filter(requestFilter).filter(filter))
                         .uri("http://" + calculatorHost + ':' + calculatorPort))
                 .route(p -> p
                         .path("/register")
-                        .filters(f -> f.filter(filter))
+                        .filters(f -> f.filter(requestFilter).filter(filter))
                         .uri("http://" + usersHost + ':' + usersPort))
                 .route(p -> p
                         .path("/auth")
-                        .filters(f -> f.filter(filter))
+                        .filters(f -> f.filter(requestFilter).filter(filter))
                         .uri("http://" + usersHost + ':' + usersPort))
                 .route(p -> p
                         .path("/users/**")
-                        .filters(f -> f.filter(filter))
+                        .filters(f -> f.filter(requestFilter).filter(filter))
+                        .uri("http://" + usersHost + ':' + usersPort))
+                .route(p -> p
+                        .path("/statistics/**")
+                        .filters(f -> f.filter(requestFilter).filter(filter))
                         .uri("http://" + usersHost + ':' + usersPort))
                 .build();
     }

@@ -68,10 +68,6 @@ public class RatioController {
             if (repository.findAllByDateString(dateString.get()).isEmpty()) {
                 service.initRatios(requestDate);
             }
-        } else {
-            if (repository.findAllByDateString(dateStringNow).isEmpty()) {
-                service.initRatios(date);
-            }
         }
 
         ratios = dateString.map(s -> repository.findAllByDateString(s).stream()
