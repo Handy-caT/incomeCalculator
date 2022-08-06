@@ -52,7 +52,6 @@ public class JwtTokenService {
         return tokenEntity.getUser();
     }
 
-
     public boolean validateUsersToken(User user, String token) {
         return  Objects.equals(token, getUsersToken(user)) ||
                 getUserFromToken(token).getRole().getRoleName().equals(UserService.adminRole);

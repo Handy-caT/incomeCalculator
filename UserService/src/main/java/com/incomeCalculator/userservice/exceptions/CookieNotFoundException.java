@@ -8,4 +8,8 @@ public class CookieNotFoundException extends RuntimeException {
         super("Cookie not found for user with id: " + user.getId());
     }
 
+    public CookieNotFoundException(String token) {
+        super("Cookie not found for token: " + token);
+    }
+
 }

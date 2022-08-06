@@ -1,6 +1,9 @@
 package com.incomeCalculator.userservice.models;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -16,6 +19,9 @@ public class Cookie {
 
     @OneToOne
     User user;
+
+    @CreationTimestamp
+    private LocalDateTime registrationDateTime;
 
     public Cookie(Long id, String token, User user) {
         this.id = id;
@@ -54,17 +60,27 @@ public class Cookie {
         this.user = user;
     }
 
+    public LocalDateTime getRegistrationDateTime() {
+        return registrationDateTime;
+    }
+
+    public void setRegistrationDateTime(LocalDateTime registrationDateTime) {
+        this.registrationDateTime = registrationDateTime;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Cookie)) return false;
         Cookie cookie = (Cookie) o;
-        return Objects.equals(id, cookie.id) && Objects.equals(token, cookie.token) && Objects.equals(user, cookie.user);
+        return Objects.equals(id, cookie.id) && Objects.equals(token, cookie.token)
+                && Objects.equals(user, cookie.user)
+                && Objects.equals(registrationDateTime, cookie.registrationDateTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, token, user);
+        return Objects.hash(id, token, user, registrationDateTime);
     }
 
     @Override
@@ -73,7 +89,7 @@ public class Cookie {
                 "id=" + id +
                 ", token='" + token + '\'' +
                 ", user=" + user +
+                ", registrationDateTime=" + registrationDateTime +
                 '}';
     }
-
 }

@@ -25,6 +25,11 @@ public class User {
     @OneToOne(orphanRemoval = true)
     private Token token;
 
+    @OneToOne
+    private Cookie cookie;
+
+    private boolean isUsingCookie;
+
     @CreationTimestamp
     private LocalDateTime registrationDateTime;
 
@@ -32,13 +37,14 @@ public class User {
     private LocalDateTime lastUpdateDateTime;
 
     public User() {
-
+        isUsingCookie = false;
     }
 
     public User(String login, String password, Role role) {
         this.password = password;
         this.login = login;
         this.role = role;
+        this.isUsingCookie = false;
     }
 
     public User(Long id, String login, String password, Role role) {
@@ -46,6 +52,7 @@ public class User {
         this.password = password;
         this.login = login;
         this.role = role;
+        this.isUsingCookie = false;
     }
 
     public User(Long id, String login, String password, Role role, LocalDateTime registrationDateTime, LocalDateTime lastUpdateDateTime) {
@@ -53,6 +60,7 @@ public class User {
         this.login = login;
         this.password = password;
         this.role = role;
+        this.isUsingCookie = false;
         this.registrationDateTime = registrationDateTime;
         this.lastUpdateDateTime = lastUpdateDateTime;
     }
@@ -113,6 +121,22 @@ public class User {
         this.lastUpdateDateTime = lastUpdateDateTime;
     }
 
+    public Cookie getCookie() {
+        return cookie;
+    }
+
+    public void setCookie(Cookie cookie) {
+        this.cookie = cookie;
+    }
+
+    public boolean isUsingCookie() {
+        return isUsingCookie;
+    }
+
+    public void setUsingCookie(boolean usingCookie) {
+        isUsingCookie = usingCookie;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -130,12 +154,15 @@ public class User {
         if (this == o) return true;
         if (!(o instanceof User)) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(login, user.login) && Objects.equals(password, user.password) && Objects.equals(role, user.role) && Objects.equals(token, user.token) && Objects.equals(registrationDateTime, user.registrationDateTime) && Objects.equals(lastUpdateDateTime, user.lastUpdateDateTime);
+        return isUsingCookie == user.isUsingCookie && Objects.equals(id, user.id) && Objects.equals(login, user.login)
+                && Objects.equals(password, user.password) && Objects.equals(role, user.role)
+                && Objects.equals(token, user.token) && Objects.equals(cookie, user.cookie)
+                && Objects.equals(registrationDateTime, user.registrationDateTime)
+                && Objects.equals(lastUpdateDateTime, user.lastUpdateDateTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, login, password, role, token, registrationDateTime, lastUpdateDateTime);
+        return Objects.hash(id, login, password, role, token, cookie, isUsingCookie, registrationDateTime, lastUpdateDateTime);
     }
-
 }
