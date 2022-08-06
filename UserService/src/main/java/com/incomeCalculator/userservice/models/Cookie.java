@@ -17,6 +17,19 @@ public class Cookie {
     @OneToOne
     User user;
 
+    public Cookie(Long id, String token, User user) {
+        this.id = id;
+        this.token = token;
+        this.user = user;
+    }
+
+    public Cookie(User user) {
+        this.user = user;
+    }
+
+    public Cookie() {
+    }
+
     public Long getId() {
         return id;
     }

@@ -8,6 +8,7 @@ import com.incomeCalculator.userservice.exceptions.PermissionException;
 import com.incomeCalculator.userservice.models.User;
 import com.incomeCalculator.userservice.repositories.RequestDestinationRepository;
 import com.incomeCalculator.userservice.repositories.RequestRepository;
+import com.incomeCalculator.userservice.services.RandomString;
 import com.incomeCalculator.userservice.services.RequestHandler;
 import com.incomeCalculator.userservice.services.UserService;
 import org.slf4j.Logger;
