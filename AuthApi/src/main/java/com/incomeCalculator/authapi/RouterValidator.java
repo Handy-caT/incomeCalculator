@@ -15,6 +15,7 @@ public class RouterValidator {
         openRoutes.add("/register");
         openRoutes.add("/currencyUnits");
         openRoutes.add("/ratios");
+        openRoutes.add("/cookies");
     }
 
     public boolean isRouteOpen(ServerHttpRequest request) {

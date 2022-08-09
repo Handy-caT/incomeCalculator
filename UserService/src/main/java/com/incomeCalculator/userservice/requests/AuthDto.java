@@ -1,6 +1,6 @@
 package com.incomeCalculator.userservice.requests;
 
-public class AuthDTO {
+public class AuthDto {
     private String login;
     private String password;
 

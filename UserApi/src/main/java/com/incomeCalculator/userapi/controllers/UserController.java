@@ -1,6 +1,6 @@
 package com.incomeCalculator.userapi.controllers;
 
-import com.incomeCalculator.userservice.requests.UserDTO;
+import com.incomeCalculator.userservice.requests.UserDto;
 import com.incomeCalculator.userservice.requests.UserUpdateRequest;
 import com.incomeCalculator.userservice.services.RequestHandler;
 import com.incomeCalculator.userservice.exceptions.PermissionException;
@@ -42,10 +42,10 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public CollectionModel<EntityModel<UserDTO>> all(HttpServletRequest request){
+    public CollectionModel<EntityModel<UserDto>> all(HttpServletRequest request){
         User user = handler.getUserFromRequest(request);
         if(service.isAdmin(user)) {
-            List<EntityModel<UserDTO>> users = repository.findAll().stream().map(UserDTO::new)
+            List<EntityModel<UserDto>> users = repository.findAll().stream().map(UserDto::new)
                     .map(assembler::toModel)
                     .collect(Collectors.toList());
 
@@ -56,14 +56,14 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public EntityModel<UserDTO> getOne(@PathVariable Long id, HttpServletRequest request) {
+    public EntityModel<UserDto> getOne(@PathVariable Long id, HttpServletRequest request) {
         User authUser= handler.getUserFromRequest(request);
         if(service.validateUser(id,authUser)) {
             if(service.isAdmin(authUser)){
                 User user = repository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-                return assembler.toModel(new UserDTO(user));
+                return assembler.toModel(new UserDto(user));
             } else {
-                return assembler.toModel(new UserDTO(authUser));
+                return assembler.toModel(new UserDto(authUser));
             }
         } else {
             throw new PermissionException();
@@ -71,10 +71,10 @@ public class UserController {
     }
 
     @GetMapping("/users/me")
-    public EntityModel<UserDTO> getMe(HttpServletRequest request) {
+    public EntityModel<UserDto> getMe(HttpServletRequest request) {
         User authUser= handler.getUserFromRequest(request);
 
-        return assembler.toModel(new UserDTO(authUser));
+        return assembler.toModel(new UserDto(authUser));
     }
 
     @DeleteMapping("/users/{id}")
@@ -92,7 +92,7 @@ public class UserController {
     }
 
     @PatchMapping("/users/{id}/password")
-    public EntityModel<UserDTO> updateUsersPassword(@PathVariable Long id,
+    public EntityModel<UserDto> updateUsersPassword(@PathVariable Long id,
                                                     @RequestBody UserUpdateRequest updateRequest, HttpServletRequest request) {
         User user = repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
@@ -109,11 +109,11 @@ public class UserController {
         } else{
             throw new PermissionException();
         }
-        return assembler.toModel(new UserDTO(user));
+        return assembler.toModel(new UserDto(user));
     }
 
     @PatchMapping("/users/{id}/makeAdmin")
-    public EntityModel<UserDTO> makeUserAdmin(@PathVariable Long id, HttpServletRequest request) {
+    public EntityModel<UserDto> makeUserAdmin(@PathVariable Long id, HttpServletRequest request) {
         User user = repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
         User authUser = handler.getUserFromRequest(request);
@@ -123,11 +123,11 @@ public class UserController {
         } else{
             throw new PermissionException();
         }
-        return assembler.toModel(new UserDTO(user));
+        return assembler.toModel(new UserDto(user));
     }
 
     @PatchMapping("/users/{id}/makeUser")
-    public EntityModel<UserDTO> makeUserUser(@PathVariable Long id, HttpServletRequest request) {
+    public EntityModel<UserDto> makeUserUser(@PathVariable Long id, HttpServletRequest request) {
         User user = repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
         User authUser = handler.getUserFromRequest(request);
@@ -137,7 +137,7 @@ public class UserController {
         } else{
             throw new PermissionException();
         }
-        return assembler.toModel(new UserDTO(user));
+        return assembler.toModel(new UserDto(user));
     }
 
 }

@@ -2,13 +2,13 @@ package com.incomeCalculator.cardservice.requests;
 
 import java.math.BigDecimal;
 
-public class RatioRequest {
+public class RatioDto {
 
     private String currencyName;
     private BigDecimal ratio;
     private String dateString;
 
-    public RatioRequest(String currencyName, BigDecimal ratio, String dateString) {
+    public RatioDto(String currencyName, BigDecimal ratio, String dateString) {
         this.currencyName = currencyName;
         this.ratio = ratio;
         this.dateString = dateString;

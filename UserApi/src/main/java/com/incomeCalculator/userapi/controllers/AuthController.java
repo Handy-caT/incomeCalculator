@@ -2,9 +2,11 @@ package com.incomeCalculator.userapi.controllers;
 
 
 import com.incomeCalculator.userservice.requests.AuthResponse;
-import com.incomeCalculator.userservice.requests.AuthDTO;
+import com.incomeCalculator.userservice.requests.AuthDto;
 import com.incomeCalculator.userservice.exceptions.UserNotFoundException;
 import com.incomeCalculator.userservice.models.User;
+import com.incomeCalculator.userservice.requests.CookieDto;
+import com.incomeCalculator.userservice.services.CookieService;
 import com.incomeCalculator.userservice.services.JwtTokenService;
 import com.incomeCalculator.userservice.services.UserService;
 import org.slf4j.Logger;
@@ -20,14 +22,16 @@ public class AuthController {
 
     private final UserService service;
     private final JwtTokenService tokenService;
+    private final CookieService cookieService;
 
-    AuthController(UserService service, JwtTokenService tokenService) {
+    AuthController(UserService service, JwtTokenService tokenService, CookieService cookieService) {
         this.service = service;
         this.tokenService = tokenService;
+        this.cookieService = cookieService;
     }
 
     @PostMapping("/register")
-    public AuthResponse registerUser(@RequestBody AuthDTO registrationRequest) {
+    public AuthResponse registerUser(@RequestBody AuthDto registrationRequest) {
         User user = new User();
         user.setPassword(registrationRequest.getPassword());
         user.setLogin(registrationRequest.getLogin());
@@ -49,7 +53,7 @@ public class AuthController {
     }
 
     @PostMapping("/auth")
-    public AuthResponse auth(@RequestBody AuthDTO request) {
+    public AuthResponse auth(@RequestBody AuthDto request) {
         User userEntity = service.findByLoginAndPassword(request.getLogin(), request.getPassword());
         String token = tokenService.generateToken(userEntity.getLogin());
         tokenService.saveToken(token,userEntity);
@@ -58,6 +62,14 @@ public class AuthController {
         return new AuthResponse(token);
     }
 
+    @PostMapping("cookies/register")
+    public CookieDto registerCookie(@RequestBody AuthDto request) {
+        User userEntity = service.findByLoginAndPassword(request.getLogin(), request.getPassword());
+        String cookie = cookieService.generateCookie(userEntity);
+        cookieService.saveCookie(cookie, userEntity);
+        log.info("Cookie registered, id=" + userEntity.getId() + ", login=" + userEntity.getLogin());
 
+        return new CookieDto(cookie,userEntity.getId());
+    }
 
 }

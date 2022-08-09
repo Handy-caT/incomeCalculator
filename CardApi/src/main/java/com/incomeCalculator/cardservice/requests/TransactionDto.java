@@ -2,12 +2,12 @@ package com.incomeCalculator.cardservice.requests;
 
 import java.math.BigDecimal;
 
-public class TransactionRequest {
+public class TransactionDto {
 
     private String currencyName;
     private BigDecimal amount;
 
-    public TransactionRequest(String currencyName, BigDecimal amount) {
+    public TransactionDto(String currencyName, BigDecimal amount) {
         this.currencyName = currencyName;
         this.amount = amount;
     }

@@ -23,4 +23,5 @@ AuthApi/src/main/resources/application.properties
 *mvnw
 frontend/package-lock.json
 frontend/yarn.lock
-*.lock
+
+/AuthApi/src/main/resources/application.yml

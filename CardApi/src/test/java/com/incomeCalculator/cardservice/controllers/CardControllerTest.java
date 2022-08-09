@@ -11,8 +11,8 @@ import com.incomeCalculator.cardservice.repositories.CardRepository;
 import com.incomeCalculator.cardservice.repositories.CurrencyUnitRepository;
 import com.incomeCalculator.cardservice.repositories.RatioRepository;
 import com.incomeCalculator.cardservice.repositories.TransactionRepository;
-import com.incomeCalculator.cardservice.requests.CardRequest;
-import com.incomeCalculator.cardservice.requests.TransactionRequest;
+import com.incomeCalculator.cardservice.requests.CardDto;
+import com.incomeCalculator.cardservice.requests.TransactionDto;
 import com.incomeCalculator.cardservice.util.CurrencyUpdaterSQL;
 import com.incomeCalculator.userservice.models.Role;
 import com.incomeCalculator.userservice.models.User;
@@ -84,12 +84,12 @@ class CardControllerTest {
         User regularUser = new User(1L,"user","password",new Role("ROLE_USER"));
 
         ObjectMapper objectMapper = new ObjectMapper();
-        CardRequest cardRequest = new CardRequest("newCard","USD");
-        String json = objectMapper.writeValueAsString(cardRequest);
+        CardDto cardDto = new CardDto("newCard","USD");
+        String json = objectMapper.writeValueAsString(cardDto);
 
         CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
-        Card card = new Card(null,currencyUnit, BigDecimal.ZERO,regularUser,cardRequest.getCardName());
-        Card savedCard = new Card(1L,currencyUnit, BigDecimal.ZERO,regularUser,cardRequest.getCardName());
+        Card card = new Card(null,currencyUnit, BigDecimal.ZERO,regularUser, cardDto.getCardName());
+        Card savedCard = new Card(1L,currencyUnit, BigDecimal.ZERO,regularUser, cardDto.getCardName());
 
         when(userRepository.findById(regularUser.getId())).thenReturn(Optional.of(regularUser));
         when(currencyUnitRepository.findByCurrencyName(currencyUnit.getCurrencyName()))
@@ -118,12 +118,12 @@ class CardControllerTest {
         User regularUser = getRegularUser();
 
         ObjectMapper objectMapper = new ObjectMapper();
-        CardRequest cardRequest = new CardRequest("newCard","USS");
-        String json = objectMapper.writeValueAsString(cardRequest);
+        CardDto cardDto = new CardDto("newCard","USS");
+        String json = objectMapper.writeValueAsString(cardDto);
 
         when(userRepository.findById(regularUser.getId())).thenReturn(Optional.of(regularUser));
-        when(currencyUnitRepository.findByCurrencyName(cardRequest.getCurrencyName()))
-                .thenThrow(new CurrencyUnitNotFoundException(cardRequest.getCurrencyName()));
+        when(currencyUnitRepository.findByCurrencyName(cardDto.getCurrencyName()))
+                .thenThrow(new CurrencyUnitNotFoundException(cardDto.getCurrencyName()));
 
         mockMvc.perform(post("/cards")
                         .contentType(MediaType.APPLICATION_JSON).content(json)
@@ -236,7 +236,7 @@ class CardControllerTest {
         Card card = new Card(1L,currencyUnit,randomValue(), regularUser,"cardName");
 
         ObjectMapper mapper = new ObjectMapper();
-        TransactionRequest request = new TransactionRequest("USD",randomValue());
+        TransactionDto request = new TransactionDto("USD",randomValue());
         String json = mapper.writeValueAsString(request);
 
         TransactionEntity transaction = new TransactionEntity(currencyUnit,request.getAmount(),true);
@@ -282,7 +282,7 @@ class CardControllerTest {
         Card card = new Card(1L,currencyUnit,randomValue(), regularUser,"cardName");
 
         ObjectMapper mapper = new ObjectMapper();
-        TransactionRequest request = new TransactionRequest("USD",randomValue().negate());
+        TransactionDto request = new TransactionDto("USD",randomValue().negate());
         String json = mapper.writeValueAsString(request);
 
         TransactionEntity transaction = new TransactionEntity(currencyUnit,request.getAmount(),false);
@@ -328,7 +328,7 @@ class CardControllerTest {
         Card card = new Card(1L,currencyUnit,randomValue(), regularUser,"cardName");
 
         ObjectMapper mapper = new ObjectMapper();
-        TransactionRequest request = new TransactionRequest("EUR",randomValue());
+        TransactionDto request = new TransactionDto("EUR",randomValue());
         String json = mapper.writeValueAsString(request);
 
         BigDecimal ratio = BigDecimal.valueOf(1.5);
@@ -380,7 +380,7 @@ class CardControllerTest {
         Card card = new Card(1L,currencyUnit,randomValue(), regularUser,"cardName");
 
         ObjectMapper mapper = new ObjectMapper();
-        TransactionRequest request = new TransactionRequest("EUR",randomValue().negate());
+        TransactionDto request = new TransactionDto("EUR",randomValue().negate());
         String json = mapper.writeValueAsString(request);
 
         BigDecimal ratio = BigDecimal.valueOf(1.5);
@@ -431,7 +431,7 @@ class CardControllerTest {
         invalidUser.setLogin("invalidUser");
 
         Card card = new Card(1L,new CurrencyUnitEntity(1L,"USD",432,1),randomValue(), regularUser,"cardName");
-        TransactionRequest request = new TransactionRequest("USD",randomValue());
+        TransactionDto request = new TransactionDto("USD",randomValue());
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(request);
 
@@ -453,7 +453,7 @@ class CardControllerTest {
         User regularUser = getRegularUser();
         CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
         Card card = new Card(1L,currencyUnit,randomValue(), regularUser,"cardName");
-        TransactionRequest request = new TransactionRequest("USD",randomValue());
+        TransactionDto request = new TransactionDto("USD",randomValue());
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(request);
 

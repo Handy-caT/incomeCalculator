@@ -1,14 +1,14 @@
 package com.incomeCalculator.cardservice.requests;
 
-public class CardRequest {
+public class CardDto {
 
     private String cardName;
     private String currencyName;
 
-    public CardRequest() {
+    public CardDto() {
     }
 
-    public CardRequest(String cardName, String currencyName) {
+    public CardDto(String cardName, String currencyName) {
         this.cardName = cardName;
         this.currencyName = currencyName;
     }

@@ -8,8 +8,8 @@ import com.incomeCalculator.cardservice.models.Card;
 import com.incomeCalculator.cardservice.models.TransactionEntity;
 import com.incomeCalculator.cardservice.repositories.CardRepository;
 import com.incomeCalculator.cardservice.repositories.TransactionRepository;
-import com.incomeCalculator.cardservice.requests.CardRequest;
-import com.incomeCalculator.cardservice.requests.TransactionRequest;
+import com.incomeCalculator.cardservice.requests.CardDto;
+import com.incomeCalculator.cardservice.requests.TransactionDto;
 import com.incomeCalculator.cardservice.services.CardService;
 import com.incomeCalculator.userservice.exceptions.PermissionException;
 import com.incomeCalculator.userservice.exceptions.UserNotFoundException;
@@ -20,9 +20,6 @@ import com.incomeCalculator.userservice.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
@@ -121,17 +118,17 @@ public class CardController {
     }
 
     @PostMapping("/cards")
-    public EntityModel<Card> createCard(@RequestBody CardRequest cardRequest, HttpServletRequest request) {
+    public EntityModel<Card> createCard(@RequestBody CardDto cardDto, HttpServletRequest request) {
         User authUser = handler.getUserFromRequest(request);
 
-        Card card = service.createCardByRequest(authUser,cardRequest);
+        Card card = service.createCardByRequest(authUser, cardDto);
         log.info("Card created: "  + card);
         return assembler.toModel(card);
     }
 
     @PostMapping("/cards/{id}/transactions")
     public EntityModel<TransactionEntity> receiveTransaction(@PathVariable Long id,
-                                                             @RequestBody TransactionRequest transactionRequest,
+                                                             @RequestBody TransactionDto transactionDto,
                                                              HttpServletRequest request) {
 
         User authUser = handler.getUserFromRequest(request);
@@ -141,7 +138,7 @@ public class CardController {
                 .orElseThrow(() -> new UserNotFoundException(card.getUserName()));
 
         if(userService.validateUser(cardUser.getId(),authUser)) {
-            TransactionEntity transaction = service.executeTransaction(card,transactionRequest);
+            TransactionEntity transaction = service.executeTransaction(card, transactionDto);
             log.info("Transaction executed: " + transaction);
             return transactionAssembler.toModel(transaction);
         } else {

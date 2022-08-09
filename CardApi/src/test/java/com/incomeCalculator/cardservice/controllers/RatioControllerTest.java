@@ -8,7 +8,7 @@ import com.incomeCalculator.cardservice.repositories.CardRepository;
 import com.incomeCalculator.cardservice.repositories.CurrencyUnitRepository;
 import com.incomeCalculator.cardservice.repositories.RatioRepository;
 import com.incomeCalculator.cardservice.repositories.TransactionRepository;
-import com.incomeCalculator.cardservice.requests.RatioRequest;
+import com.incomeCalculator.cardservice.requests.RatioDto;
 import com.incomeCalculator.core.wallet.money.util.DateFormatter;
 import com.incomeCalculator.userservice.models.User;
 import com.incomeCalculator.userservice.repositories.RoleRepository;
@@ -16,12 +16,8 @@ import com.incomeCalculator.userservice.repositories.TokenRepository;
 import com.incomeCalculator.userservice.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -181,8 +177,8 @@ class RatioControllerTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         BigDecimal ratio = randomValue();
-        RatioRequest ratioRequest = new RatioRequest("USD",ratio,DateFormatter.sqlFormat(date));
-        String json = objectMapper.writeValueAsString(ratioRequest);
+        RatioDto ratioDto = new RatioDto("USD",ratio,DateFormatter.sqlFormat(date));
+        String json = objectMapper.writeValueAsString(ratioDto);
 
         when(userRepository.findById(regularUser.getId())).thenReturn(Optional.of(regularUser));
 
@@ -203,8 +199,8 @@ class RatioControllerTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         BigDecimal ratio = randomValue();
-        RatioRequest ratioRequest = new RatioRequest("USD",ratio,DateFormatter.sqlFormat(date));
-        String json = objectMapper.writeValueAsString(ratioRequest);
+        RatioDto ratioDto = new RatioDto("USD",ratio,DateFormatter.sqlFormat(date));
+        String json = objectMapper.writeValueAsString(ratioDto);
 
         when(userRepository.findById(regularUser.getId())).thenReturn(Optional.of(regularUser));
 
@@ -240,15 +236,15 @@ class RatioControllerTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         BigDecimal ratio = randomValue().setScale(4, RoundingMode.HALF_DOWN);
-        RatioRequest ratioRequest = new RatioRequest("USD",ratio,DateFormatter.sqlFormat(date));
-        String json = objectMapper.writeValueAsString(ratioRequest);
+        RatioDto ratioDto = new RatioDto("USD",ratio,DateFormatter.sqlFormat(date));
+        String json = objectMapper.writeValueAsString(ratioDto);
 
         CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
         Ratio ratioEntity = new Ratio(1L,currencyUnit,ratio,DateFormatter.sqlFormat(date));
 
         when(userRepository.findById(admin.getId())).thenReturn(Optional.of(admin));
-        when(repository.findByCurrencyUnit_CurrencyNameAndDateString(ratioRequest.getCurrencyName(),
-                ratioRequest.getDateString())).thenReturn(Optional.empty());
+        when(repository.findByCurrencyUnit_CurrencyNameAndDateString(ratioDto.getCurrencyName(),
+                ratioDto.getDateString())).thenReturn(Optional.empty());
         when(currencyUnitRepository.findByCurrencyName(currencyUnit.getCurrencyName()))
                 .thenReturn(Optional.of(currencyUnit));
         when(repository.save(ratioEntity)).thenReturn(ratioEntity);
@@ -275,8 +271,8 @@ class RatioControllerTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         BigDecimal ratio = randomValue();
-        RatioRequest ratioRequest = new RatioRequest("USD",ratio,DateFormatter.sqlFormat(date));
-        String json = objectMapper.writeValueAsString(ratioRequest);
+        RatioDto ratioDto = new RatioDto("USD",ratio,DateFormatter.sqlFormat(date));
+        String json = objectMapper.writeValueAsString(ratioDto);
 
         CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
         Ratio ratioEntity = new Ratio(1L,currencyUnit,ratio,DateFormatter.sqlFormat(date));

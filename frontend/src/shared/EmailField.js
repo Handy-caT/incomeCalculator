@@ -16,7 +16,7 @@ class EmailField extends React.Component {
         return(
             <div className="row mb-2 justify-content-center ">
                 <div className="col-sm-2 col-form-label">
-                    <label className={'form-label'} htmlFor="password">{this.props.label}</label>
+                    <label className={'form-label'} htmlFor="email">{this.props.label}</label>
                 </div>
                 <div className={'col-sm-5'}>
                     <input type="email" className={'form-control'} placeholder={this.props.placeholder}

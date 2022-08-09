@@ -2,25 +2,45 @@ import React from 'react';
 import NameField from "../shared/NameField";
 import PasswordField from "../shared/PasswordField";
 import EmailField from "../shared/EmailField";
+import axios from "axios";
 
 class LogIn extends React.Component {
 
     constructor(props) {
         super(props);
+
+        this.handleEmailChange = this.handleEmailChange.bind(this);
+        this.handlePasswordChange = this.handlePasswordChange.bind(this);
+
         this.state = {
             email: '',
             password: '',
         }
-
-        this.handleEmailChange = this.handleEmailChange.bind(this);
-        this.handlePasswordChange = this.handlePasswordChange.bind(this);
     }
 
-    handleEmailChange(event) {
-        this.setState({email: event.target.value});
+    handleEmailChange(email) {
+        const passwordOld = this.state.password;
+        this.setState({email: email, password: passwordOld});
     }
-    handlePasswordChange(event) {
-        this.setState({password: event.target.value});
+    handlePasswordChange(password) {
+        const emailOld = this.state.email;
+        this.setState({password: password, email: emailOld});
+    }
+
+    logIn(object) {
+
+        console.log(object)
+
+        axios.post('http://localhost:8080/auth', {
+            login: 'zuka',
+            password: 'test'
+        })
+            .then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
     }
 
     render() {
@@ -50,7 +70,8 @@ class LogIn extends React.Component {
                         </div>
 
                         <div className="row mt-3 mb-1 justify-content-center ">
-                            <input type="button" className={'btn btn-primary col-5 mb-2'} value="Log In" />
+                            <input type="button" className={'btn btn-primary col-5 mb-2'} value="Log In"
+                                   onClick={this.logIn.bind(this.state)} />
                         </div>
 
                         <div className="row mb-3 justify-content-center">

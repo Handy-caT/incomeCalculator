@@ -2,7 +2,7 @@ package com.incomeCalculator.userapi.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.incomeCalculator.userservice.requests.AuthDTO;
+import com.incomeCalculator.userservice.requests.AuthDto;
 import com.incomeCalculator.userservice.models.Role;
 import com.incomeCalculator.userservice.models.Token;
 import com.incomeCalculator.userservice.models.User;
@@ -83,7 +83,7 @@ class AuthControllerTest {
     public void registerTest() throws Exception {
 
         User rawUser = getRawUser();
-        AuthDTO request = new AuthDTO();
+        AuthDto request = new AuthDto();
         request.setLogin(rawUser.getLogin());
         request.setPassword(rawUser.getPassword());
 
@@ -123,7 +123,7 @@ class AuthControllerTest {
     public void shouldAuthenticateValidUser() throws Exception {
 
         User rawUser = getRawUser();
-        AuthDTO request = new AuthDTO();
+        AuthDto request = new AuthDto();
         request.setLogin(rawUser.getLogin());
         request.setPassword(rawUser.getPassword());
 
@@ -160,7 +160,7 @@ class AuthControllerTest {
     @Test
     public void shouldNotAuthenticateWrongUser() throws Exception {
         User rawUser = getRawUser();
-        AuthDTO request = new AuthDTO();
+        AuthDto request = new AuthDto();
         request.setLogin(rawUser.getLogin());
         request.setPassword(rawUser.getPassword());
 
