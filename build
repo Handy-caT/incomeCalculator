@@ -5,8 +5,10 @@ userApiName=handycat/user-api
 cardApiName=handycat/card-api
 gatewayName=handycat/auth-api
 
+version='latest'
 
-while getopts 'dCAgcup' OPTION; do
+
+while getopts 'dCv:Agcup' OPTION; do
     case "$OPTION" in
         d)docker pull $cardApiName
           docker pull $gatewayName
@@ -14,17 +16,20 @@ while getopts 'dCAgcup' OPTION; do
             ;;
         C)mvn clean install -DskipTests
             ;;
-        A)docker build -t $cardApiName ./CardApi
-          docker build -t $gatewayName ./AuthApi
-          docker build -t $userApiName ./UserApi
+        v) version="$OPTARG"
             ;;
-        g)docker build -t $gatewayName ./AuthApi
+        A)docker build -t $cardApiName:"$version" ./CardApi
+          docker build -t $gatewayName:"$version" ./AuthApi
+          docker build -t $userApiName:"$version" ./UserApi
+            ;;
+        g)docker build -t $gatewayName:"$version" ./AuthApi
           docker push $gatewayName
             ;;
-        c)docker build -t $cardApiName ./CardApi
+        c)docker build -t $cardApiName:"$version" ./CardApi
           docker push $cardApiName
            ;;
-        u)docker build -t $userApiName ./UserApi
+        u)docker build -t $userApiName:"$version"
+          ./UserApi
           docker push $userApiName
             ;;
         p)docker push $cardApiName

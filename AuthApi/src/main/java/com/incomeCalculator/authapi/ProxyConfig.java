@@ -60,6 +60,10 @@ public class ProxyConfig {
                         .path("/statistics/**")
                         .filters(f -> f.filter(requestFilter).filter(filter))
                         .uri("http://" + usersHost + ':' + usersPort))
+                .route(p -> p
+                        .path("/cookies/**")
+                        .filters(f -> f.filter(requestFilter).filter(filter))
+                        .uri("http://" + usersHost + ':' + usersPort))
                 .build();
     }
 

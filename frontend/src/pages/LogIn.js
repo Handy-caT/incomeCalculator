@@ -9,31 +9,28 @@ class LogIn extends React.Component {
     constructor(props) {
         super(props);
 
-        this.handleEmailChange = this.handleEmailChange.bind(this);
+        this.handleUsernameChange = this.handleUsernameChange.bind(this);
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
+        this.logIn = this.logIn.bind(this);
 
         this.state = {
-            email: '',
+            username: '',
             password: '',
         }
     }
 
-    handleEmailChange(email) {
-        const passwordOld = this.state.password;
-        this.setState({email: email, password: passwordOld});
+    handleUsernameChange(username) {
+        this.setState({username: username});
     }
     handlePasswordChange(password) {
-        const emailOld = this.state.email;
-        this.setState({password: password, email: emailOld});
+        this.setState({password: password});
     }
 
-    logIn(object) {
+    logIn() {
 
-        console.log(object)
-
-        axios.post('http://localhost:8080/auth', {
-            login: 'zuka',
-            password: 'test'
+        axios.post('/auth', {
+            login: this.state.username,
+            password: this.state.password
         })
             .then(function (response) {
                 console.log(response);
@@ -50,11 +47,11 @@ class LogIn extends React.Component {
                     <div className="col-md-12 mt-3">
                         <h1 className={'mb-3 center'}>Log In</h1>
 
-                        <EmailField
-                            onValueChange={this.handleEmailChange}
+                        <NameField
+                            onValueChange={this.handleUsernameChange}
                             value={this.state.email}
-                            label={'Email'}
-                            placeholder={'name@example.com'}/>
+                            label={'Username'}
+                            placeholder={'Username'}/>
                         <PasswordField
                             onValueChange={this.handlePasswordChange}
                             value={this.state.password}
@@ -71,7 +68,7 @@ class LogIn extends React.Component {
 
                         <div className="row mt-3 mb-1 justify-content-center ">
                             <input type="button" className={'btn btn-primary col-5 mb-2'} value="Log In"
-                                   onClick={this.logIn.bind(this.state)} />
+                                   onClick={this.logIn} />
                         </div>
 
                         <div className="row mb-3 justify-content-center">
