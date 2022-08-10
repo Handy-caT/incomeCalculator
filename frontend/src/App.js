@@ -13,21 +13,27 @@ class App extends React.Component {
     constructor(props) {
         super(props);
 
+        this.handleUserChange = this.handleUserChange.bind(this);
+
         this.state = {
             user: null
         }
     }
 
+    handleUserChange(user) {
+        this.setState({user: user});
+    }
+
     render() {
         return (
             <div className="App">
-                <Navbar />
+                <Navbar user={this.state.user} onUserChange={this.handleUserChange} />
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/ratios" element={<CurrencyRatios />} />
                     <Route path="/signup" element={<SignUp />} />
-                    <Route path="/login" element={<LogIn />} />
+                    <Route path="/login" element={<LogIn user={this.state.user} onUserChange={this.handleUserChange} />} />
                 </Routes>
             </div>
         );

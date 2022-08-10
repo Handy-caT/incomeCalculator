@@ -1,8 +1,37 @@
 import React from 'react';
 import NameField from "../shared/NameField";
 import PasswordField from "../shared/PasswordField";
-import EmailField from "../shared/EmailField";
-import axios from "axios";
+import UserModel from "../classes/UserModel";
+import UserApiConnection from "../classes/UserApiConnection";
+import {useNavigate} from "react-router";
+
+function LogInButton(props) {
+
+    const nav = useNavigate();
+
+    async function logIn() {
+        let authUser = new UserModel(props.username, props.cookieAgreement);
+        props.onUserChange(authUser);
+        try {
+            const response = await UserApiConnection.authenticate(props.username, props.password);
+            console.log(response);
+            props.handleError(false);
+        } catch (error) {
+            console.log(error);
+            props.handleError(true);
+        }
+
+        console.log(authUser);
+        nav("/");
+    }
+
+    return (
+        <div className="row mt-3 mb-1 justify-content-center ">
+            <input type="button" className={'btn btn-primary col-5 mb-2'} value="Log In"
+                   onClick={logIn}/>
+        </div>
+    );
+}
 
 class LogIn extends React.Component {
 
@@ -11,11 +40,14 @@ class LogIn extends React.Component {
 
         this.handleUsernameChange = this.handleUsernameChange.bind(this);
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
-        this.logIn = this.logIn.bind(this);
+        this.handleCookieAgreement = this.handleCookieAgreement.bind(this);
+        this.handleError = this.handleError.bind(this);
 
         this.state = {
             username: '',
             password: '',
+            cookieAgreement: false,
+            error: false,
         }
     }
 
@@ -25,28 +57,33 @@ class LogIn extends React.Component {
     handlePasswordChange(password) {
         this.setState({password: password});
     }
-
-    logIn() {
-
-        axios.post('/auth', {
-            login: this.state.username,
-            password: this.state.password
-        })
-            .then(function (response) {
-                console.log(response);
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
+    handleCookieAgreement() {
+        const newCookieAgreement = !this.state.cookieAgreement;
+        this.setState({cookieAgreement: newCookieAgreement});
+    }
+    handleError(error) {
+        this.setState({error: error});
     }
 
+
+
+
     render() {
+        let alert;
+        if (this.state.error) {
+            alert = (<div className="alert alert-danger" role="alert">
+                A simple danger alert—check it out!
+            </div>)
+        } else {
+            alert = null;
+        }
+
         return (
             <div className="container">
                 <div className="row">
                     <div className="col-md-12 mt-3">
+                        {alert}
                         <h1 className={'mb-3 center'}>Log In</h1>
-
                         <NameField
                             onValueChange={this.handleUsernameChange}
                             value={this.state.email}
@@ -61,15 +98,14 @@ class LogIn extends React.Component {
                         <div className="row mb-1 justify-content-center">
                             <div className="col-sm-2 col-form-label"></div>
                             <div className="col-sm-5">
-                                <input type="checkbox" className="form-check-input" id="exampleCheck1" />
+                                <input type="checkbox" className="form-check-input" id="exampleCheck1"
+                                       onClick={this.handleCookieAgreement}/>
                                 <label className="text-secondary mx-1"> Remember me on this computer</label>
                             </div>
                         </div>
 
-                        <div className="row mt-3 mb-1 justify-content-center ">
-                            <input type="button" className={'btn btn-primary col-5 mb-2'} value="Log In"
-                                   onClick={this.logIn} />
-                        </div>
+                        <LogInButton username={this.state.username} password={this.state.password}
+                                        handleError={this.handleError} onUserChange={this.props.onUserChange}/>
 
                         <div className="row mb-3 justify-content-center">
                             <p className="col-sm-2 "><strong>New to Sample App?</strong></p>
@@ -82,7 +118,9 @@ class LogIn extends React.Component {
                 </div>
             </div>
         );
+
     }
 }
 
 export default LogIn;
+

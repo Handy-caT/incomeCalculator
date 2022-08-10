@@ -2,8 +2,7 @@ import axios from "axios";
 
 class UserApiConnection {
 
-
-    authenticate(username, password) {
+    static async  authenticate(username, password) {
         return axios.post('/auth', {
             login: username,
             password: password
@@ -12,11 +11,11 @@ class UserApiConnection {
                 return response.data;
             })
             .catch(function (error) {
-                return error;
+                throw error;
             });
     }
 
-    register(username, password) {
+    static async register(username, password) {
         return axios.post('/register', {
             login: username,
             password: password
@@ -25,8 +24,10 @@ class UserApiConnection {
                 return response.data;
             })
             .catch(function (error) {
-                return error;
+                throw error;
             });
     }
 
 }
+
+export default UserApiConnection;

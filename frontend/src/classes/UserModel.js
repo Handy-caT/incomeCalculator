@@ -6,7 +6,6 @@ class UserModel {
         this.cookieAgreement = cookieAgreement;
     }
 
-
 }
 
 export default UserModel;
