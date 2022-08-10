@@ -4,25 +4,29 @@ import PasswordField from "../shared/PasswordField";
 import UserModel from "../classes/UserModel";
 import UserApiConnection from "../classes/UserApiConnection";
 import {useNavigate} from "react-router";
+import {UserContext} from "../context/user-context";
 
 function LogInButton(props) {
 
     const nav = useNavigate();
+    const userContext = React.useContext(UserContext);
 
     async function logIn() {
         let authUser = new UserModel(props.username, props.cookieAgreement);
-        props.onUserChange(authUser);
         try {
             const response = await UserApiConnection.authenticate(props.username, props.password);
             console.log(response);
             props.handleError(false);
+            authUser.setToken(response.token);
+            userContext.setUser(authUser);
+            nav("/");
         } catch (error) {
             console.log(error);
             props.handleError(true);
         }
 
         console.log(authUser);
-        nav("/");
+        console.log(userContext.user);
     }
 
     return (
@@ -105,6 +109,7 @@ class LogIn extends React.Component {
                         </div>
 
                         <LogInButton username={this.state.username} password={this.state.password}
+                                        cookieAgreement={this.state.cookieAgreement}
                                         handleError={this.handleError} onUserChange={this.props.onUserChange}/>
 
                         <div className="row mb-3 justify-content-center">

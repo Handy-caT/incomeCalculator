@@ -7,34 +7,45 @@ import CurrencyRatios from "./pages/CurrencyRatios";
 import SignUp from "./pages/SignUp";
 import LogIn from "./pages/LogIn";
 import Navbar from "./shared/Navbar";
+import {UserContext} from "./context/user-context";
+import UserModel from "./classes/UserModel";
 
 class App extends React.Component {
 
     constructor(props) {
         super(props);
 
-        this.handleUserChange = this.handleUserChange.bind(this);
+        this.setUser = this.setUser.bind(this);
 
+        let user = new UserModel();
+        if(!user.loadCookie()) {
+            user.loadSession();
+        }
         this.state = {
-            user: null
+            user: user
         }
     }
 
-    handleUserChange(user) {
+    setUser(user) {
+        user.saveSession();
+        user.cookieAgreement ? user.saveCookie() : user.deleteCookie();
         this.setState({user: user});
     }
 
     render() {
         return (
             <div className="App">
-                <Navbar user={this.state.user} onUserChange={this.handleUserChange} />
-                <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/about" element={<About />} />
-                    <Route path="/ratios" element={<CurrencyRatios />} />
-                    <Route path="/signup" element={<SignUp />} />
-                    <Route path="/login" element={<LogIn user={this.state.user} onUserChange={this.handleUserChange} />} />
-                </Routes>
+                <UserContext.Provider value={{user: this.state.user,
+                                                setUser: this.setUser}}>
+                    <Navbar />
+                    <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/about" element={<About />} />
+                        <Route path="/ratios" element={<CurrencyRatios />} />
+                        <Route path="/signup" element={<SignUp />} />
+                        <Route path="/login" element={<LogIn />} />
+                    </Routes>
+                </UserContext.Provider>
             </div>
         );
     }

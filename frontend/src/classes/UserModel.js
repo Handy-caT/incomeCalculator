@@ -1,3 +1,4 @@
+import {Cookies} from "react-cookie";
 
 class UserModel {
 
@@ -6,6 +7,53 @@ class UserModel {
         this.cookieAgreement = cookieAgreement;
     }
 
+    setCookieAgreement(cookieAgreement) {
+        this.cookieAgreement = cookieAgreement;
+    }
+
+    setToken(token) {
+        this.token = token;
+    }
+
+    setCookieToken(token) {
+        this.cookieToken = token;
+    }
+
+    saveSession() {
+        sessionStorage.setItem("name", this.name);
+        sessionStorage.setItem("cookieAgreement", this.cookieAgreement);
+        sessionStorage.setItem("token", this.token);
+    }
+
+    saveCookie() {
+        const cookies = new Cookies();
+        cookies.set("name", this.name, {path: "/"});
+        cookies.set("cookieAgreement", this.cookieAgreement, {path: "/"});
+        cookies.set("token", this.token, {path: "/"});
+    }
+
+    deleteCookie() {
+        const cookies = new Cookies();
+        cookies.remove("user", {path: "/"});
+    }
+
+    loadSession() {
+       this.name = sessionStorage.getItem("name");
+       this.cookieAgreement = sessionStorage.getItem("cookieAgreement");
+       this.token = sessionStorage.getItem("token");
+    }
+
+    loadCookie() {
+        const cookies = new Cookies();
+        this.name = cookies.get("name");
+        this.cookieAgreement = cookies.get("cookieAgreement");
+        this.token = cookies.get("token");
+
+        this.saveSession();
+
+        return this.name != null;
+    }
 }
+
 
 export default UserModel;
