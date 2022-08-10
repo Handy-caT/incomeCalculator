@@ -19,6 +19,7 @@ function LogInButton(props) {
             props.handleError(false);
             authUser.setToken(response.token);
             userContext.setUser(authUser);
+            userContext.setLogin(true);
             nav("/");
         } catch (error) {
             console.log(error);

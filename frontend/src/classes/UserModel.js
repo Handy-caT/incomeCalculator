@@ -34,13 +34,21 @@ class UserModel {
 
     deleteCookie() {
         const cookies = new Cookies();
-        cookies.remove("user", {path: "/"});
+        cookies.remove("name", {path: "/"});
+        cookies.remove("cookieAgreement", {path: "/"});
+        cookies.remove("token", {path: "/"});
+    }
+
+    deleteSession() {
+        sessionStorage.clear();
     }
 
     loadSession() {
        this.name = sessionStorage.getItem("name");
        this.cookieAgreement = sessionStorage.getItem("cookieAgreement");
        this.token = sessionStorage.getItem("token");
+
+        return this.name !== "undefined";
     }
 
     loadCookie() {
@@ -48,8 +56,6 @@ class UserModel {
         this.name = cookies.get("name");
         this.cookieAgreement = cookies.get("cookieAgreement");
         this.token = cookies.get("token");
-
-        this.saveSession();
 
         return this.name != null;
     }

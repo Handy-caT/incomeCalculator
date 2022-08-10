@@ -16,13 +16,20 @@ class App extends React.Component {
         super(props);
 
         this.setUser = this.setUser.bind(this);
+        this.setLogin = this.setLogin.bind(this);
 
+        this.state = {
+            user: {},
+            login: false,
+        }
+    }
+
+    componentDidMount() {
         let user = new UserModel();
         if(!user.loadCookie()) {
-            user.loadSession();
-        }
-        this.state = {
-            user: user
+            this.setState({user: {}, login: false});
+        } else {
+            this.setState({user: user, login: true});
         }
     }
 
@@ -32,11 +39,17 @@ class App extends React.Component {
         this.setState({user: user});
     }
 
+    setLogin(login) {
+        this.setState({login: login});
+    }
+
     render() {
         return (
             <div className="App">
                 <UserContext.Provider value={{user: this.state.user,
-                                                setUser: this.setUser}}>
+                                                setUser: this.setUser,
+                                                login: this.state.login,
+                                                setLogin: this.setLogin}}>
                     <Navbar />
                     <Routes>
                         <Route path="/" element={<Home />} />
