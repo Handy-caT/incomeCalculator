@@ -9,6 +9,7 @@ import LogIn from "./pages/LogIn";
 import Navbar from "./shared/Navbar";
 import {UserContext} from "./context/user-context";
 import UserModel from "./classes/UserModel";
+import UserProfile from "./pages/UserProfile";
 
 class App extends React.Component {
 
@@ -27,7 +28,11 @@ class App extends React.Component {
     componentDidMount() {
         let user = new UserModel();
         if(!user.loadCookie()) {
-            this.setState({user: {}, login: false});
+            if(!user.loadSession()) {
+                this.setState({user: {}, login: false});
+            } else {
+                this.setState({user: user, login: true});
+            }
         } else {
             this.setState({user: user, login: true});
         }
@@ -57,6 +62,7 @@ class App extends React.Component {
                         <Route path="/ratios" element={<CurrencyRatios />} />
                         <Route path="/signup" element={<SignUp />} />
                         <Route path="/login" element={<LogIn />} />
+                        <Route path="/users/:login" element={<UserProfile />} />
                     </Routes>
                 </UserContext.Provider>
             </div>

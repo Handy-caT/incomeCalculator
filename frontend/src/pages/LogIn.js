@@ -1,5 +1,5 @@
 import React from 'react';
-import NameField from "../shared/NameField";
+import UsernameField from "../shared/UsernameField";
 import PasswordField from "../shared/PasswordField";
 import UserModel from "../classes/UserModel";
 import UserApiConnection from "../classes/UserApiConnection";
@@ -77,7 +77,7 @@ class LogIn extends React.Component {
         let alert;
         if (this.state.error) {
             alert = (<div className="alert alert-danger" role="alert">
-                A simple danger alert—check it out!
+                Wrong username or password. Try again!
             </div>)
         } else {
             alert = null;
@@ -89,7 +89,9 @@ class LogIn extends React.Component {
                     <div className="col-md-12 mt-3">
                         {alert}
                         <h1 className={'mb-3 center'}>Log In</h1>
-                        <NameField
+                        <div className="row mb-1 justify-content-center">
+
+                        <UsernameField
                             onValueChange={this.handleUsernameChange}
                             value={this.state.email}
                             label={'Username'}
@@ -100,7 +102,7 @@ class LogIn extends React.Component {
                             label={'Password'}
                             placeholder={'Password'}/>
 
-                        <div className="row mb-1 justify-content-center">
+
                             <div className="col-sm-2 col-form-label"></div>
                             <div className="col-sm-5">
                                 <input type="checkbox" className="form-check-input" id="exampleCheck1"

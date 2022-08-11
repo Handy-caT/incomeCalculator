@@ -1,5 +1,5 @@
 import React from 'react';
-import NameField from "../shared/NameField";
+import UsernameField from "../shared/UsernameField";
 import PasswordField from "../shared/PasswordField";
 import EmailField from "../shared/EmailField";
 
@@ -38,15 +38,15 @@ class SignUp extends React.Component {
             <div className="container">
                 <div className="row">
                     <div className="col-md-12 mt-3 ">
-                        <h1 className={'mb-3 center '}>Sign Up</h1>
-                        <div className="flex-row">
+                        <h1 className={'mb-3 center'}>Sign Up</h1>
+                        <div className="flex-row ">
                             <form>
 
-                                <NameField
+                                <UsernameField
                                     onValueChange={this.handleNameChange}
                                     value={this.state.name}
-                                    label={'Name'}
-                                    placeholder={'Name'}/>
+                                    label={'Username'}
+                                    placeholder={'Username'}/>
                                 <EmailField
                                     onValueChange={this.handleEmailChange}
                                     value={this.state.email}

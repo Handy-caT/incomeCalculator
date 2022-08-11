@@ -48,7 +48,8 @@ class UserModel {
        this.cookieAgreement = sessionStorage.getItem("cookieAgreement");
        this.token = sessionStorage.getItem("token");
 
-        return this.name !== "undefined";
+       console.log(this.name != null);
+       return this.name != null;
     }
 
     loadCookie() {

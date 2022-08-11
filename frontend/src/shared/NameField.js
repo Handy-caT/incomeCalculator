@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 class NameField extends React.Component {
     constructor(props) {
@@ -12,17 +12,19 @@ class NameField extends React.Component {
     }
 
     render() {
-        const value = this.props.value;
+        let valid = '';
+        if(this.props.valid !== undefined) {
+            this.props.valid ? valid = 'is-valid' : valid = 'is-invalid';
+        }
         return(
-            <div className="row mb-2 justify-content-center ">
-                <div className="col-sm-2 col-form-label">
-                    <label className={'form-label'} htmlFor="firstName">{this.props.label}</label>
+                <div className="col-md-3 mb-2 mx-3">
+                    <label htmlFor="validationCustom01" className="form-label">{this.props.label}</label>
+                    <input type="text" className={"form-control " + valid } id="validationCustom01" value={this.props.value}
+                           required />
+                        <div className="valid-feedback">
+                            {this.props.successMessage}
+                        </div>
                 </div>
-                <div className={'col-sm-5'}>
-                    <input type="text" className={'form-control'} placeholder={this.props.placeholder}
-                        value={value} onChange={this.handleChange}/>
-                </div>
-            </div>
         );
     }
 }

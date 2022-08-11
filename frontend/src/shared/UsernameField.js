@@ -1,6 +1,6 @@
 import React from 'react';
 
-class EmailField extends React.Component {
+class UsernameField extends React.Component {
     constructor(props) {
         super(props);
 
@@ -17,13 +17,13 @@ class EmailField extends React.Component {
             this.props.valid ? valid = 'is-valid' : valid = 'is-invalid';
         }
         return(
-            <div className="row mb-2 justify-content-center ">
+            <div className="row mb-2 justify-content-center">
                 <div className="col-sm-2 col-form-label">
-                    <label className={'form-label'} htmlFor="email">{this.props.label}</label>
+                    <label className={'form-label'} htmlFor="firstName">{this.props.label}</label>
                 </div>
                 <div className={'col-sm-5'}>
-                    <input type="email" className={'form-control ' + valid} placeholder={this.props.placeholder}
-                           value={this.props.value} onChange={this.handleChange} />
+                    <input type="text" className={'form-control ' + valid} placeholder={this.props.placeholder}
+                           value={this.props.value} onChange={this.handleChange}/>
                     <div className="invalid-feedback">
                         {this.props.errorMessage}
                     </div>
@@ -33,4 +33,4 @@ class EmailField extends React.Component {
     }
 }
 
-export default EmailField;
+export default UsernameField;
