@@ -17,7 +17,7 @@ class NameField extends React.Component {
             this.props.valid ? valid = 'is-valid' : valid = 'is-invalid';
         }
         return(
-                <div className="col-md-3 mb-2 mx-3">
+                <div className="col-sm-4 mb-2 ">
                     <label htmlFor="validationCustom01" className="form-label">{this.props.label}</label>
                     <input type="text" className={"form-control " + valid } id="validationCustom01" value={this.props.value}
                            required />

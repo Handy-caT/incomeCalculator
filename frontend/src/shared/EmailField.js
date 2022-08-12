@@ -21,7 +21,7 @@ class EmailField extends React.Component {
                 <div className="col-sm-2 col-form-label">
                     <label className={'form-label'} htmlFor="email">{this.props.label}</label>
                 </div>
-                <div className={'col-sm-5'}>
+                <div className={'col-sm-6'}>
                     <input type="email" className={'form-control ' + valid} placeholder={this.props.placeholder}
                            value={this.props.value} onChange={this.handleChange} />
                     <div className="invalid-feedback">

@@ -37,11 +37,10 @@ class SignUp extends React.Component {
         return (
             <div className="container">
                 <div className="row">
-                    <div className="col-md-12 mt-3 ">
+                    <div className="col-md-12 mt-3">
                         <h1 className={'mb-3 center'}>Sign Up</h1>
-                        <div className="flex-row ">
+                        <div>
                             <form>
-
                                 <UsernameField
                                     onValueChange={this.handleNameChange}
                                     value={this.state.name}
