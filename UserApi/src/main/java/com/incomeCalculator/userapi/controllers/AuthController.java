@@ -1,11 +1,11 @@
 package com.incomeCalculator.userapi.controllers;
 
 
-import com.incomeCalculator.userservice.requests.AuthResponse;
 import com.incomeCalculator.userservice.requests.AuthDto;
 import com.incomeCalculator.userservice.exceptions.UserNotFoundException;
 import com.incomeCalculator.userservice.models.User;
 import com.incomeCalculator.userservice.requests.CookieDto;
+import com.incomeCalculator.userservice.requests.TokenDto;
 import com.incomeCalculator.userservice.services.CookieService;
 import com.incomeCalculator.userservice.services.JwtTokenService;
 import com.incomeCalculator.userservice.services.UserService;
@@ -31,7 +31,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public AuthResponse registerUser(@RequestBody AuthDto registrationRequest) {
+    public TokenDto registerUser(@RequestBody AuthDto registrationRequest) {
         User user = new User();
         user.setPassword(registrationRequest.getPassword());
         user.setLogin(registrationRequest.getLogin());
@@ -48,18 +48,18 @@ public class AuthController {
             tokenService.saveToken(token, user);
             log.info("User saved, id=" + user.getId() + ", login=" + user.getLogin());
 
-            return new AuthResponse(token);
+            return new TokenDto(user.getId(),token);
         }
     }
 
     @PostMapping("/auth")
-    public AuthResponse auth(@RequestBody AuthDto request) {
+    public TokenDto auth(@RequestBody AuthDto request) {
         User userEntity = service.findByLoginAndPassword(request.getLogin(), request.getPassword());
         String token = tokenService.generateToken(userEntity.getLogin());
         tokenService.saveToken(token,userEntity);
         log.info("User authenticated, id=" + userEntity.getId() + ", login=" + userEntity.getLogin());
 
-        return new AuthResponse(token);
+        return new TokenDto(userEntity.getId(),token);
     }
 
     @PostMapping("cookies/register")
