@@ -91,5 +91,9 @@ public class CookieService {
         return null;
     }
 
+    public void deleteCookie(String token) {
+        repository.findByToken(token).ifPresent(repository::delete);
+    }
+
 
 }

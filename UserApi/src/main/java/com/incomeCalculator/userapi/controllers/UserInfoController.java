@@ -56,8 +56,9 @@ public class UserInfoController {
     @PostMapping("/users/{id}/info")
     public UserInfo updateUserInfo(@PathVariable Long id, @RequestBody UserInfoDto userInfo, HttpServletRequest request) {
         User authUser = handler.getUserFromRequest(request);
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         if(authUser.getId().equals(id) || userService.isAdmin(authUser)) {
-            return userInfoService.saveUserInfo(userInfo,authUser);
+            return userInfoService.saveUserInfo(userInfo,user);
         } else {
             throw new PermissionException();
         }

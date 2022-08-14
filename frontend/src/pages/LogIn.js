@@ -2,9 +2,10 @@ import React from 'react';
 import UsernameField from "../shared/UsernameField";
 import PasswordField from "../shared/PasswordField";
 import UserModel from "../classes/UserModel";
-import UserApiConnection from "../classes/UserApiConnection";
 import {useNavigate} from "react-router";
 import {UserContext} from "../context/user-context";
+import {authenticate} from "../classes/ApiConnection";
+
 
 function LogInButton(props) {
 
@@ -14,7 +15,7 @@ function LogInButton(props) {
     async function logIn() {
         let authUser = new UserModel(props.username, props.cookieAgreement);
         try {
-            const response = await UserApiConnection.authenticate(props.username, props.password);
+            const response = await authenticate(props.username, props.password);
             console.log(response);
             props.handleError(false);
             authUser.setToken(response.token);

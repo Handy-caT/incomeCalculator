@@ -10,6 +10,7 @@ import Navbar from "./shared/Navbar";
 import {UserContext} from "./context/user-context";
 import UserModel from "./classes/UserModel";
 import UserProfile from "./pages/UserProfile";
+import CardList from "./pages/Cards";
 
 class App extends React.Component {
 
@@ -62,7 +63,8 @@ class App extends React.Component {
                         <Route path="/ratios" element={<CurrencyRatios />} />
                         <Route path="/signup" element={<SignUp />} />
                         <Route path="/login" element={<LogIn />} />
-                        <Route path="/users/:login" element={<UserProfile />} />
+                        <Route path="/users/:id" element={<UserProfile />} />
+                        <Route path="/users/:id/cards" element={<CardList />} />
                     </Routes>
                 </UserContext.Provider>
             </div>

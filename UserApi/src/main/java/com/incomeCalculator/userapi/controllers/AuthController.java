@@ -1,6 +1,7 @@
 package com.incomeCalculator.userapi.controllers;
 
 
+import com.incomeCalculator.userservice.repositories.UserRepository;
 import com.incomeCalculator.userservice.requests.AuthDto;
 import com.incomeCalculator.userservice.exceptions.UserNotFoundException;
 import com.incomeCalculator.userservice.models.User;
@@ -8,9 +9,12 @@ import com.incomeCalculator.userservice.requests.CookieDto;
 import com.incomeCalculator.userservice.requests.TokenDto;
 import com.incomeCalculator.userservice.services.CookieService;
 import com.incomeCalculator.userservice.services.JwtTokenService;
+import com.incomeCalculator.userservice.services.RequestHandler;
 import com.incomeCalculator.userservice.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +27,9 @@ public class AuthController {
     private final UserService service;
     private final JwtTokenService tokenService;
     private final CookieService cookieService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     AuthController(UserService service, JwtTokenService tokenService, CookieService cookieService) {
         this.service = service;
@@ -70,6 +77,16 @@ public class AuthController {
         log.info("Cookie registered, id=" + userEntity.getId() + ", login=" + userEntity.getLogin());
 
         return new CookieDto(cookie,userEntity.getId());
+    }
+
+    @DeleteMapping("cookies/delete")
+    public String deleteCookie(@RequestBody CookieDto request) {
+        User userEntity = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new UserNotFoundException(request.getUserId()));
+        cookieService.deleteCookie(request.getToken());
+        log.info("Cookie deleted, id=" + userEntity.getId() + ", login=" + userEntity.getLogin());
+
+        return "Cookie deleted";
     }
 
 }
