@@ -1,34 +1,15 @@
-{{/*
-Expand the name of the chart.
-*/}}
-{{- define "calculator-chart.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+
+{{- define "calculator-chart.selectorLabels" -}}
+app.kubernetes.io/name: {{  .Chart.Name }}
+app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
-Create a default fully qualified app name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-If release name contains chart name it will be used as a full name.
-*/}}
-{{- define "calculator-chart.fullname" -}}
-{{- if .Values.fullnameOverride }}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- $name := default .Chart.Name .Values.nameOverride }}
-{{- if contains $name .Release.Name }}
-{{- .Release.Name | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
-{{- end }}
-{{- end }}
-{{- end }}
-
-{{/*
-Create chart name and version as used by the chart label.
+Chart name and version as used by the chart label
 */}}
 {{- define "calculator-chart.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
-{{- end }}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
 
 {{/*
 Common labels
@@ -40,23 +21,102 @@ helm.sh/chart: {{ include "calculator-chart.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
+{{- end -}}
 
-{{/*
-Selector labels
-*/}}
-{{- define "calculator-chart.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "calculator-chart.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
-
-{{/*
-Create the name of the service account to use
-*/}}
 {{- define "calculator-chart.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "calculator-chart.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.serviceAccount.name }}
-{{- end }}
-{{- end }}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (printf "%s-%s" .Release.Name .Chart.Name | trunc 63 | trimSuffix "-") .Values.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Names of user_api tier components
+*/}}
+{{- define "calculator-chart.user_api.defaultName" -}}
+{{- printf "user_api-%s" .Release.Name -}}
+{{- end -}}
+
+{{- define "calculator-chart.user_api.deployment.name" -}}
+{{- default (include "calculator-chart.user_api.defaultName" .) .Values.user_api.deployment.name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "calculator-chart.user_api.container.name" -}}
+{{- default (include "calculator-chart.user_api.defaultName" .) .Values.user_api.container.name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "calculator-chart.user_api.service.name" -}}
+{{- default (include "calculator-chart.user_api.defaultName" .) .Values.user_api.service.name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "calculator-chart.user_api.hpa.name" -}}
+{{- default (include "calculator-chart.user_api.defaultName" .) .Values.user_api.hpa.name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Names of card_api tier components
+*/}}
+{{- define "calculator-chart.card_api.defaultName" -}}
+{{- printf "card_api-%s" .Release.Name -}}
+{{- end -}}
+
+{{- define "calculator-chart.card_api.deployment.name" -}}
+{{- default (include "calculator-chart.card_api.defaultName" .) .Values.card_api.deployment.name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "calculator-chart.v.container.name" -}}
+{{- default (include "calculator-chart.card_api.defaultName" .) .Values.card_api.container.name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "calculator-chart.card_api.service.name" -}}
+{{- default (include "calculator-chart.card_api.defaultName" .) .Values.card_api.service.name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "calculator-chart.card_api.hpa.name" -}}
+{{- default (include "calculator-chart.card_api.defaultName" .) .Values.card_api.hpa.name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Names of gateway tier components
+*/}}
+{{- define "calculator-chart.gateway.defaultName" -}}
+{{- printf "gateway-%s" .Release.Name -}}
+{{- end -}}
+
+{{- define "calculator-chart.gateway.deployment.name" -}}
+{{- default (include "calculator-chart.gateway.defaultName" .) .Values.gateway.deployment.name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "calculator-chart.gateway.container.name" -}}
+{{- default (include "calculator-chart.gateway.defaultName" .) .Values.gateway.container.name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "calculator-chart.gateway.service.name" -}}
+{{- default (include "calculator-chart.gateway.defaultName" .) .Values.gateway.service.name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "calculator-chart.gateway.hpa.name" -}}
+{{- default (include "calculator-chart.gateway.defaultName" .) .Values.gateway.hpa.name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Annotation to update pods on Secrets or ConfigMaps updates
+*/}}
+{{- define "calculator-chart.propertiesHash" -}}
+{{- $secrets := include (print $.Template.BasePath "/secrets.yaml") . | sha256sum -}}
+{{- $urlConfig := include (print $.Template.BasePath "/urls-config.yaml") . | sha256sum -}}
+{{ print $secrets $urlConfig | sha256sum }}
+{{- end -}}
+
+{{/*
+Names of other components
+*/}}
+{{- define "calculator-chart.secrets.defaultName" -}}
+{{- printf "secrets-%s" .Release.Name -}}
+{{- end -}}
+
+{{- define "calculator-chart.urlConfig.defaultName" -}}
+{{- printf "url-config-%s" .Release.Name -}}
+{{- end -}}
+

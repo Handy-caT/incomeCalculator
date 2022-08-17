@@ -27,59 +27,59 @@ gateway:
     maxReplicas: 1
     targetCPUUtilizationPercentage: 50
 
-user-api:
+user_api:
   deployment:
     name:
     replicas: 2
-    container:
-      name:
-      resources:
-        limits:
-          memory: 512Mi
-          cpu: 500m
-        requests:
-          memory: 256Mi
-          cpu: 100m
-    service:
-      name:
-      port: 8080
-    image:
-      name: handycat/user-api
-      tag: latest
-      pullPolicy: IfNotPresent
-    hpa:
-      enabled: false
-      name:
-      minReplicas: 1
-      maxReplicas: 2
-      targetCPUUtilizationPercentage: 50
+  container:
+    name:
+    resources:
+      limits:
+        memory: 512Mi
+        cpu: 500m
+      requests:
+        memory: 256Mi
+        cpu: 100m
+  service:
+    name:
+    port: 8080
+  image:
+    name: handycat/user-api
+    tag: latest
+    pullPolicy: IfNotPresent
+  hpa:
+    enabled: false
+    name:
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 50
 
-card-api:
+card_api:
   deployment:
     name:
     replicas: 2
-    container:
-      name:
-      resources:
-        limits:
-          memory: 512Mi
-          cpu: 500m
-        requests:
-          memory: 256Mi
-          cpu: 100m
-    service:
-      name:
-      port: 8080
-    image:
-      name: handycat/card-api
-      tag: latest
-      pullPolicy: IfNotPresent
-    hpa:
-      enabled: false
-      name:
-      minReplicas: 1
-      maxReplicas: 2
-      targetCPUUtilizationPercentage: 50
+  container:
+    name:
+    resources:
+      limits:
+        memory: 512Mi
+        cpu: 500m
+      requests:
+        memory: 256Mi
+        cpu: 100m
+  service:
+    name:
+    port: 8080
+  image:
+    name: handycat/card-api
+    tag: latest
+    pullPolicy: IfNotPresent
+  hpa:
+    enabled: false
+    name:
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 50
 
 secrets:
   secret: default-secret

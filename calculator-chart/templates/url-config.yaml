@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "calculator-chart.urlConfig.defaultName" . }}
+  labels:
+    {{- include "calculator-chart.labels" . | nindent 4 }}
+data:
+  USER_API_URL: "http://{{ include "calculator-chart.user_api.service.name" . }}:{{ .Values.user_api.service.port }}/"
+  CARD_API_URL: "http://{{ include "calculator-chart.card_api.service.name" . }}:{{ .Values.card_api.service.port }}/"
