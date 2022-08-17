@@ -28,8 +28,7 @@ while getopts 'dCv:Agcup' OPTION; do
         c)docker build -t $cardApiName:"$version" ./CardApi
           docker push $cardApiName
            ;;
-        u)docker build -t $userApiName:"$version"
-          ./UserApi
+        u)docker build -t $userApiName:"$version" ./UserApi
           docker push $userApiName
             ;;
         p)docker push $cardApiName

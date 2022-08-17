@@ -1,8 +1,10 @@
 package com.incomeCalculator.userapi.models;
 
 import com.incomeCalculator.userservice.models.User;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -27,6 +29,10 @@ public class UserInfo {
 
     @OneToOne
     private User user;
+
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
     public Long getId() {
         return id;
@@ -76,17 +82,25 @@ public class UserInfo {
         this.user = user;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof UserInfo)) return false;
         UserInfo userInfo = (UserInfo) o;
-        return cookiesActive == userInfo.cookiesActive && Objects.equals(id, userInfo.id) && Objects.equals(email, userInfo.email) && Objects.equals(firstName, userInfo.firstName) && Objects.equals(lastName, userInfo.lastName) && Objects.equals(user, userInfo.user);
+        return cookiesActive == userInfo.cookiesActive && Objects.equals(id, userInfo.id) && Objects.equals(email, userInfo.email) && Objects.equals(firstName, userInfo.firstName) && Objects.equals(lastName, userInfo.lastName) && Objects.equals(user, userInfo.user) && Objects.equals(createdAt, userInfo.createdAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, firstName, lastName, cookiesActive, user);
+        return Objects.hash(id, email, firstName, lastName, cookiesActive, user, createdAt);
     }
 
     @Override
@@ -97,7 +111,9 @@ public class UserInfo {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", cookiesActive=" + cookiesActive +
-                ", user=" + user +
+                ", user=" + user.getId() +
+                ", createdAt=" + createdAt +
                 '}';
     }
+
 }

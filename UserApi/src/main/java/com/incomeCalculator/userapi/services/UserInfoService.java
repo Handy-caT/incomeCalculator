@@ -21,7 +21,8 @@ public class UserInfoService {
 
     public UserInfo saveUserInfo(UserInfoDto userInfoDto, User user) {
 
-        UserInfo userInfo = new UserInfo();
+        UserInfo userInfo = userInfoRepository.findByUser_Id(user.getId())
+                .orElse(new UserInfo());
 
         userInfo.setFirstName(userInfoDto.getFirstName());
         userInfo.setLastName(userInfoDto.getLastName());

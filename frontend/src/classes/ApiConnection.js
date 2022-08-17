@@ -1,5 +1,16 @@
 import axios from "axios";
 
+function getConfig() {
+    let config = {};
+    const cookieAgreement = localStorage.getItem('cookieAgreement');
+    if (!cookieAgreement) {
+        config = {headers: {'Authorization': 'Bearer ' + localStorage.getItem('token')}};
+    } else {
+        config = {headers: {'Cookie': localStorage.getItem('token')}};
+    }
+    return config;
+}
+
 export async function authenticate(username, password) {
     return axios.post('/auth', {
         login: username,
@@ -19,7 +30,6 @@ export async function register(username, password) {
         password: password
     })
         .then(function (response) {
-            response.headers;
             return response.data;
         })
         .catch(function (error) {
@@ -39,7 +49,7 @@ export async function getUser(id) {
 }
 
 export async function getUserMe() {
-    return axios.get('/user/me', {headers: {'Authorization': 'Bearer ' + localStorage.getItem('token')}})
+    return axios.get('/user/me', getConfig())
         .then(function (response) {
             return response;
         })
@@ -48,7 +58,18 @@ export async function getUserMe() {
         });
 }
 
-
+export async function registerCookie(username, password) {
+    return axios.post('/cookies/register', {
+        login: username,
+        password: password
+    })
+        .then(function (response) {
+            return response.data;
+        })
+        .catch(function (error) {
+            throw error;
+        });
+}
 
 
 

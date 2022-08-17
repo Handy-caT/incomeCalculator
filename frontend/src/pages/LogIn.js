@@ -4,7 +4,7 @@ import PasswordField from "../shared/PasswordField";
 import UserModel from "../classes/UserModel";
 import {useNavigate} from "react-router";
 import {UserContext} from "../context/user-context";
-import {authenticate} from "../classes/ApiConnection";
+import {authenticate, registerCookie} from "../classes/ApiConnection";
 
 
 function LogInButton(props) {
@@ -19,6 +19,14 @@ function LogInButton(props) {
             console.log(response);
             props.handleError(false);
             authUser.setToken(response.token);
+
+            if(props.cookieAgreement) {
+                const response = await registerCookie(props.username, props.password);
+                console.log(response);
+                authUser.setToken(response.token);
+                authUser.setId(response.userId);
+            }
+
             userContext.setUser(authUser);
             userContext.setLogin(true);
             nav("/");

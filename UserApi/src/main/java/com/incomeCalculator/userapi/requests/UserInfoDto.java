@@ -1,5 +1,7 @@
 package com.incomeCalculator.userapi.requests;
 
+import com.incomeCalculator.userapi.models.UserInfo;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -16,6 +18,14 @@ public class UserInfoDto implements Serializable {
         this.lastName = lastName;
         this.cookiesActive = cookiesActive;
         this.userId = userId;
+    }
+
+    public UserInfoDto(UserInfo userInfo) {
+        this.email = userInfo.getEmail();
+        this.firstName = userInfo.getFirstName();
+        this.lastName = userInfo.getLastName();
+        this.cookiesActive = userInfo.isCookiesActive();
+        this.userId = userInfo.getUser().getId();
     }
 
     public String getEmail() {

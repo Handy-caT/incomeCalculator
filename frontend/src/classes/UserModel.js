@@ -15,20 +15,23 @@ class UserModel {
         this.token = token;
     }
 
-    setCookieToken(token) {
-        this.cookieToken = token;
+    setId(id) {
+        this.id = id;
     }
 
     saveSession() {
         sessionStorage.setItem("name", this.name);
         sessionStorage.setItem("cookieAgreement", this.cookieAgreement);
+        sessionStorage.setItem("id", this.id);
         sessionStorage.setItem("token", this.token);
     }
 
     saveCookie() {
         const cookies = new Cookies();
+
         cookies.set("name", this.name, {path: "/"});
         cookies.set("cookieAgreement", this.cookieAgreement, {path: "/"});
+        cookies.set("id", this.id, {path: "/"});
         cookies.set("token", this.token, {path: "/"});
     }
 
@@ -36,6 +39,7 @@ class UserModel {
         const cookies = new Cookies();
         cookies.remove("name", {path: "/"});
         cookies.remove("cookieAgreement", {path: "/"});
+        cookies.remove("id", {path: "/"});
         cookies.remove("token", {path: "/"});
     }
 
@@ -47,6 +51,7 @@ class UserModel {
        this.name = sessionStorage.getItem("name");
        this.cookieAgreement = sessionStorage.getItem("cookieAgreement");
        this.token = sessionStorage.getItem("token");
+       this.id = sessionStorage.getItem("id");
 
        console.log(this.name != null);
        return this.name != null;
@@ -57,9 +62,11 @@ class UserModel {
         this.name = cookies.get("name");
         this.cookieAgreement = cookies.get("cookieAgreement");
         this.token = cookies.get("token");
+        this.id = cookies.get("id");
 
         return this.name != null;
     }
+
 }
 
 
