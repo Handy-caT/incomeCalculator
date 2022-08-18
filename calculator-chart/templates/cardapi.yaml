@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "calculator-chart.cardapi.deployment.name" . }}
+  labels:
+    {{- include "calculator-chart.labels" . | nindent 4 }}
+    tier: cardapi
+spec:
+  replicas: {{ .Values.cardapi.deployment.replicas }}
+  selector:
+    matchLabels:
+      {{- include "calculator-chart.selectorLabels" . | nindent 6 }}
+      tier: cardapi
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        {{- include "calculator-chart.selectorLabels" . | nindent 8 }}
+        tier: cardapi
+    spec:
+      serviceAccountName: {{ include "calculator-chart.serviceAccountName" . }}
+      containers:
+        - name: {{ include "calculator-chart.cardapi.container.name" . }}
+          image: "{{ .Values.cardapi.image.name }}:{{ .Values.cardapi.image.tag }}"
+          imagePullPolicy: {{ .Values.cardapi.image.pullPolicy }}
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 3
+          envFrom:
+            - configMapRef:
+                name: {{ include "calculator-chart.urlConfig.defaultName" . }}
+            - secretRef:
+                name: {{ include "calculator-chart.secrets.defaultName" . }}
+          resources:
+            {{- toYaml .Values.cardapi.container.resources | nindent 12 }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "calculator-chart.cardapi.service.name" . }}
+  labels:
+    {{- include "calculator-chart.labels" . | nindent 4 }}
+    tier: cardapi
+spec:
+  ports:
+    - port: {{ .Values.cardapi.service.port }}
+      protocol: TCP
+      targetPort: 8080
+      name: http
+  selector:
+    {{- include "calculator-chart.selectorLabels" . | nindent 4 }}
+    tier: cardapi
+
+---
+
+{{- if .Values.cardapi.hpa.enabled -}}
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "calculator-chart.cardapi.hpa.name" . }}
+  labels:
+    {{- include "calculator-chart.labels" . | nindent 4 }}
+    tier: cardapi
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "calculator-chart.cardapi.deployment.name" . }}
+  minReplicas: {{ .Values.cardapi.hpa.minReplicas }}
+  maxReplicas: {{ .Values.cardapi.hpa.maxReplicas }}
+  targetCPUUtilizationPercentage: {{ .Values.cardapi.hpa.targetCPUUtilizationPercentage }}
+{{- end -}}

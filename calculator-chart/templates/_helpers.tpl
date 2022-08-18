@@ -32,49 +32,49 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
 
 {{/*
-Names of user_api tier components
+Names of userapi tier components
 */}}
-{{- define "calculator-chart.user_api.defaultName" -}}
-{{- printf "user_api-%s" .Release.Name -}}
+{{- define "calculator-chart.userapi.defaultName" -}}
+{{- printf "userapi-%s" .Release.Name -}}
 {{- end -}}
 
-{{- define "calculator-chart.user_api.deployment.name" -}}
-{{- default (include "calculator-chart.user_api.defaultName" .) .Values.user_api.deployment.name | trunc 63 | trimSuffix "-" -}}
+{{- define "calculator-chart.userapi.deployment.name" -}}
+{{- default (include "calculator-chart.userapi.defaultName" .) .Values.userapi.deployment.name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{- define "calculator-chart.user_api.container.name" -}}
-{{- default (include "calculator-chart.user_api.defaultName" .) .Values.user_api.container.name | trunc 63 | trimSuffix "-" -}}
+{{- define "calculator-chart.userapi.container.name" -}}
+{{- default (include "calculator-chart.userapi.defaultName" .) .Values.userapi.container.name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{- define "calculator-chart.user_api.service.name" -}}
-{{- default (include "calculator-chart.user_api.defaultName" .) .Values.user_api.service.name | trunc 63 | trimSuffix "-" -}}
+{{- define "calculator-chart.userapi.service.name" -}}
+{{- default (include "calculator-chart.userapi.defaultName" .) .Values.userapi.service.name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{- define "calculator-chart.user_api.hpa.name" -}}
-{{- default (include "calculator-chart.user_api.defaultName" .) .Values.user_api.hpa.name | trunc 63 | trimSuffix "-" -}}
+{{- define "calculator-chart.userapi.hpa.name" -}}
+{{- default (include "calculator-chart.userapi.defaultName" .) .Values.userapi.hpa.name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
-Names of card_api tier components
+Names of cardapi tier components
 */}}
-{{- define "calculator-chart.card_api.defaultName" -}}
-{{- printf "card_api-%s" .Release.Name -}}
+{{- define "calculator-chart.cardapi.defaultName" -}}
+{{- printf "cardapi-%s" .Release.Name -}}
 {{- end -}}
 
-{{- define "calculator-chart.card_api.deployment.name" -}}
-{{- default (include "calculator-chart.card_api.defaultName" .) .Values.card_api.deployment.name | trunc 63 | trimSuffix "-" -}}
+{{- define "calculator-chart.cardapi.deployment.name" -}}
+{{- default (include "calculator-chart.cardapi.defaultName" .) .Values.cardapi.deployment.name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{- define "calculator-chart.v.container.name" -}}
-{{- default (include "calculator-chart.card_api.defaultName" .) .Values.card_api.container.name | trunc 63 | trimSuffix "-" -}}
+{{- define "calculator-chart.cardapi.container.name" -}}
+{{- default (include "calculator-chart.cardapi.defaultName" .) .Values.cardapi.container.name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{- define "calculator-chart.card_api.service.name" -}}
-{{- default (include "calculator-chart.card_api.defaultName" .) .Values.card_api.service.name | trunc 63 | trimSuffix "-" -}}
+{{- define "calculator-chart.cardapi.service.name" -}}
+{{- default (include "calculator-chart.cardapi.defaultName" .) .Values.cardapi.service.name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{- define "calculator-chart.card_api.hpa.name" -}}
-{{- default (include "calculator-chart.card_api.defaultName" .) .Values.card_api.hpa.name | trunc 63 | trimSuffix "-" -}}
+{{- define "calculator-chart.cardapi.hpa.name" -}}
+{{- default (include "calculator-chart.cardapi.defaultName" .) .Values.cardapi.hpa.name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -105,7 +105,7 @@ Annotation to update pods on Secrets or ConfigMaps updates
 */}}
 {{- define "calculator-chart.propertiesHash" -}}
 {{- $secrets := include (print $.Template.BasePath "/secrets.yaml") . | sha256sum -}}
-{{- $urlConfig := include (print $.Template.BasePath "/urls-config.yaml") . | sha256sum -}}
+{{- $urlConfig := include (print $.Template.BasePath "/url-config.yaml") . | sha256sum -}}
 {{ print $secrets $urlConfig | sha256sum }}
 {{- end -}}
 

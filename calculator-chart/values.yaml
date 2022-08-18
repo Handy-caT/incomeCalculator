@@ -27,7 +27,7 @@ gateway:
     maxReplicas: 1
     targetCPUUtilizationPercentage: 50
 
-user_api:
+userapi:
   deployment:
     name:
     replicas: 2
@@ -54,7 +54,7 @@ user_api:
     maxReplicas: 2
     targetCPUUtilizationPercentage: 50
 
-card_api:
+cardapi:
   deployment:
     name:
     replicas: 2
