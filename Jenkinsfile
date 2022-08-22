@@ -5,24 +5,26 @@ pipeline {
     skipDefaultCheckout()
   }
   stages {
+    stage('Checkout') {
+        steps {
+          checkout scm
+        }
+    }
+
     stage('Prepare Container') {
       agent {
         docker {
-          image 'openjdk:8-jdk-alpine'
+          image 'maven:3.8.6-jdk-8'
           args '-v /root/.m2:/root/.m2'
         }
       }
       stages {
-        stage('Checkout') {
-          steps {
-            checkout scm
-          }
-        }
         stage('Build') {
           steps {
-            sh './build -C'
+            sh 'cd CardApi && mvn compile'
           }
         }
+
       }
     }
 
