@@ -2,13 +2,13 @@
 gateway:
   deployment:
     name:
-    replicas: 2
+    replicas: 1
   container:
     name:
     resources:
       limits:
         cpu: 500m
-        memory: 512Mi
+        memory: 1024Mi
       requests:
         cpu: 100m
         memory: 256Mi
@@ -19,7 +19,7 @@ gateway:
   image:
     name: handycat/auth-api
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   hpa:
     enabled: false
     name:
@@ -30,7 +30,7 @@ gateway:
 userapi:
   deployment:
     name:
-    replicas: 2
+    replicas: 1
   container:
     name:
     resources:
@@ -46,7 +46,7 @@ userapi:
   image:
     name: handycat/user-api
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   hpa:
     enabled: false
     name:
@@ -57,7 +57,7 @@ userapi:
 cardapi:
   deployment:
     name:
-    replicas: 2
+    replicas: 1
   container:
     name:
     resources:
@@ -73,7 +73,7 @@ cardapi:
   image:
     name: handycat/card-api
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   hpa:
     enabled: false
     name:

@@ -5,10 +5,12 @@ metadata:
   labels:
     {{- include "calculator-chart.labels" . | nindent 4 }}
 data:
-  USER_HOST: userapi
+  USER_HOST: userapi-calculator
   USER_PORT: "8080"
-  CARD_HOST: cardapi
+  CARD_HOST: cardapi-calculator
   CARD_PORT: "8080"
+  CARD_DOCKER_PORT: "8080"
+  USER_DOCKER_PORT: "8080"
   MYSQL_HOST: mysqldb
   MYSQL_PORT: "3306"
   MYSQL_DATABASE: incomeCalculator

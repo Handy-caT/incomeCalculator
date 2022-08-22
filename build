@@ -23,17 +23,17 @@ while getopts 'dCv:Agcup' OPTION; do
           docker build -t $userApiName:"$version" ./UserApi
             ;;
         g)docker build -t $gatewayName:"$version" ./AuthApi
-          docker push $gatewayName
+          docker push $gatewayName:"$version"
             ;;
         c)docker build -t $cardApiName:"$version" ./CardApi
-          docker push $cardApiName
+          docker push $cardApiName:"$version"
            ;;
         u)docker build -t $userApiName:"$version" ./UserApi
-          docker push $userApiName
+          docker push $userApiName:"$version"
             ;;
-        p)docker push $cardApiName
-          docker push $gatewayName
-          docker push $userApiName
+        p)docker push $cardApiName:"$version"
+          docker push $gatewayName:"$version"
+          docker push $userApiName:"$version"
             ;;
         ?)echo "Usage: $0 [-d] [-C] [-A] [-g] [-c] [-u] [-p] "
           exit 1

@@ -16,6 +16,6 @@ metadata:
   name: mysqldb
 subsets:
   - addresses:
-      - ip: 172.18.0.2
+      - ip: 192.168.65.2
     ports:
       - port: 3306

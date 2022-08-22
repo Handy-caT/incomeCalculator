@@ -1,0 +1,21 @@
+pipeline {
+    agent none
+    stages {
+        stage('Checkout') {
+            agent any
+            steps {
+                echo 'Checkout..'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing..'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying....'
+            }
+        }
+    }
+}
