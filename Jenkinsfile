@@ -22,7 +22,7 @@ pipeline {
       stages {
         stage('Build') {
           steps {
-            sh 'cd CardApi && mvn -B -DskipTests clean package'
+            sh 'mvn -B -DskipTests clean package'
           }
         }
 
