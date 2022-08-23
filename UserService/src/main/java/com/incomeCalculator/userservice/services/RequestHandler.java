@@ -2,7 +2,7 @@ package com.incomeCalculator.userservice.services;
 
 import com.incomeCalculator.userservice.exceptions.UserNotFoundException;
 import com.incomeCalculator.userservice.models.User;
-import com.incomeCalculator.userservice.repositories.UserRepository;
+import com.incomeCalculator.userservice.repositories.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

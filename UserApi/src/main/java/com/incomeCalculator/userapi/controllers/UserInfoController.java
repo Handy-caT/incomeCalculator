@@ -7,7 +7,7 @@ import com.incomeCalculator.userapi.services.UserInfoService;
 import com.incomeCalculator.userservice.exceptions.PermissionException;
 import com.incomeCalculator.userservice.exceptions.UserNotFoundException;
 import com.incomeCalculator.userservice.models.User;
-import com.incomeCalculator.userservice.repositories.UserRepository;
+import com.incomeCalculator.userservice.repositories.user.UserRepository;
 import com.incomeCalculator.userservice.services.RequestHandler;
 import com.incomeCalculator.userservice.services.UserService;
 import org.slf4j.Logger;

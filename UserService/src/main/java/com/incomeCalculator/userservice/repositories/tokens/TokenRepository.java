@@ -1,4 +1,4 @@
-package com.incomeCalculator.userservice.repositories;
+package com.incomeCalculator.userservice.repositories.tokens;
 
 
 import com.incomeCalculator.userservice.models.Token;

@@ -1,4 +1,4 @@
-package com.incomeCalculator.userapi.exceptions;
+package com.incomeCalculator.userservice.exceptions;
 
 import com.incomeCalculator.userservice.exceptions.PermissionException;
 import com.incomeCalculator.userservice.exceptions.TokenNotFoundException;

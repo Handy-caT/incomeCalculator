@@ -1,7 +1,7 @@
 package com.incomeCalculator.userapi.controllers;
 
 
-import com.incomeCalculator.userservice.repositories.UserRepository;
+import com.incomeCalculator.userservice.repositories.user.UserRepository;
 import com.incomeCalculator.userservice.requests.AuthDto;
 import com.incomeCalculator.userservice.exceptions.UserNotFoundException;
 import com.incomeCalculator.userservice.models.User;
@@ -9,7 +9,6 @@ import com.incomeCalculator.userservice.requests.CookieDto;
 import com.incomeCalculator.userservice.requests.TokenDto;
 import com.incomeCalculator.userservice.services.CookieService;
 import com.incomeCalculator.userservice.services.JwtTokenService;
-import com.incomeCalculator.userservice.services.RequestHandler;
 import com.incomeCalculator.userservice.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

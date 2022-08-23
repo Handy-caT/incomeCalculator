@@ -1,4 +1,4 @@
-package com.incomeCalculator.userservice.repositories;
+package com.incomeCalculator.userservice.repositories.requests;
 
 import com.incomeCalculator.userservice.models.Request;
 import org.springframework.data.jpa.repository.JpaRepository;

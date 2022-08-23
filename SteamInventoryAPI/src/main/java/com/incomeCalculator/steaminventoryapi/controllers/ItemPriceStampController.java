@@ -2,13 +2,12 @@ package com.incomeCalculator.steaminventoryapi.controllers;
 
 import com.incomeCalculator.steaminventoryapi.exceptions.ItemPriceStampNotFoundException;
 import com.incomeCalculator.steaminventoryapi.modelAssemblers.ItemPriceStampModelAssembler;
-import com.incomeCalculator.steaminventoryapi.models.Item;
 import com.incomeCalculator.steaminventoryapi.models.ItemPriceStamp;
 import com.incomeCalculator.steaminventoryapi.repositories.ItemPriceStampRepository;
 import com.incomeCalculator.steaminventoryapi.requests.ItemPriceStampRequest;
 import com.incomeCalculator.userservice.exceptions.PermissionException;
 import com.incomeCalculator.userservice.models.User;
-import com.incomeCalculator.userservice.repositories.UserRepository;
+import com.incomeCalculator.userservice.repositories.user.UserRepository;
 import com.incomeCalculator.userservice.services.RequestHandler;
 import com.incomeCalculator.userservice.services.UserService;
 import org.slf4j.Logger;

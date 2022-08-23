@@ -1,0 +1,24 @@
+#!/bin/sh
+set -e
+
+while getopts 'gucA' OPTION; do
+    case "$OPTION" in
+        g)  cd AuthApi
+          mvn test
+          cd ..
+            ;;
+        u)  cd UserApi
+          mvn test
+          cd ..
+            ;;
+        c)  cd CardApi
+          mvn test
+          cd ..
+            ;;
+        A) mvn test
+            ;;
+        ?)echo "Usage: $0 [-g] [-u] [-c]"
+            exit 1
+            ;;
+    esac
+done

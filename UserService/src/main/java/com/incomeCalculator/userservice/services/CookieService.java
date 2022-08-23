@@ -3,16 +3,14 @@ package com.incomeCalculator.userservice.services;
 import com.incomeCalculator.userservice.exceptions.CookieNotFoundException;
 import com.incomeCalculator.userservice.exceptions.TokenNotFoundException;
 import com.incomeCalculator.userservice.models.Cookie;
-import com.incomeCalculator.userservice.models.Token;
 import com.incomeCalculator.userservice.models.User;
-import com.incomeCalculator.userservice.repositories.CookieRepository;
+import com.incomeCalculator.userservice.repositories.tokens.CookieRepository;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;

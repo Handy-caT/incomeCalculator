@@ -25,9 +25,46 @@ pipeline {
             sh 'mvn -B -DskipTests clean package'
           }
         }
-
+        stage('Test') {
+          parallel {
+            stage('CardApi Tests') {
+              steps {
+                sh './test -c'
+              }
+              post {
+                always {
+                  junit 'target/surefire-reports/*.xml'
+                }
+              }
+            }
+            stage('UserApi Tests') {
+              steps {
+                sh './test -u'
+              }
+              post {
+                always {
+                  junit 'target/surefire-reports/*.xml'
+                }
+              }
+            }
+            stage('Gateway Tests') {
+              steps {
+                sh './test -g'
+              }
+              post {
+                always {
+                  junit 'target/surefire-reports/*.xml'
+                }
+              }
+            }
+          }
+        }
+        stage('End') {
+          steps {
+            sh 'echo "End"'
+          }
+        }
       }
     }
-
   }
-}
+ }
