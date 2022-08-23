@@ -22,7 +22,7 @@ pipeline {
       stages {
         stage('Build') {
           steps {
-            sh 'mvn -B -DskipTests clean package'
+            sh './build -C'
           }
         }
         stage('Test') {
