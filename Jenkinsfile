@@ -29,39 +29,13 @@ pipeline {
           }
         }
         stage('Test') {
-          parallel {
-            stage('CardApi Tests') {
-              steps {
-                unstash 'compiled'
-                sh './test -c'
-              }
-              post {
-                always {
-                  junit 'target/surefire-reports/*.xml'
-                }
-              }
-            }
-            stage('UserApi Tests') {
-              steps {
-                unstash 'compiled'
-                sh './test -u'
-              }
-              post {
-                always {
-                  junit 'target/surefire-reports/*.xml'
-                }
-              }
-            }
-            stage('Gateway Tests') {
-              steps {
-                unstash 'compiled'
-                sh './test -g'
-              }
-              post {
-                always {
-                  junit 'target/surefire-reports/*.xml'
-                }
-              }
+          steps {
+            unstash 'compiled'
+            sh './test -A'
+          }
+          post {
+            always {
+              junit 'target/surefire-reports/*.xml'
             }
           }
         }
