@@ -12,9 +12,7 @@
 *.class
 
 *.DS_Store
-/Core/testFiles/db/
 /src/main/resources/application.properties
-*.db
 *.jar
 *.properties
 
