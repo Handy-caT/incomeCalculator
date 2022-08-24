@@ -14,7 +14,7 @@ while getopts 'dCv:Agcup' OPTION; do
           docker pull $gatewayName
           docker pull $userApiName
             ;;
-        C)mvn clean install -DskipTests
+        C)mvn -B -DskipTests clean package
             ;;
         v) version="$OPTARG"
             ;;
