@@ -17,7 +17,7 @@ pipeline {
       agent {
         docker {
           image 'maven:3.8.6-jdk-8'
-          args '-v /Users/maksim/.m2:/root/.m2'
+          args '-v /home/.m2:/root/.m2'
         }
       }
       stages {
@@ -74,3 +74,4 @@ pipeline {
     }
   }
  }
+
