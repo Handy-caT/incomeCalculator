@@ -23,7 +23,7 @@ pipeline {
       stages {
         stage('Build') {
           steps {
-            unstash 'sources'
+            unstash 'source'
             sh './build -C'
             stash(name: 'compiled',includes: '**')
           }
