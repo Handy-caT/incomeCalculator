@@ -9,6 +9,7 @@ pipeline {
         agent any
         steps {
           checkout scm
+          stash(name: 'source',includes: '**')
         }
     }
 
@@ -22,13 +23,16 @@ pipeline {
       stages {
         stage('Build') {
           steps {
+            unstash 'sources'
             sh './build -C'
+            stash(name: 'compiled',includes: '**')
           }
         }
         stage('Test') {
           parallel {
             stage('CardApi Tests') {
               steps {
+                unstash 'compiled'
                 sh './test -c'
               }
               post {
@@ -39,6 +43,7 @@ pipeline {
             }
             stage('UserApi Tests') {
               steps {
+                unstash 'compiled'
                 sh './test -u'
               }
               post {
@@ -49,6 +54,7 @@ pipeline {
             }
             stage('Gateway Tests') {
               steps {
+                unstash 'compiled'
                 sh './test -g'
               }
               post {
