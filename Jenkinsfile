@@ -17,7 +17,7 @@ pipeline {
       agent {
         docker {
           image 'maven:3.8.6-jdk-8'
-          args '-v /home/.m2:/root/.m2'
+          args '-v /root/.m2:/root/.m2'
         }
       }
       stages {
@@ -35,7 +35,9 @@ pipeline {
           }
           post {
             always {
-              junit 'target/surefire-reports/*.xml'
+              junit 'CardApi/target/surefire-reports/*.xml'
+              junit 'UserApi/target/surefire-reports/*.xml'
+              junit 'Core/target/surefire-reports/*.xml'
             }
           }
         }
