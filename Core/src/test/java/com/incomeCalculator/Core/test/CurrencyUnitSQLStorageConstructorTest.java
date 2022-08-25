@@ -16,6 +16,8 @@ import java.util.Objects;
 public class CurrencyUnitSQLStorageConstructorTest {
 
     static PropertiesStorage propertiesStorage;
+    static String dbPath = "testFiles/db/test.db";
+    static String jdbc = "jdbc:sqlite:";
 
     @BeforeClass
     public static void before() {
@@ -36,6 +38,8 @@ public class CurrencyUnitSQLStorageConstructorTest {
         Files.copy(Paths.get("testFiles/properties/configConstructor.properties"),
                 Paths.get("testFiles/properties/configConstructorTest.properties"), StandardCopyOption.REPLACE_EXISTING);
         propertiesStorage.setPropertiesPath("testFiles/properties/configConstructorTest.properties");
+        File dbfile = new File(dbPath);
+        propertiesStorage.addProperty("DatabaseUrl",jdbc + dbfile.getAbsolutePath());
 
         String jsonPath = "testFiles/json/testapi.json";
         TestAPI testAPI = new TestAPI(jsonPath);

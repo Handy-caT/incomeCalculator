@@ -30,6 +30,8 @@ public class CurrencyUpdaterSQLTest {
     private static final String jsonPath = "testFiles/json/testapi.json";
     private static final SimpleDateFormat formatter = new SimpleDateFormat("dd_MM_yyyy");
     private static final String onDateString = "testFiles/json/OnDate_testapi.json";
+    static String dbPath = "testFiles/db/test.db";
+    static String jdbc = "jdbc:sqlite:";
     private static TestAPI testAPI;
 
     private void copyTable(String tableName) throws SQLException {
@@ -112,6 +114,8 @@ public class CurrencyUpdaterSQLTest {
                 Paths.get("testFiles/properties/configConstructorTest.properties"),
                 StandardCopyOption.REPLACE_EXISTING);
         propertiesStorage.setPropertiesPath("testFiles/properties/configConstructorTest.properties");
+        File dbfile = new File(dbPath);
+        propertiesStorage.addProperty("DatabaseUrl",jdbc + dbfile.getAbsolutePath());
 
         copyUpdatersStorage();
 
@@ -131,6 +135,8 @@ public class CurrencyUpdaterSQLTest {
                 Paths.get("testFiles/properties/configNewConstructorTest.properties"),
                 StandardCopyOption.REPLACE_EXISTING);
         propertiesStorage.setPropertiesPath("testFiles/properties/configNewConstructorTest.properties");
+        File dbfile = new File(dbPath);
+        propertiesStorage.addProperty("DatabaseUrl",jdbc + dbfile.getAbsolutePath());
 
         Date date = new Date();
         copyTable(CurrencyUpdaterSQL.defaultTableName + formatter.format(date));
@@ -157,6 +163,8 @@ public class CurrencyUpdaterSQLTest {
                 Paths.get("testFiles/properties/configOldConstructorTest.properties"),
                 StandardCopyOption.REPLACE_EXISTING);
         propertiesStorage.setPropertiesPath("testFiles/properties/configOldConstructorTest.properties");
+        File dbfile = new File(dbPath);
+        propertiesStorage.addProperty("DatabaseUrl",jdbc + dbfile.getAbsolutePath());
 
         Date date = new Date();
         Calendar calendar = Calendar.getInstance();
