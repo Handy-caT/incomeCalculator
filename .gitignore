@@ -24,3 +24,4 @@ frontend/yarn.lock
 
 /AuthApi/src/main/resources/application.yml
 /SteamInventoryPy/.idea/
+SteamInventoryPy/db/config.ini

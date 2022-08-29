@@ -10,6 +10,7 @@ alembic = "*"
 sqlalchemy = "*"
 pymysql = "*"
 pydantic = "*"
+configparser = "*"
 
 [dev-packages]
 
