@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Table, Integer, String
+from sqlalchemy import Column, Table, BIGINT, VARCHAR
 
 from db.engine import Engine
 
@@ -7,6 +7,6 @@ metadata = Engine.get_metadata()
 roles_table = Table(
     'Roles',
     metadata,
-    Column('id', Integer, primary_key=True),
-    Column('role_name', String(255)),
+    Column('id', BIGINT, primary_key=True),
+    Column('role_name', VARCHAR(255)),
 )

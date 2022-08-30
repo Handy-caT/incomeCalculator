@@ -1,0 +1,129 @@
+[
+   {
+      "name": "items",
+      "columns": {
+         "id": {
+            "type": "BIGINT",
+            "nullable": false,
+            "primary_key": true,
+            "unique": null,
+            "index": null,
+            "default": null
+         },
+         "class_id": {
+            "type": "BIGINT",
+            "nullable": false,
+            "primary_key": false,
+            "unique": true,
+            "index": true,
+            "default": null
+         },
+         "item_name": {
+            "type": "VARCHAR(40)",
+            "nullable": false,
+            "primary_key": false,
+            "unique": null,
+            "index": null,
+            "default": null
+         },
+         "created_timestamp": {
+            "type": "DATETIME",
+            "nullable": true,
+            "primary_key": false,
+            "unique": null,
+            "index": null,
+            "default": null
+         },
+         "updated_timestamp": {
+            "type": "DATETIME",
+            "nullable": true,
+            "primary_key": false,
+            "unique": null,
+            "index": null,
+            "default": null
+         }
+      }
+   },
+   {
+      "name": "roles",
+      "columns": {
+         "id": {
+            "type": "BIGINT",
+            "nullable": false,
+            "primary_key": true,
+            "unique": null,
+            "index": null,
+            "default": null
+         },
+         "role_name": {
+            "type": "VARCHAR(255)",
+            "nullable": true,
+            "primary_key": false,
+            "unique": null,
+            "index": null,
+            "default": null
+         }
+      }
+   },
+   {
+      "name": "users",
+      "columns": {
+         "id": {
+            "type": "BIGINT",
+            "nullable": false,
+            "primary_key": true,
+            "unique": null,
+            "index": null,
+            "default": null
+         },
+         "login": {
+            "type": "VARCHAR(255)",
+            "nullable": true,
+            "primary_key": false,
+            "unique": null,
+            "index": null,
+            "default": null
+         },
+         "password": {
+            "type": "VARCHAR(255)",
+            "nullable": true,
+            "primary_key": false,
+            "unique": null,
+            "index": null,
+            "default": null
+         },
+         "registration_date_time": {
+            "type": "DATETIME",
+            "nullable": true,
+            "primary_key": false,
+            "unique": null,
+            "index": null,
+            "default": null
+         },
+         "last_update_date_time": {
+            "type": "DATETIME",
+            "nullable": true,
+            "primary_key": false,
+            "unique": null,
+            "index": null,
+            "default": null
+         },
+         "is_using_cookies": {
+            "type": "BOOLEAN",
+            "nullable": false,
+            "primary_key": false,
+            "unique": null,
+            "index": null,
+            "default": null
+         },
+         "role_id": {
+            "type": "BIGINT",
+            "nullable": true,
+            "primary_key": false,
+            "unique": null,
+            "index": null,
+            "default": null
+         }
+      }
+   }
+]
