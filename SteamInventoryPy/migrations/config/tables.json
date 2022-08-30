@@ -108,7 +108,7 @@
             "index": null,
             "default": null
          },
-         "is_using_cookies": {
+         "is_using_cookie": {
             "type": "BOOLEAN",
             "nullable": false,
             "primary_key": false,

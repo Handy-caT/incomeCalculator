@@ -14,7 +14,7 @@ class User(Base):
     password = Column(String(255))
     registration_date_time = Column(DateTime, server_default=func.now())
     last_update_date_time = Column(DateTime, onupdate=func.now())
-    is_using_cookies = Column(Boolean, nullable=False)
+    is_using_cookie = Column(Boolean, nullable=False)
     role_id = Column(Integer, ForeignKey('roles.id'))
     role = relationship("Role")
 
@@ -24,13 +24,13 @@ class User(Base):
     def __init__(self, login, password, is_using_cookies):
         self.login = login
         self.password = password
-        self.is_using_cookies = is_using_cookies
+        self.is_using_cookie = is_using_cookies
 
     def __init__(self, login, password, is_using_cookies, role):
         self.login = login
         self.password = password
-        self.is_using_cookies = is_using_cookies
+        self.is_using_cookie = is_using_cookies
         self.role_id = role.id
 
     def __repr__(self):
-        return f'User({self.login}, {self.password}, {self.is_using_cookies}, {self.role})'
+        return f'User({self.login}, {self.password}, {self.is_using_cookie}, {self.role})'

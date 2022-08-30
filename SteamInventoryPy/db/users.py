@@ -13,6 +13,6 @@ users_table = Table(
     Column('password', VARCHAR(255)),
     Column('registration_date_time', DateTime, server_default=func.now()),
     Column('last_update_date_time', DateTime, onupdate=func.now()),
-    Column('is_using_cookies', Boolean, nullable=False),
+    Column('is_using_cookie', Boolean, nullable=False),
     Column('role_id', BIGINT, ForeignKey('Roles.id'))
 )

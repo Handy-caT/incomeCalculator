@@ -5,6 +5,7 @@ from db.engine import Engine
 from db import *
 
 configs_dir = 'migrations/config'
+file_name = 'tables.json'
 
 
 def make_dir():
@@ -15,7 +16,7 @@ def save_json(tables):
     make_dir()
 
     json_str = json.dumps(tables, indent=3)
-    with open(configs_dir + '/tables.json', 'w') as f:
+    with open(configs_dir + '/' + file_name, 'w') as f:
         f.write(json_str)
 
 
