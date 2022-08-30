@@ -1,8 +1,8 @@
-import sqlalchemy
 from sqlalchemy import Column, Table, Integer, String
 
+from db.engine import Engine
 
-metadata = sqlalchemy.MetaData()
+metadata = Engine.get_metadata()
 
 roles_table = Table(
     'Roles',

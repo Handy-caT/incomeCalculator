@@ -1,10 +1,12 @@
 import configparser
 
+import sqlalchemy
 from sqlalchemy import create_engine
 
 
 class Engine:
     sql_engine = None
+    metadata = sqlalchemy.MetaData()
 
     @classmethod
     def get_engine(cls):
@@ -29,3 +31,7 @@ class Engine:
     @classmethod
     def get_connection(cls):
         return cls.get_engine().connect()
+
+    @classmethod
+    def get_metadata(cls):
+        return cls.metadata

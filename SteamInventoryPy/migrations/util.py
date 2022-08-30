@@ -1,19 +1,22 @@
+import configparser
+
 from pathlib import Path
 from sqlalchemy import text
 
 from db.engine import Engine
 
-
-def read_script(filename):
-    file = open(filename, 'r')
-    script = file.read()
-    file.close()
-
-    return script
+configs_dir = 'migrations/configs'
 
 
 def make_dir():
-    Path('migrations/configs').mkdir(parents=True, exist_ok=True)
+    Path(configs_dir).mkdir(parents=True, exist_ok=True)
+
+
+def get_config():
+    config = configparser.ConfigParser()
+    config.read(configs_dir+'/migrations.ini')
+
+    return config
 
 
 def check_table_exists(engine, table_name):
@@ -21,13 +24,10 @@ def check_table_exists(engine, table_name):
         return engine.dialect.has_table(connection, table_name)
 
 
-def create_table(table_name):
-    script = text(read_script('../sql/create'+table_name+'.sql'))
-    connection = Engine.get_connection()
+def save_table_state(table_name, version, state):
+    config = get_config()
+    config[version] = {}
+    config[version][table_name] = state
 
-    result = connection.execute(script)
-    connection.close()
-    
-    return result
-
-
+    with open(configs_dir+'/migrations.ini', 'w') as configfile:
+        config.write(configfile)
