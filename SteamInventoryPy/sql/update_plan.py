@@ -1,7 +1,7 @@
 import json
 
 from db.engine import Engine
-from sql.table_scan import file_name, configs_dir
+from sql.table_scan import file_name, configs_dir, make_dir
 from sql.util import check_if_table_exists, check_if_column_exists
 
 column_info = {
@@ -12,6 +12,14 @@ column_info = {
     'default': 4,
     'extra': 5
 }
+
+
+def save_plan(plan, version):
+    make_dir()
+
+    json_str = json.dumps(plan, indent=3)
+    with open(configs_dir + '/' + version + '.json', 'w') as f:
+        f.write(json_str)
 
 
 def compare_column_plans(schema, plan):
@@ -36,7 +44,18 @@ def scan_columns(connection, table_name, table_schema):
             }
             columns.append(plan)
 
-    print(columns)
+    return columns
+
+
+def save_create_columns_plan(table_schema):
+    columns = []
+
+    for column in table_schema['columns'].keys():
+        plan = {
+            column: 'Create'
+        }
+        columns.append(plan)
+
     return columns
 
 
@@ -49,8 +68,11 @@ def compare_tables():
 
     for table in data:
         if check_if_table_exists(connection, table['name']) is False:
+            columns = save_create_columns_plan(table)
+
             plan = {
-                table['name']: 'Create'
+                table['name']: 'Create',
+                'columns': columns
             }
             tables_plan.append(plan)
         else:
@@ -64,12 +86,14 @@ def compare_tables():
 
             if ind is True:
                 plan = {
-                    table['name']: 'Update'
+                    table['name']: 'Update',
+                    'columns': columns
                 }
                 tables_plan.append(plan)
             else:
                 plan = {
-                    table['name']: 'Existed'
+                    table['name']: 'Existed',
+                    'columns': columns
                 }
                 tables_plan.append(plan)
 
