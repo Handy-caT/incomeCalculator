@@ -1,8 +1,9 @@
 import json
 
 from db.engine import Engine
+from sql.exceptions import IncorrectColumnType
 from sql.table_scan import file_name, configs_dir, make_dir
-from sql.util import check_if_table_exists, check_if_column_exists
+from sql.util import check_if_table_exists, check_if_column_exists, get_indexes
 
 column_info = {
     'field': 0,
@@ -13,6 +14,8 @@ column_info = {
     'extra': 5
 }
 
+column_name_index = 4
+
 
 def save_plan(plan, version):
     make_dir()
@@ -22,9 +25,23 @@ def save_plan(plan, version):
         f.write(json_str)
 
 
-def compare_column_plans(schema, plan):
-    var = plan['type'].lower() == schema['type'].lower()
+def check_index(connection, table_name, column_name):
+    db_indexes = get_indexes(connection, table_name).fetchall()
+
+    for index in db_indexes:
+        if column_name in index[column_name_index]:
+            return True
+
+    return False
+
+
+def check_nullable(connection, table_name, column_name):
     pass
+
+
+def compare_column_plans(connection, schema, plan):
+    if plan['type'].lower() != schema['type'].lower():
+        raise IncorrectColumnType(schema['field'], schema['type'], plan['type'])
 
 
 def scan_columns(connection, table_name, table_schema):
@@ -32,8 +49,7 @@ def scan_columns(connection, table_name, table_schema):
 
     for column in table_schema['columns'].keys():
         result = check_if_column_exists(connection, table_name, column)
-        print(result.rowcount)
-        if result.rowcount == 0:
+        if result is False:
             plan = {
                 column: 'Create'
             }
