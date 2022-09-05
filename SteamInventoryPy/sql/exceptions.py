@@ -14,3 +14,17 @@ class IncorrectPrimaryKey(Exception):
     def __init__(self, column_name):
         self.column_name = column_name
         super().__init__(f'Incorrect primary key in {self.column_name} column. Primary key must be named id')
+
+
+class IncorrectNullableState(Exception):
+
+    def __init__(self, column_name):
+        self.column_name = column_name
+        super().__init__(f'Incorrect nullable state in {self.column_name} column. Can\'t make not null column nullable')
+
+
+class IncorrectUniqueState(Exception):
+
+    def __init__(self, column_name):
+        self.column_name = column_name
+        super().__init__(f'Incorrect unique state in {self.column_name} column. Can\'t make unique column not unique')

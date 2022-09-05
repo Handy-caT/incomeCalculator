@@ -1,18 +1,10 @@
 import json
 
 from db.engine import Engine
-from sql.exceptions import IncorrectColumnType
+from sql.column_validation import check_type, check_nullable, check_primary_key
+from sql.exceptions import IncorrectColumnType, IncorrectNullableState, IncorrectPrimaryKey
 from sql.table_scan import file_name, configs_dir, make_dir
-from sql.util import check_if_table_exists, check_if_column_exists, get_indexes
-
-column_info = {
-    'field': 0,
-    'type': 1,
-    'null': 2,
-    'key': 3,
-    'default': 4,
-    'extra': 5
-}
+from sql.util import check_if_table_exists, check_if_column_exists, get_indexes, get_column
 
 column_name_index = 4
 
@@ -35,13 +27,17 @@ def check_index(connection, table_name, column_name):
     return False
 
 
-def check_nullable(connection, table_name, column_name):
-    pass
+def compare_column_plans(connection, table_name, column_name, plan):
+    column = get_column(connection, table_name, column_name)
 
+    if check_type(column, plan['type']) is False:
+        raise IncorrectColumnType(table_name, column[1], plan['type'])
 
-def compare_column_plans(connection, schema, plan):
-    if plan['type'].lower() != schema['type'].lower():
-        raise IncorrectColumnType(schema['field'], schema['type'], plan['type'])
+    if plan['nullable'] != check_nullable(column):
+        raise IncorrectNullableState(column_name)
+
+    if plan['primary_key'] != check_primary_key(column):
+        raise IncorrectPrimaryKey(column_name)
 
 
 def scan_columns(connection, table_name, table_schema):
@@ -59,6 +55,8 @@ def scan_columns(connection, table_name, table_schema):
                 column: 'Existed'
             }
             columns.append(plan)
+
+            compare_column_plans(connection, table_name, column, table_schema['columns'][column])
 
     return columns
 

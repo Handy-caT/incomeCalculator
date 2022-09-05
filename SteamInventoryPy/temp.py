@@ -12,7 +12,7 @@ from sql.table_scan import scan_tables, save_json
 # print(scan_tables())
 # save_json(scan_tables())
 from sql.update_plan import compare_tables, save_plan, check_index
-from sql.util import get_indexes
+from sql.util import get_indexes, get_column
 
 connection = Engine.get_connection()
 # print(check_index(connection, 'users', 'is_admin'))
@@ -20,6 +20,8 @@ connection = Engine.get_connection()
 plan = compare_tables()
 print(plan)
 
-# save_plan(plan, 'v1')
+# print(get_column(connection, 'users', 'login'))
+
+save_plan(plan, 'v1')
 
 # raise IncorrectColumnType('users', 'INT', 'BIGINT')
