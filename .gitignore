@@ -12,9 +12,7 @@
 *.class
 
 *.DS_Store
-/Core/testFiles/db/
 /src/main/resources/application.properties
-*.db
 *.jar
 *.properties
 
@@ -23,4 +21,7 @@ AuthApi/src/main/resources/application.properties
 *mvnw
 frontend/package-lock.json
 frontend/yarn.lock
-*.lock
+
+/AuthApi/src/main/resources/application.yml
+/SteamInventoryPy/.idea/
+SteamInventoryPy/db/config.ini

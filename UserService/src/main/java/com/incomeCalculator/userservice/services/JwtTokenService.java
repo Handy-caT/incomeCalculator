@@ -4,8 +4,8 @@ package com.incomeCalculator.userservice.services;
 import com.incomeCalculator.userservice.exceptions.TokenNotFoundException;
 import com.incomeCalculator.userservice.models.Token;
 import com.incomeCalculator.userservice.models.User;
-import com.incomeCalculator.userservice.repositories.TokenRepository;
-import com.incomeCalculator.userservice.repositories.UserRepository;
+import com.incomeCalculator.userservice.repositories.tokens.TokenRepository;
+import com.incomeCalculator.userservice.repositories.user.UserRepository;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,6 @@ public class JwtTokenService {
 
         return tokenEntity.getUser();
     }
-
 
     public boolean validateUsersToken(User user, String token) {
         return  Objects.equals(token, getUsersToken(user)) ||

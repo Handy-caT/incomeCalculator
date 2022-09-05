@@ -2,10 +2,8 @@ package com.incomeCalculator.userapi.services;
 
 import com.incomeCalculator.userapi.models.RequestStatistics;
 import com.incomeCalculator.userapi.repositories.RequestStatisticsRepository;
-import com.incomeCalculator.userservice.models.Request;
-import com.incomeCalculator.userservice.repositories.RequestDestinationRepository;
-import com.incomeCalculator.userservice.repositories.RequestRepository;
-import com.sun.corba.se.impl.protocol.SharedCDRClientRequestDispatcherImpl;
+import com.incomeCalculator.userservice.repositories.requests.RequestDestinationRepository;
+import com.incomeCalculator.userservice.repositories.requests.RequestRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

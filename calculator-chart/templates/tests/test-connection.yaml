@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .Release.Name }}-interaction-test"
+  labels:
+    {{- include "calculator-chart.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": hook-succeeded,hook-failed
+spec:
+  template:
+    spec:
+      containers:
+        - name: test
+          image: busybox
+          command: ['wget']
+          args:  ['{{ include "calculator-chart.gateway.service.name" . }}:{{ .Values.gateway.service.port }}/']
+      restartPolicy: Never
+  backoffLimit: 3

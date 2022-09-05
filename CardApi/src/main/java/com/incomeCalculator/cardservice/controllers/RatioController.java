@@ -5,7 +5,7 @@ import com.incomeCalculator.cardservice.exceptions.RatioNotFoundException;
 import com.incomeCalculator.cardservice.modelAssemblers.RatioModelAssembler;
 import com.incomeCalculator.cardservice.models.Ratio;
 import com.incomeCalculator.cardservice.repositories.RatioRepository;
-import com.incomeCalculator.cardservice.requests.RatioRequest;
+import com.incomeCalculator.cardservice.requests.RatioDto;
 import com.incomeCalculator.cardservice.services.RatioService;
 import com.incomeCalculator.core.wallet.money.util.DateFormatter;
 import com.incomeCalculator.userservice.exceptions.PermissionException;
@@ -13,9 +13,6 @@ import com.incomeCalculator.userservice.models.User;
 import com.incomeCalculator.userservice.services.RequestHandler;
 import com.incomeCalculator.userservice.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
@@ -135,14 +132,14 @@ public class RatioController {
     }
 
     @PutMapping("/ratios/{id}")
-    public EntityModel<Ratio> updateById(@RequestBody RatioRequest ratioRequest
+    public EntityModel<Ratio> updateById(@RequestBody RatioDto ratioDto
             , @PathVariable Long id, HttpServletRequest request) {
 
         User authUser = handler.getUserFromRequest(request);
         if(userService.isAdmin(authUser)) {
             Ratio ratio = repository.findById(id)
                     .orElseThrow(() -> new RatioNotFoundException(id));
-            ratio = service.updateRatioByRequest(ratioRequest,ratio);
+            ratio = service.updateRatioByRequest(ratioDto,ratio);
             ratio = repository.save(ratio);
 
             return assembler.toModel(ratio);
@@ -153,16 +150,16 @@ public class RatioController {
     }
 
     @PostMapping("/ratios")
-    public EntityModel<Ratio> addRatio(@RequestBody RatioRequest ratioRequest, HttpServletRequest request) {
+    public EntityModel<Ratio> addRatio(@RequestBody RatioDto ratioDto, HttpServletRequest request) {
 
         User authUser = handler.getUserFromRequest(request);
         if(userService.isAdmin(authUser)) {
             Date date = new Date();
-            if(repository.findByCurrencyUnit_CurrencyNameAndDateString(ratioRequest.getCurrencyName(),
+            if(repository.findByCurrencyUnit_CurrencyNameAndDateString(ratioDto.getCurrencyName(),
                     DateFormatter.sqlFormat(date)).isPresent() ) {
                 throw new IllegalArgumentException("This ratio is already exist, try update it if it's needed");
             } else {
-                Ratio ratio = service.createRatioFromRequest(ratioRequest);
+                Ratio ratio = service.createRatioFromRequest(ratioDto);
 
                 repository.save(ratio);
                 return assembler.toModel(ratio);

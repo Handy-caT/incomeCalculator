@@ -1,7 +1,6 @@
 package com.incomeCalculator.cardservice.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.incomeCalculator.cardservice.controllers.CurrencyUnitController;
 import com.incomeCalculator.cardservice.exceptions.CurrencyUnitNotFoundException;
 import com.incomeCalculator.cardservice.models.CurrencyUnitEntity;
 import com.incomeCalculator.cardservice.repositories.CardRepository;
@@ -9,22 +8,16 @@ import com.incomeCalculator.cardservice.repositories.CurrencyUnitRepository;
 import com.incomeCalculator.cardservice.repositories.RatioRepository;
 import com.incomeCalculator.cardservice.repositories.TransactionRepository;
 import com.incomeCalculator.cardservice.services.CurrencyUnitService;
-import com.incomeCalculator.userservice.models.Token;
 import com.incomeCalculator.userservice.models.User;
-import com.incomeCalculator.userservice.repositories.RoleRepository;
-import com.incomeCalculator.userservice.repositories.TokenRepository;
-import com.incomeCalculator.userservice.repositories.UserRepository;
+import com.incomeCalculator.userservice.repositories.user.RoleRepository;
+import com.incomeCalculator.userservice.repositories.tokens.TokenRepository;
+import com.incomeCalculator.userservice.repositories.user.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.LinkedList;
@@ -289,12 +282,13 @@ public class CurrencyUnitControllerTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         CurrencyUnitEntity currencyUnit = new CurrencyUnitEntity(1L,"USD",432,1);
+        CurrencyUnitEntity currencyUnitNull = new CurrencyUnitEntity(null,"USD",432,1);
         String json = objectMapper.writeValueAsString(currencyUnit);
 
         when(userRepository.findById(admin.getId())).thenReturn(Optional.of(admin));
         when(repository.findById(currencyUnit.getId())).thenReturn(Optional.of(currencyUnit));
         when(repository.findByCurrencyId(currencyUnit.getCurrencyId())).thenReturn(Optional.empty());
-        when(repository.save(currencyUnit)).thenReturn(currencyUnit);
+        when(repository.save(currencyUnitNull)).thenReturn(currencyUnit);
 
         mockMvc.perform(post("/currencyUnits")
                         .contentType(MediaType.APPLICATION_JSON).content(json)

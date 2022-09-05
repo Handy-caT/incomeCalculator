@@ -5,23 +5,18 @@ import com.incomeCalculator.userapi.modelAssemblers.RequestStatisticsModelAssemb
 import com.incomeCalculator.userapi.models.RequestStatistics;
 import com.incomeCalculator.userapi.repositories.RequestStatisticsRepository;
 import com.incomeCalculator.userservice.exceptions.PermissionException;
-import com.incomeCalculator.userservice.models.Request;
-import com.incomeCalculator.userservice.models.RequestDestination;
 import com.incomeCalculator.userservice.models.User;
-import com.incomeCalculator.userservice.repositories.RequestDestinationRepository;
-import com.incomeCalculator.userservice.repositories.RequestRepository;
-import com.incomeCalculator.userservice.requests.UserResponse;
+import com.incomeCalculator.userservice.repositories.requests.RequestDestinationRepository;
+import com.incomeCalculator.userservice.repositories.requests.RequestRepository;
 import com.incomeCalculator.userservice.services.RequestHandler;
 import com.incomeCalculator.userservice.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.embedded.undertow.UndertowServletWebServer;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;

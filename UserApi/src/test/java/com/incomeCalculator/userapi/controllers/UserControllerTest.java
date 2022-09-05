@@ -1,12 +1,18 @@
 package com.incomeCalculator.userapi.controllers;
 
+import com.incomeCalculator.userapi.repositories.RequestStatisticsRepository;
+import com.incomeCalculator.userapi.repositories.UserInfoRepository;
 import com.incomeCalculator.userservice.models.User;
-import com.incomeCalculator.userservice.repositories.RoleRepository;
-import com.incomeCalculator.userservice.repositories.TokenRepository;
-import com.incomeCalculator.userservice.repositories.UserRepository;
+import com.incomeCalculator.userservice.repositories.requests.RequestDestinationRepository;
+import com.incomeCalculator.userservice.repositories.requests.RequestRepository;
+import com.incomeCalculator.userservice.repositories.requests.RequestSourceRepository;
+import com.incomeCalculator.userservice.repositories.requests.ResponseRepository;
+import com.incomeCalculator.userservice.repositories.tokens.CookieRepository;
+import com.incomeCalculator.userservice.repositories.user.RoleRepository;
+import com.incomeCalculator.userservice.repositories.tokens.TokenRepository;
+import com.incomeCalculator.userservice.repositories.user.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -14,7 +20,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Optional;
 
 import static com.incomeCalculator.userapi.controllers.AuthControllerTest.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -30,6 +35,20 @@ class UserControllerTest {
     RoleRepository roleRepository;
     @MockBean
     TokenRepository tokenRepository;
+    @MockBean
+    RequestRepository requestRepository;
+    @MockBean
+    ResponseRepository responseRepository;
+    @MockBean
+    RequestDestinationRepository requestDestinationRepository;
+    @MockBean
+    RequestSourceRepository requestSourceRepository;
+    @MockBean
+    RequestStatisticsRepository requestStatisticsRepository;
+    @MockBean
+    UserInfoRepository userInfoRepository;
+    @MockBean
+    CookieRepository cookieRepository;
 
     @Autowired
     MockMvc mockMvc;

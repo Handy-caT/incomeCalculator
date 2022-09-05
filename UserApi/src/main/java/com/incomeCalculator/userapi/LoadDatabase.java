@@ -1,7 +1,7 @@
 package com.incomeCalculator.userapi;
 
 import com.incomeCalculator.userservice.models.Role;
-import com.incomeCalculator.userservice.repositories.RoleRepository;
+import com.incomeCalculator.userservice.repositories.user.RoleRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;

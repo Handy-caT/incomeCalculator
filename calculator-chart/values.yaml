@@ -1,0 +1,90 @@
+
+gateway:
+  deployment:
+    name:
+    replicas: 1
+  container:
+    name:
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1024Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+  service:
+    name:
+    port: 8080
+    type: LoadBalancer
+  image:
+    name: handycat/auth-api
+    tag: latest
+    pullPolicy: Always
+  hpa:
+    enabled: false
+    name:
+    minReplicas: 1
+    maxReplicas: 1
+    targetCPUUtilizationPercentage: 50
+
+userapi:
+  deployment:
+    name:
+    replicas: 1
+  container:
+    name:
+    resources:
+      limits:
+        memory: 512Mi
+        cpu: 500m
+      requests:
+        memory: 256Mi
+        cpu: 100m
+  service:
+    name:
+    port: 8080
+  image:
+    name: handycat/user-api
+    tag: latest
+    pullPolicy: Always
+  hpa:
+    enabled: false
+    name:
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 50
+
+cardapi:
+  deployment:
+    name:
+    replicas: 1
+  container:
+    name:
+    resources:
+      limits:
+        memory: 512Mi
+        cpu: 500m
+      requests:
+        memory: 256Mi
+        cpu: 100m
+  service:
+    name:
+    port: 8080
+  image:
+    name: handycat/card-api
+    tag: latest
+    pullPolicy: Always
+  hpa:
+    enabled: false
+    name:
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 50
+
+secrets:
+  secret: default-secret
+
+serviceAccount:
+  create: true
+  name:
+

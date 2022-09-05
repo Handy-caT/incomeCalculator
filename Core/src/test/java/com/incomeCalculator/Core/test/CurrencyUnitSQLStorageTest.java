@@ -7,17 +7,22 @@ import com.incomeCalculator.core.wallet.PropertiesStorage;
 import com.incomeCalculator.core.wallet.money.currencyUnit.currencyUnitSQL.CurrencyUnitSQLStorage;
 import com.incomeCalculator.core.wallet.money.currencyUnit.currencyUnitSQL.CurrencyUnitSQLStorageFactory;
 
+import java.io.File;
 import java.io.IOException;
 
 public class CurrencyUnitSQLStorageTest {
 
     static PropertiesStorage propertiesStorage;
     static CurrencyUnitSQLStorageFactory factory;
+    static String dbPath = "testFiles/db/test.db";
+    static String jdbc = "jdbc:sqlite:";
 
     @BeforeClass
     public static void before() throws IOException {
         propertiesStorage = PropertiesStorage.getInstance();
         propertiesStorage.setPropertiesPath("testFiles/properties/config.properties");
+        File dbfile = new File(dbPath);
+        propertiesStorage.addProperty("DatabaseUrl",jdbc + dbfile.getAbsolutePath());
         factory = new CurrencyUnitSQLStorageFactory();
     }
 

@@ -5,7 +5,7 @@ import com.incomeCalculator.cardservice.models.CurrencyUnitEntity;
 import com.incomeCalculator.cardservice.models.Ratio;
 import com.incomeCalculator.cardservice.repositories.CurrencyUnitRepository;
 import com.incomeCalculator.cardservice.repositories.RatioRepository;
-import com.incomeCalculator.cardservice.requests.RatioRequest;
+import com.incomeCalculator.cardservice.requests.RatioDto;
 import com.incomeCalculator.cardservice.util.RatioBuilder;
 import com.incomeCalculator.core.wallet.money.util.DateFormatter;
 import org.slf4j.Logger;
@@ -28,26 +28,26 @@ public class RatioService {
     @Autowired
     RatioRepository repository;
 
-    public Ratio createRatioFromRequest(RatioRequest ratioRequest) {
+    public Ratio createRatioFromRequest(RatioDto ratioDto) {
         Ratio ratio = new Ratio();
 
-        ratio.setDateString(ratioRequest.getDateString());
-        ratio.setRatio(ratioRequest.getRatio());
+        ratio.setDateString(ratioDto.getDateString());
+        ratio.setRatio(ratioDto.getRatio());
         CurrencyUnitEntity currencyUnit = currencyUnitRepository
-                .findByCurrencyName(ratioRequest.getCurrencyName())
-                .orElseThrow(() -> new CurrencyUnitNotFoundException(ratioRequest.getCurrencyName()));
+                .findByCurrencyName(ratioDto.getCurrencyName())
+                .orElseThrow(() -> new CurrencyUnitNotFoundException(ratioDto.getCurrencyName()));
         ratio.setCurrencyUnit(currencyUnit);
 
         return ratio;
     }
 
-    public Ratio updateRatioByRequest(RatioRequest ratioRequest,Ratio ratio) {
+    public Ratio updateRatioByRequest(RatioDto ratioDto, Ratio ratio) {
 
-        ratio.setDateString(ratioRequest.getDateString());
-        ratio.setRatio(ratioRequest.getRatio());
+        ratio.setDateString(ratioDto.getDateString());
+        ratio.setRatio(ratioDto.getRatio());
         CurrencyUnitEntity currencyUnit = currencyUnitRepository
-                .findByCurrencyName(ratioRequest.getCurrencyName())
-                .orElseThrow(() -> new CurrencyUnitNotFoundException(ratioRequest.getCurrencyName()));
+                .findByCurrencyName(ratioDto.getCurrencyName())
+                .orElseThrow(() -> new CurrencyUnitNotFoundException(ratioDto.getCurrencyName()));
         ratio.setCurrencyUnit(currencyUnit);
 
         return ratio;
@@ -66,7 +66,7 @@ public class RatioService {
 
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 1 0 * * *")
     public void initRatios() {
         initRatios(new Date());
     }

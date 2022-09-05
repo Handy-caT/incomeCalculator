@@ -7,14 +7,11 @@ import com.incomeCalculator.cardservice.models.TransactionEntity;
 import com.incomeCalculator.cardservice.repositories.CardRepository;
 import com.incomeCalculator.cardservice.repositories.CurrencyUnitRepository;
 import com.incomeCalculator.cardservice.repositories.TransactionRepository;
-import com.incomeCalculator.cardservice.requests.CardRequest;
-import com.incomeCalculator.cardservice.requests.TransactionRequest;
+import com.incomeCalculator.cardservice.requests.CardDto;
+import com.incomeCalculator.cardservice.requests.TransactionDto;
 import com.incomeCalculator.cardservice.util.CurrencyUpdaterSQL;
 import com.incomeCalculator.userservice.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -33,7 +30,7 @@ public class CardService {
 
 
 
-    public Card createCardByRequest(User user, CardRequest request) {
+    public Card createCardByRequest(User user, CardDto request) {
         CurrencyUnitEntity currencyUnit = currencyUnitRepository.findByCurrencyName(request.getCurrencyName())
                 .orElseThrow(() -> new CurrencyUnitNotFoundException(request.getCurrencyName()));
         Card card = new Card(currencyUnit, BigDecimal.ZERO,user,request.getCardName());
@@ -41,7 +38,7 @@ public class CardService {
         return card;
     }
 
-    public TransactionEntity executeTransaction(Card card, TransactionRequest request) {
+    public TransactionEntity executeTransaction(Card card, TransactionDto request) {
 
         TransactionEntity transaction;
         CurrencyUnitEntity currencyUnit = currencyUnitRepository.findByCurrencyName(request.getCurrencyName())

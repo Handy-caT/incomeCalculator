@@ -108,7 +108,7 @@ public class MoneyTest {
         Assert.assertEquals(NonStrictCurrencyUnit.of(currencyString),result.getCurrency());
     }
 
-    @Test
+    //@Test
     public void convertTest() throws IOException {
         String jsonPath = "testFiles/json/testapi.json";
         TestAPI testAPI = new TestAPI(jsonPath);

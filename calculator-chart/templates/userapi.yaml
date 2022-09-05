@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "calculator-chart.userapi.deployment.name" . }}
+  labels:
+    {{- include "calculator-chart.labels" . | nindent 4 }}
+    tier: userapi
+spec:
+  replicas: {{ .Values.userapi.deployment.replicas }}
+  selector:
+    matchLabels:
+      {{- include "calculator-chart.selectorLabels" . | nindent 6 }}
+      tier: userapi
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        {{- include "calculator-chart.selectorLabels" . | nindent 8 }}
+        tier: userapi
+    spec:
+      serviceAccountName: {{ include "calculator-chart.serviceAccountName" . }}
+      containers:
+        - name: {{ include "calculator-chart.cardapi.container.name" . }}
+          image: "{{ .Values.userapi.image.name }}:{{ .Values.userapi.image.tag }}"
+          imagePullPolicy: {{ .Values.userapi.image.pullPolicy }}
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 3
+          envFrom:
+            - configMapRef:
+                name: {{ include "calculator-chart.urlConfig.defaultName" . }}
+            - secretRef:
+                name: {{ include "calculator-chart.secrets.defaultName" . }}
+          resources:
+            {{- toYaml .Values.userapi.container.resources | nindent 12 }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "calculator-chart.userapi.service.name" . }}
+  labels:
+    {{- include "calculator-chart.labels" . | nindent 4 }}
+    tier: userapi
+spec:
+  ports:
+    - port: {{ .Values.userapi.service.port }}
+      protocol: TCP
+      targetPort: 8080
+      name: http
+  selector:
+    {{- include "calculator-chart.selectorLabels" . | nindent 4 }}
+    tier: userapi
+
+---
+
+{{- if .Values.userapi.hpa.enabled -}}
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "calculator-chart.userapi.hpa.name" . }}
+  labels:
+    {{- include "calculator-chart.labels" . | nindent 4 }}
+    tier: userapi
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "calculator-chart.userapi.deployment.name" . }}
+  minReplicas: {{ .Values.userapi.hpa.minReplicas }}
+  maxReplicas: {{ .Values.userapi.hpa.maxReplicas }}
+  targetCPUUtilizationPercentage: {{ .Values.userapi.hpa.targetCPUUtilizationPercentage }}
+{{- end -}}
